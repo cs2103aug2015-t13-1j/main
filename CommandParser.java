@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
  * CommandParser parses user's input to create Command objects that have the
  * appropriate fields initialised. For example, the "remove" command requires the
@@ -17,10 +18,17 @@ public class CommandParser {
     // the regex pattern to split input by spaces, except if there is a quoted string
 private static Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
 
-    private static Command getCommandFromInput(String input) {
+    public static Command getCommandFromInput(String input) {
     	ArrayList<String> params = splitInput(input);
-    	String commandType = getCommandType(params);
+    	String commandType = getCommandType(params).toLowerCase();
     	ArrayList<String> args = getCommandArgs(params);
+    	
+    	switch(commandType) {
+    	case "list":
+    		return initListCommand();
+    	default:
+    		return initInvalidCommand();
+    	}
     }
     
     private static ArrayList<String> splitInput(String input) {
@@ -35,7 +43,7 @@ private static Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
     	return params;
     }
     
-    private String getCommandType(ArrayList<String> params) {
+    private static String getCommandType(ArrayList<String> params) {
         return params.get(POSITION_COMMAND_TYPE);
     }
 
@@ -44,4 +52,11 @@ private static Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
                                                         params.size()));
     }
 
+    private static Command initInvalidCommand() {
+    	return new Command(Command.Type.INVALID);
+    }
+    
+    private static Command initListCommand() {
+    	return new Command(Command.Type.LIST);
+    }
 }
