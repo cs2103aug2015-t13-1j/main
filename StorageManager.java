@@ -20,7 +20,7 @@ public class StorageManager {
 
 	}
 
-	public Task readTask(String name) {
+	public Task[] readTask(String name) {
 
 	}
 
