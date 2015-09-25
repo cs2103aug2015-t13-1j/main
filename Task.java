@@ -9,9 +9,6 @@ public class Task {
     private LOCALDATETIME start = null;
     private LOCALDATETIME end = null;
 
-    public Task() {
-    }
-
     public Task(String name) {
     	this.name = name;
     }

@@ -8,7 +8,11 @@ public class Command {
     }
 
     private Type type;
-    private Task task;
+    private Task task = null;
+
+    public Command(Type type) {
+        this.type = type;
+    }
 
     public Command(Type type, Task task) {
         this.type = type;
