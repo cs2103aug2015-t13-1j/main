@@ -6,7 +6,6 @@ import java.util.ArrayList;
  * execute it. It is created by CommandParser's parse method.
  */
 public class Command {
-    
     public enum Type {
         ADD, LIST, UPDATE, REMOVE
     }
@@ -17,5 +16,13 @@ public class Command {
     public Command(Type type, Task task) {
         this.type = type;
         this.task = task;
+    }
+
+    public Type getCommandType() {
+        return type;
+    }
+
+    public Task getCommandTask() {
+        return task;
     }
 }
