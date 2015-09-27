@@ -23,4 +23,9 @@ public class Task {
     	this.start = start;
     	this.end = end;
     }
+    
+    public String getName() {
+    	return name;
+    }
+    
 }
