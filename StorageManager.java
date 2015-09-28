@@ -7,9 +7,7 @@ import java.io.FileWriter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.google.gson.Gson;
 
 /**
  * StorageManager is a class that read/write/delete appropriate task information to the Storage.
@@ -55,23 +53,26 @@ public class StorageManager {
 	}
 
 	public Task[] readTask(String name) {
-		JSONParser jsonParser = new JSONParser();
-
 		try {
-			Object obj = jsonParser.parse(bufferedReader);
-
-			JSONArray jsonArray = (JSONArray) obj; 
-			Task[] taskList = new Task[jsonArray.size()];
-
-			if (jsonArray != null) { 
-				for (int i = 0; i < jsonArray.size(); i++) {
-					if (((Task) jsonArray.get(i)).getName().equals(name)) {
-						taskList[i] = (Task) jsonArray.get(i); // SKSK: Forceful conversion to Task may not work
+			Gson gson = new Gson();
+			Task[] taskListFromJSON;
+			Task[] taskListToReturn;
+			
+			taskListFromJSON = gson.fromJson(bufferedReader, Task[].class);
+			taskListToReturn = new Task[taskListFromJSON.length];
+			
+			if (taskListFromJSON != null) { 
+				int j = 0;
+				
+				for (int i = 0; i < taskListFromJSON.length; i++) {
+					if (taskListFromJSON[i].getName().equals(name)) {
+						taskListToReturn[j] = taskListFromJSON[i];
+						j++;
 					}
 				}
 			}
 
-			return taskList;
+			return taskListToReturn;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -80,22 +81,14 @@ public class StorageManager {
 	}
 
 	public Task[] readAllTask() {
-		JSONParser jsonParser = new JSONParser();
-
 		try {
-			Object obj = jsonParser.parse(bufferedReader);
-
-			JSONArray jsonArray = (JSONArray) obj; 
-			Task[] taskList = new Task[jsonArray.size()];
-
-			if (jsonArray != null) { 
-				for (int i = 0; i < jsonArray.size(); i++) {
-					taskList[i] = (Task) jsonArray.get(i); // SKSK: Forceful conversion to Task may not work
-				}
-			}
-
-			return taskList;
-
+			Gson gson = new Gson();
+			Task[] taskListFromJSON;
+			
+			taskListFromJSON = gson.fromJson(bufferedReader, Task[].class);
+			
+			return taskListFromJSON;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -103,18 +96,17 @@ public class StorageManager {
 	}
 
 	public void writeTask(Task task) {
-		JSONParser jsonParser = new JSONParser();
-
 		try {
-			Object obj = jsonParser.parse(bufferedReader);
-
-			JSONArray jsonArray = (JSONArray) obj; 
-			jsonArray.add(task);
-
-			bufferedWriter.write(jsonArray.toJSONString());
-
-			return;
-
+			Gson gson = new Gson();
+			Task[] taskListFromJSON;
+			
+			taskListFromJSON = gson.fromJson(bufferedReader, Task[].class);
+			taskListFromJSON[taskListFromJSON.length] = task;
+			
+			gson.toJson(taskListFromJSON);
+			
+			bufferedWriter.write(gson.toString());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
