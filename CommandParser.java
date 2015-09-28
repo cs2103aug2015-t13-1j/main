@@ -90,5 +90,17 @@ if (args.size() == 0 || args.size() > MAX_ARG_REMOVE) {
 Task taskToRemove = new Task(args.get(0));
 return new Command(Command.Type.REMOVE, taskToRemove);
     }
+
+    /* 
+    private static Command initUpdateCommand(ArrayList<String> args) {
+    	if (args.size() != 2) {    	
+    	    	return initInvalidCommand();
+    	    }
+
+    	Task taskToRemove = new Task(args.get(0));
+    	return new Command(Command.Type.REMOVE, taskToRemove);
+    	    }
+*/
     
 }
+
