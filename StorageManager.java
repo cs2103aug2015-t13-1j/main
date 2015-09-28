@@ -17,7 +17,7 @@ import org.json.simple.parser.JSONParser;
 public class StorageManager {
 	private final String DIRECTORY = "./";
 	private final String FILE_NAME = "TaskStorage";
-	private final String FILE_TYPE = ".json"
+	private final String FILE_TYPE = ".json";
 	private FileReader fileReader;
 	private FileWriter fileWriter;
 	private BufferedReader bufferedReader;
@@ -26,7 +26,7 @@ public class StorageManager {
 	public StorageManager() {
 	}
 
-	public boolean openStorage() {
+	public void openStorage() {
 		try {
 			File file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
 
@@ -36,14 +36,14 @@ public class StorageManager {
 
 			fileReader = new FileReader(file.getAbsoluteFile());
 			fileWriter = new FileWriter(file.getAbsoluteFile());
-			bufferedReader = new BufferedWriter(fileReader);
+			bufferedReader = new BufferedReader(fileReader);
 			bufferedWriter = new BufferedWriter(fileWriter);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public boolean closeStorage() {
+	public void closeStorage() {
 		try {
 			bufferedReader.close();
 			bufferedWriter.close();
@@ -61,12 +61,12 @@ public class StorageManager {
 			Object obj = jsonParser.parse(bufferedReader);
 
 			JSONArray jsonArray = (JSONArray) obj; 
-			Task[] taskList = new Task[jsonArray.length()];
+			Task[] taskList = new Task[jsonArray.size()];
 
 			if (jsonArray != null) { 
-				for (int i = 0; i < jsonArray.length(); i++) {
-					if (jsonArray.get(i).name.equals(name)) {
-						taskList[i] = jsonArray.get(i); // SKSK: Maybe need to convert Object (jsonArray.get(i)) to Task
+				for (int i = 0; i < jsonArray.size(); i++) {
+					if (((Task) jsonArray.get(i)).getName().equals(name)) {
+						taskList[i] = (Task) jsonArray.get(i); // SKSK: Forceful conversion to Task may not work
 					}
 				}
 			}
@@ -75,6 +75,7 @@ public class StorageManager {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 
@@ -85,11 +86,11 @@ public class StorageManager {
 			Object obj = jsonParser.parse(bufferedReader);
 
 			JSONArray jsonArray = (JSONArray) obj; 
-			Task[] taskList = new Task[jsonArray.length()];
+			Task[] taskList = new Task[jsonArray.size()];
 
 			if (jsonArray != null) { 
-				for (int i = 0; i < jsonArray.length(); i++) {
-					taskList[i] = jsonArray.get(i); // SKSK: Maybe need to convert Object (jsonArray.get(i)) to Task
+				for (int i = 0; i < jsonArray.size(); i++) {
+					taskList[i] = (Task) jsonArray.get(i); // SKSK: Forceful conversion to Task may not work
 				}
 			}
 
@@ -97,6 +98,7 @@ public class StorageManager {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 
