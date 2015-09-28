@@ -4,7 +4,7 @@
  */
 public class Command {
     public enum Type {
-        ADD, LIST, UPDATE, REMOVE
+        ADD, LIST, UPDATE, REMOVE, INVALID, EXIT
     }
 
     private Type type;
