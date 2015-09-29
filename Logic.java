@@ -1,7 +1,7 @@
 /*
  *The logic class will process user input from UI, and return the result of the processing to UI.
  *For example, UI gets info about successful execution   of a command. 
- *Errors encountered during input parsing or execution will be propogated by exceptions
+ *Errors encountered during input parsing or execution will be propagated by exceptions
  *@author Dickson
  */
 
