@@ -1,6 +1,7 @@
 /*
  *The logic class will process user input from UI, and return the result of the processing to UI.
- *For example, successful execution   of a command, or errors encountered during input parsing or execution.
+ *For example, UI gets info about successful execution   of a command. 
+ *Errors encountered during input parsing or execution will be propogated by exceptions
  *@author Dickson
  */
 
@@ -9,20 +10,27 @@ private static StorageManager storage = new StorageManager();
 private static boolean isStorageOpen = false; // whether storage component is ready to read and write
 
 public static void processUserInput(String userInput) throws Exception {
-	Command c = CommandParser.getCommandFromInput(userInput);
+	Command command = CommandParser.getCommandFromInput(userInput);
 	if (isStorageOpen == false) {
 		openStorage(); 
 	}
 	
-	if (c.getCommandType() == Command.Type.INVALID) {
-		throw new Exception("Invalid input.");
-	}
-	
-switch(c.getCommandType()) {
+switch(command.getCommandType()) {
 case ADD:
-	execAdd(c);
-
+	execAdd(command);
+	break;
+case EXIT:
+	execExit();
+	break;
+case INVALID:
+	throw new Exception("Invalid input.");
+case REMOVE:
+	execRemove(command);
+	default:
+		throw new Exception("Invalid input.");
 }
+
+Ui.displayCommandSuccess(c);
 }
 
 private static void openStorage() {
@@ -38,6 +46,21 @@ private static void closeStorage() {
 private static void execAdd(Command c) throws Exception {
 	Task newTask = c.getCommandTask();
 storage.writeTask(newTask);	
+}
+
+private static void execExit() {
+	closeStorage();
+	System.exit(0);
+}
+
+private static void execRemove(Command c) throws Exception {
+	Task taskToRemove = c.getCommandTask();
+storage.removeTask(taskToRemove);	
+}
+
+private static void execList(Command c) throws Exception {
+	Task[] tasks = storage.readAllTask();
+Ui.showTasks(tasks);	
 }
 
 }
