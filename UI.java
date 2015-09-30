@@ -1,18 +1,52 @@
 import java.util.Scanner;
 
+/**
+ * The UI class handles all user input and output to the screen.
+ * It sends the user input to the Logic component for processing,
+ * and it handles displaying the command feedback and errors to the user. 
+ * Exceptions thrown by the Logic component to indicate errors are handled by UI. 
+ * 
+ * @author Katherine Coronado
+ *
+ */
+
 public class UI {
+	/** messages to be displayed to the user **/
+	private static final String MESSAGE_WELCOME = "Welcome to TaskBuddy!\n\n";
+	private static final String MESSAGE_COMMAND_PROMPT = "> ";
+	private static final String MESSAGE_SUCCESS_ADD = "\"%1$s\" added successfully\n\n";
+	private static final String MESSAGE_SUCCESS_UPDATE = "\"%1$s\" updated successfully\n\n";
+	private static final String MESSAGE_SUCCESS_REMOVE = "\"%1$s\" removed successfully\n\n";
+	
 	private static boolean isRunning;
+	private static Scanner keyboard;
 	
 	public static void main(String[] args) {
-		Scanner keyboard = new Scanner(System.in);
-		isRunning = true;
-		
+		taskBuddyInit();
 		displayWelcomeMessage();
 		while (isRunning) {
-			String userInput = keyboard.nextLine();
+			showToUser(MESSAGE_COMMAND_PROMPT);
+			String userInput = getUserInput();
 			executeUserInput(userInput);
 		}
-		keyboard.close();
+		taskBuddyClose();
+	}
+
+	/** 
+	 * This method gets user input from the keyboard
+	 * 
+	 * @return	the user's input string
+	 */
+	private static String getUserInput() {
+		return keyboard.nextLine();
+	}
+
+	/**
+	 * This method initiates Task Buddy by initializing the class variables
+	 */
+	private static void taskBuddyInit() {
+		keyboard = new Scanner(System.in);
+		isRunning = true;
 	}
 
 	/**
@@ -20,8 +54,16 @@ public class UI {
 	 * upon opening the program.
 	 */
 	private static void displayWelcomeMessage() {
-		// TODO Auto-generated method stub
-		
+		showToUser(MESSAGE_WELCOME);
+		// TODO possibly show the list of upcoming tasks to the user
+	}
+
+	/**
+	 * This method closes Task Buddy
+	 */
+	private static void taskBuddyClose() {
+		keyboard.close();
+		System.exit(0);
 	}
 	
 	/**
@@ -30,11 +72,10 @@ public class UI {
 	 * @param userInput	the string entered by the user
 	 */
 	private static void executeUserInput(String userInput) {
-		// TODO Auto-generated method stub
 		try {
 //			Logic.processUserInput(userInput);
 		} catch (Exception e) {
-			
+			// TODO handle exception error messages
 		}
 	}
 
@@ -44,7 +85,10 @@ public class UI {
 	 * @param tasks	the array holding the list of tasks to display to the user
 	 */
 	public static void listTasks(Task[] tasks) {
-		
+		for (int i = 0; i < tasks.length; i++) {
+			String entry = tasks[i].getName() + "\n";
+			showToUser(entry);
+		}
 	}
 	
 	/**
@@ -67,7 +111,7 @@ public class UI {
 				break;
 				
 			case EXIT :
-				exitProgram();
+				indicateExit();
 				break;
 				
 			// TODO handle case for INVALID and LIST
@@ -83,8 +127,8 @@ public class UI {
 	 * @param task	the task that the user added
 	 */
 	private static void displayAddSuccess(Task task) {
-		// TODO Auto-generated method stub
-		
+		String message = String.format(MESSAGE_SUCCESS_ADD, task.getName());
+		showToUser(message);
 	}
 
 	/**
@@ -93,7 +137,8 @@ public class UI {
 	 * @param task	the updated task that was edited by the user
 	 */
 	private static void displayUpdateSuccess(Task task) {
-		// TODO Auto-generated method stub
+		String message = String.format(MESSAGE_SUCCESS_UPDATE, task.getName());
+		showToUser(message);
 		
 	}
 	
@@ -103,15 +148,24 @@ public class UI {
 	 * @param task	the task that was removed by the user
 	 */
 	private static void displayRemoveSuccess(Task task) {
-		// TODO Auto-generated method stub
+		String message = String.format(MESSAGE_SUCCESS_REMOVE, task.getName());
+		showToUser(message);
 		
 	}
 	
 	/**
-	 * This method displays an exit message and closes out of the program
+	 * This method shows a message to the user in the console
+	 * 
+	 * @param message	the message to display to the user
 	 */
-	private static void exitProgram() {
-		// TODO Auto-generated method stub
+	private static void showToUser(String message) {
+		System.out.print(message);
+	}
+	
+	/**
+	 * This method flags that the user requested to exit the program
+	 */
+	private static void indicateExit() {
 		isRunning = false;
 	}
 }
