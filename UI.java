@@ -73,7 +73,7 @@ public class UI {
 	 */
 	private static void executeUserInput(String userInput) {
 		try {
-//			Logic.processUserInput(userInput);
+			Logic.processUserInput(userInput);
 		} catch (Exception e) {
 			// TODO handle exception error messages
 		}
