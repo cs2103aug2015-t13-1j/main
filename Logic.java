@@ -29,7 +29,7 @@ case REMOVE:
 		throw new Exception("Invalid input.");
 }
 
-Ui.displayCommandSuccess(command);
+	Ui.displayCommandSuccess(command);
 }
 
 private static void openStorage() {
@@ -42,8 +42,8 @@ private static void closeStorage() {
 	isStorageOpen = false;
 }
 
-private static void execAdd(Command c) throws Exception {
-	Task newTask = c.getCommandTask();
+private static void execAdd(Command command) throws Exception {
+	Task newTask = command.getCommandTask();
 	StorageManager.writeTask(newTask);	
 }
 
@@ -52,14 +52,14 @@ private static void execExit() {
 	System.exit(0);
 }
 
-private static void execRemove(Command c) throws Exception {
-	Task taskToRemove = c.getCommandTask();
+private static void execRemove(Command command) throws Exception {
+	Task taskToRemove = command.getCommandTask();
 	StorageManager.removeTask(taskToRemove);	
 }
 
-private static void execList(Command c) throws Exception {
+private static void execList(Command command) throws Exception {
 	Task[] tasks = StorageManager.readAllTask();
-Ui.showTasks(tasks);	
+Ui.listTasks(tasks);	
 }
 
 }
