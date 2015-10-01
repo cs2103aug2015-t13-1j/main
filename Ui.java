@@ -14,6 +14,7 @@ public class Ui {
 	/** messages to be displayed to the user **/
 	private static final String MESSAGE_WELCOME = "Welcome to TaskBuddy!\n\n";
 	private static final String MESSAGE_COMMAND_PROMPT = "> ";
+	private static final String MESSAGE_NO_TASKS = "No tasks to display\n\n";
 	private static final String MESSAGE_SUCCESS_ADD = "\"%1$s\" added successfully\n\n";
 	private static final String MESSAGE_SUCCESS_UPDATE = "\"%1$s\" updated successfully\n\n";
 	private static final String MESSAGE_SUCCESS_REMOVE = "\"%1$s\" removed successfully\n\n";
@@ -85,9 +86,13 @@ public class Ui {
 	 * @param tasks	the array holding the list of tasks to display to the user
 	 */
 	public static void listTasks(Task[] tasks) {
-		for (int i = 0; i < tasks.length; i++) {
-			String entry = tasks[i].getName() + "\n";
-			showToUser(entry);
+		if (tasks.length == 0) {
+			showToUser(MESSAGE_NO_TASKS);
+		} else {
+			for (int i = 0; i < tasks.length; i++) {
+				String entry = tasks[i].getName() + "\n";
+				showToUser(entry);
+			}
 		}
 	}
 	
