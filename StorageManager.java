@@ -13,18 +13,18 @@ import com.google.gson.Gson;
  * StorageManager is a class that read/write/delete appropriate task information to the Storage.
  */
 public class StorageManager {
-	private final String DIRECTORY = "./";
-	private final String FILE_NAME = "TaskStorage";
-	private final String FILE_TYPE = ".json";
-	private FileReader fileReader;
-	private FileWriter fileWriter;
-	private BufferedReader bufferedReader;
-	private BufferedWriter bufferedWriter;
+	private static final String DIRECTORY = "./";
+	private static final String FILE_NAME = "TaskStorage";
+	private static final String FILE_TYPE = ".json";
+	private static FileReader fileReader;
+	private static FileWriter fileWriter;
+	private static BufferedReader bufferedReader;
+	private static BufferedWriter bufferedWriter;
 
 	public StorageManager() {
 	}
 
-	public void openStorage() {
+	public static void openStorage() {
 		try {
 			File file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
 
@@ -41,7 +41,7 @@ public class StorageManager {
 		}
 	}
 
-	public void closeStorage() {
+	public static void closeStorage() {
 		try {
 			bufferedReader.close();
 			bufferedWriter.close();
@@ -52,7 +52,7 @@ public class StorageManager {
 		}
 	}
 
-	public Task[] readTask(String name) {
+	public static Task[] readTask(String name) {
 		try {
 			Gson gson = new Gson();
 			Task[] taskListFromJSON;
@@ -80,7 +80,7 @@ public class StorageManager {
 		}
 	}
 
-	public Task[] readAllTask() {
+	public static Task[] readAllTask() {
 		try {
 			Gson gson = new Gson();
 			Task[] taskListFromJSON;
@@ -95,7 +95,7 @@ public class StorageManager {
 		}
 	}
 
-	public void writeTask(Task task) {
+	public static void writeTask(Task task) {
 		try {
 			Gson gson = new Gson();
 			Task[] taskListFromJSON;
@@ -110,5 +110,9 @@ public class StorageManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void removeTask(Task task) {
+		
 	}
 }

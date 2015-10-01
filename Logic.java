@@ -44,7 +44,7 @@ private static void closeStorage() {
 
 private static void execAdd(Command c) throws Exception {
 	Task newTask = c.getCommandTask();
-StorageManager.writeTask(newTask);	
+	StorageManager.writeTask(newTask);	
 }
 
 private static void execExit() {
@@ -54,7 +54,7 @@ private static void execExit() {
 
 private static void execRemove(Command c) throws Exception {
 	Task taskToRemove = c.getCommandTask();
-StorageManager.removeTask(taskToRemove);	
+	StorageManager.removeTask(taskToRemove);	
 }
 
 private static void execList(Command c) throws Exception {
