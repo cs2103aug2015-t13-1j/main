@@ -9,6 +9,9 @@ import java.io.BufferedWriter;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * StorageManager is a class that read/write/delete appropriate task information to the Storage.
  */
@@ -20,6 +23,7 @@ public class StorageManager {
 	private static FileWriter fileWriter;
 	private static BufferedReader bufferedReader;
 	private static BufferedWriter bufferedWriter;
+	private static final Task[] EMPTY_TASK = {};
 
 	public StorageManager() {
 	}
@@ -99,15 +103,27 @@ public class StorageManager {
 		try {
 			Gson gson = new Gson();
 			Task[] taskListFromJSON;
+			ArrayList<Task> taskListTransition;
+			Task[] taskListToReturn;
 			
 			taskListFromJSON = gson.fromJson(bufferedReader, Task[].class);
-			taskListFromJSON[taskListFromJSON.length] = task;
 			
-			gson.toJson(taskListFromJSON);
+			if (taskListFromJSON == null) {
+				taskListFromJSON = EMPTY_TASK;
+			}
 			
-			bufferedWriter.write(gson.toString());
+			taskListTransition = new ArrayList<Task> (Arrays.asList(taskListFromJSON));
+			
+			taskListTransition.add(task);
+			
+			taskListToReturn = taskListTransition.toArray(new Task[taskListTransition.size()]);
+			
+			gson.toJson(taskListToReturn, bufferedWriter);
+			bufferedWriter.flush();
+			// bufferedWriter.write(gson.toString());
 			
 		} catch (Exception e) {
+			
 			e.printStackTrace();
 		}
 	}

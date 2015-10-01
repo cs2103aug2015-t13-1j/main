@@ -28,4 +28,12 @@ public class Task {
     	return name;
     }
     
+    public LocalDateTime getStartDateTime() {
+    	return this.start;
+    }
+    
+    public LocalDateTime getEndDateTime() {
+    	return this.end;
+    }
+    
 }

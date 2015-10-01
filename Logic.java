@@ -19,7 +19,7 @@ case ADD:
 	execAdd(command);
 	break;
 case EXIT:
-	execExit();
+	execExit(command);
 	break;
 case INVALID:
 	throw new Exception("Invalid input.");
@@ -51,8 +51,9 @@ private static void execAdd(Command command) throws Exception {
 	StorageManager.writeTask(newTask);	
 }
 
-private static void execExit() {
+private static void execExit(Command command) {
 	closeStorage();
+	Ui.displayCommandSuccess(command);
 	System.exit(0);
 }
 
