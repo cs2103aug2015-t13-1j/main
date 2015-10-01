@@ -6,7 +6,6 @@
  */
 
 public class Logic {
-private static StorageManager storage = new StorageManager();
 private static boolean isStorageOpen = false; // whether storage component is ready to read and write
 
 public static void processUserInput(String userInput) throws Exception {
@@ -30,22 +29,22 @@ case REMOVE:
 		throw new Exception("Invalid input.");
 }
 
-Ui.displayCommandSuccess(c);
+Ui.displayCommandSuccess(command);
 }
 
 private static void openStorage() {
-	storage.openStorage();
+	StorageManager.openStorage();
 	isStorageOpen = true;
 }
 
 private static void closeStorage() {
-	storage.closeStorage();
+	StorageManager.closeStorage();
 	isStorageOpen = false;
 }
 
 private static void execAdd(Command c) throws Exception {
 	Task newTask = c.getCommandTask();
-storage.writeTask(newTask);	
+StorageManager.writeTask(newTask);	
 }
 
 private static void execExit() {
@@ -55,11 +54,11 @@ private static void execExit() {
 
 private static void execRemove(Command c) throws Exception {
 	Task taskToRemove = c.getCommandTask();
-storage.removeTask(taskToRemove);	
+StorageManager.removeTask(taskToRemove);	
 }
 
 private static void execList(Command c) throws Exception {
-	Task[] tasks = storage.readAllTask();
+	Task[] tasks = StorageManager.readAllTask();
 Ui.showTasks(tasks);	
 }
 
