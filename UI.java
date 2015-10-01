@@ -10,7 +10,7 @@ import java.util.Scanner;
  *
  */
 
-public class UI {
+public class Ui {
 	/** messages to be displayed to the user **/
 	private static final String MESSAGE_WELCOME = "Welcome to TaskBuddy!\n\n";
 	private static final String MESSAGE_COMMAND_PROMPT = "> ";
