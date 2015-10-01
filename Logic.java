@@ -23,8 +23,12 @@ case EXIT:
 	break;
 case INVALID:
 	throw new Exception("Invalid input.");
+case LIST:
+	execList(command);
+	break;
 case REMOVE:
 	execRemove(command);
+	break;
 	default:
 		throw new Exception("Invalid input.");
 }
