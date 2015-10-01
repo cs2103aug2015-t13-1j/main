@@ -118,11 +118,12 @@ public class StorageManager {
 			
 			taskListToReturn = taskListTransition.toArray(new Task[taskListTransition.size()]);
 			
-			gson.toJson(taskListToReturn);
-			
-			bufferedWriter.write(gson.toString());
+			gson.toJson(taskListToReturn, bufferedWriter);
+			bufferedWriter.flush();
+			// bufferedWriter.write(gson.toString());
 			
 		} catch (Exception e) {
+			
 			e.printStackTrace();
 		}
 	}
