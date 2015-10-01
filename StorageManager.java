@@ -111,4 +111,8 @@ public class StorageManager {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void removeTask(Task task) {
+		
+	}
 }
