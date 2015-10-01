@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class Ui {
 	/** messages to be displayed to the user **/
 	private static final String MESSAGE_WELCOME = "Welcome to TaskBuddy!\n\n";
+	private static final String MESSAGE_EXIT = "Goodbye";
 	private static final String MESSAGE_COMMAND_PROMPT = "> ";
 	private static final String MESSAGE_NO_TASKS = "No tasks to display\n\n";
 	private static final String MESSAGE_SUCCESS_ADD = "\"%1$s\" added successfully\n\n";
@@ -30,6 +31,7 @@ public class Ui {
 			String userInput = getUserInput();
 			executeUserInput(userInput);
 		}
+		showToUser(MESSAGE_EXIT);
 		taskBuddyClose();
 	}
 
@@ -77,6 +79,7 @@ public class Ui {
 			Logic.processUserInput(userInput);
 		} catch (Exception e) {
 			// TODO handle exception error messages
+			showToUser(e.getMessage());
 		}
 	}
 
@@ -93,6 +96,7 @@ public class Ui {
 				String entry = tasks[i].getName() + "\n";
 				showToUser(entry);
 			}
+			showToUser("\n");
 		}
 	}
 	

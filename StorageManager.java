@@ -91,6 +91,10 @@ public class StorageManager {
 			
 			taskListFromJSON = gson.fromJson(bufferedReader, Task[].class);
 			
+			if (taskListFromJSON == null) {
+				taskListFromJSON = EMPTY_TASK;
+			}
+			
 			return taskListFromJSON;
 			
 		} catch (Exception e) {
