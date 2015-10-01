@@ -30,7 +30,7 @@ case REMOVE:
 		throw new Exception("Invalid input.");
 }
 
-Ui.displayCommandSuccess(c);
+Ui.displayCommandSuccess(command);
 }
 
 private static void openStorage() {
@@ -45,7 +45,7 @@ private static void closeStorage() {
 
 private static void execAdd(Command c) throws Exception {
 	Task newTask = c.getCommandTask();
-storage.writeTask(newTask);	
+	storage.writeTask(newTask);	
 }
 
 private static void execExit() {
@@ -55,7 +55,7 @@ private static void execExit() {
 
 private static void execRemove(Command c) throws Exception {
 	Task taskToRemove = c.getCommandTask();
-storage.removeTask(taskToRemove);	
+	storage.removeTask(taskToRemove);	
 }
 
 private static void execList(Command c) throws Exception {
