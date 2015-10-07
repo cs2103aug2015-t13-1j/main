@@ -35,6 +35,9 @@ public class CommandParser {
 	    	case "remove" :
 	    		return initRemoveCommand(args);
 	    		
+	    	case "update" :
+	    		return initUpdateCommand(args);
+	    		
 	    	case "exit" :
 	    		// fallthrough
 	    		
@@ -97,15 +100,15 @@ public class CommandParser {
 		return new Command(Command.Type.REMOVE, taskToRemove);
     }
 
-/* 
+
     private static Command initUpdateCommand(ArrayList<String> args) {
     	if (args.size() != 2) {    	
 	    	return initInvalidCommand();
 	    }
 
-    	Task taskToRemove = new Task(args.get(0));
-    	return new Command(Command.Type.REMOVE, taskToRemove);
+    	// TODO fix the super hacky way of doing things
+    	Task taskToUpdate = new Task(args.get(0));
+    	return new Command(Command.Type.UPDATE, taskToUpdate);
     }
-*/
 }
 
