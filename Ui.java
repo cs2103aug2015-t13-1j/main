@@ -80,6 +80,7 @@ public class Ui {
 		} catch (Exception e) {
 			// TODO handle exception error messages
 			showToUser(e.getMessage());
+			showToUser("\n\n");
 		}
 	}
 
