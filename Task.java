@@ -6,34 +6,34 @@ import java.time.LocalDateTime;
  */
 public class Task {
 	private String name;
-    private LocalDateTime start = null;
-    private LocalDateTime end = null;
+  private LocalDateTime start = null;
+  private LocalDateTime end = null;
 
-    public Task(String name) {
-    	this.name = name;
-    }
+  public Task(String name) {
+  	this.name = name;
+  }
 
-    public Task(String name, LocalDateTime end) {
-    	this.name = name;
-    	this.end = end;
-    }
+  public Task(String name, LocalDateTime end) {
+  	this.name = name;
+  	this.end = end;
+  }
 
-    public Task(String name, LocalDateTime start, LocalDateTime end) {
-    	this.name = name;
-    	this.start = start;
-    	this.end = end;
-    }
+  public Task(String name, LocalDateTime start, LocalDateTime end) {
+  	this.name = name;
+  	this.start = start;
+  	this.end = end;
+  }
     
-    public String getName() {
-    	return name;
-    }
-    
-    public LocalDateTime getStartDateTime() {
-    	return this.start;
-    }
-    
-    public LocalDateTime getEndDateTime() {
-    	return this.end;
-    }
+  public String getName() {
+  	return name;
+  }
+  
+  public LocalDateTime getStartDateTime() {
+  	return this.start;
+  }
+  
+  public LocalDateTime getEndDateTime() {
+  	return this.end;
+  }
     
 }
