@@ -23,12 +23,21 @@ public class Logic {
 				execExit(command);
 				break;
 				
-			case INVALID :
-				throw new Exception("Invalid input.");
-				
 			case LIST :
 				execList(command);
 				break;
+				
+			case UPDATE :
+				execUpdate(command);
+				// TODO fix this
+				int indexOfNew = userInput.lastIndexOf('\"', userInput.length()-2);
+				String newInput = "add " + userInput.substring(indexOfNew);
+				Command tempCommand = CommandParser.getCommandFromInput(newInput);
+				execAdd(tempCommand);
+				break;
+				
+			case INVALID :
+				// falthrough
 				
 			case REMOVE :
 				execRemove(command);
@@ -39,7 +48,7 @@ public class Logic {
 		}
 		Ui.displayCommandSuccess(command);
 	}
-	
+
 	private static void openStorage() {
 		StorageManager.openStorage();
 		isStorageOpen = true;
@@ -48,6 +57,13 @@ public class Logic {
 	private static void closeStorage() {
 		StorageManager.closeStorage();
 		isStorageOpen = false;
+	}
+	
+	private static void execUpdate(Command command) throws Exception {
+		Task updateTask = command.getCommandTask();
+//		StorageManager.updateTask(updateTask);
+		// TODO temp code: delete the task and then go back and re-add the new task
+		StorageManager.removeTask(updateTask);
 	}
 	
 	private static void execAdd(Command command) throws Exception {

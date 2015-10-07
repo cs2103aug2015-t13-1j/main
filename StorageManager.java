@@ -78,6 +78,11 @@ public class StorageManager {
 		}
 	}
 	
+	/**
+	 * This method searches the current task list for all tasks that match the name
+	 * @param name	the name of the task to search for
+	 * @return		an array of tasks containing the Tasks that match the name
+	 */
 	public static Task[] readTask(String name) {
 		Task[] taskListToReturn = new Task[TASK_LIST.length];
 		
@@ -192,5 +197,10 @@ public class StorageManager {
 		if (!isRemoved) {
 			throw new Exception("\"" + task.getName() + "\" was not found.");
 		}
+	}
+
+	public static void updateTask(Task updateTask) {
+		// TODO Auto-generated method stub
+		
 	}
 }
