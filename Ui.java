@@ -78,7 +78,6 @@ public class Ui {
 		try {
 			Logic.processUserInput(userInput);
 		} catch (Exception e) {
-			// TODO handle exception error messages
 			showToUser(e.getMessage());
 			showToUser("\n\n");
 		}

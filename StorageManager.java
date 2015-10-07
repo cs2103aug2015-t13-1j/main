@@ -156,7 +156,14 @@ public class StorageManager {
 		}
 	}
 	
-	public static void removeTask(Task task) {
+	/**
+	 * This method removes a given task from the file
+	 * 
+	 * @param task
+	 * @throws Exception	if the task was unable to be removed
+	 */
+	public static void removeTask(Task task) throws Exception {
+		boolean isRemoved = false;
 		try {
 			Gson gson = new Gson();
 			ArrayList<Task> taskListTransition;
@@ -164,7 +171,7 @@ public class StorageManager {
 			
 			taskListTransition = new ArrayList<Task> (Arrays.asList(TASK_LIST));
 			
-			taskListTransition.remove(task);
+			isRemoved = taskListTransition.remove(task);
 			
 			taskListToUpdate = taskListTransition.toArray(new Task[taskListTransition.size()]);
 			
@@ -175,8 +182,15 @@ public class StorageManager {
 			bufferedWriter.flush();
 			
 		} catch (Exception e) {
-			
-			e.printStackTrace();
+//			e.printStackTrace();
+			// TODO is this what would throw the exception?
+			// if so we should re-add the removed task to the local copy to reflect the file
+			isRemoved = false;
+			throw new Exception("Error saving changes to file.");
+		}
+		
+		if (!isRemoved) {
+			throw new Exception("\"" + task.getName() + "\" was not found.");
 		}
 	}
 }
