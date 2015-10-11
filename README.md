@@ -8,13 +8,34 @@ TaskBuddy is your friend in your laptop that helps you manage your tasks easily.
 
 ## How to use?
 
-## Public API
+## Developer guide
+
+### IDE Setup
+
+* Download and install version 1.8 of the Java runtime environment and eclipse. 
+* Create a new java project, choosing the local copy of this repo as a source folder.
+* Download the latest version of [Gson](https://github.com/google/gson) and add the .jar to the build path.
+
+### Architecture Overview
+
+TaskBuddy consists of the following components: 
+* UI, which reads user input, formats and displays information
+* command parser, which extracts information about commands from user input
+* logic, which implements TaskBuddy's functionality by calling the APIs of other components,
+* storage manager, which reads and writes from a file containing task data
+* task and command, which contains information about tasks and commands respectively
 
 ### UI
 
 ### Logic
 
+API:
+* public static void processUserInput(String userInput) throws Exception: executes the requested command
+
 ### CommandParser
+
+API:
+*     public static Command getCommandFromInput(String input): returns a command object which contains information about the command to be performed.
 
 ### StorageManager
 
