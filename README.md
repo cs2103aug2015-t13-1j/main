@@ -26,6 +26,8 @@ TaskBuddy consists of the following components:
 * task and command, which contains information about tasks and commands respectively
 
 ### UI
+* public static void listTasks(Task[] tasks): displays a list of tasks to the user
+* public static void displayCommandSuccess(Command command): generic method to display a success message to the user after executing a command
 
 ### Logic
 
