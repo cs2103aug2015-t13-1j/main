@@ -83,7 +83,7 @@ public class Logic {
 	}
 	
 	private static void execList(Command command) throws Exception {
-		Task[] tasks = StorageManager.readAllTask();
+		Task[] tasks = StorageManager.readAllTasks();
 		Ui.listTasks(tasks);	
 	}
 

@@ -97,6 +97,34 @@ public class StorageManager {
 		
 		return taskListToReturn;
 	}
+	
+	/**
+	 * This method searches the task list for tasks containing all of the given keywords
+	 * 
+	 * @param keywords	the array of keywords to search for in the task names
+	 * @return			an ArrayList of the tasks containing all of the keywords
+	 * 					The ArrayList will be empty if no tasks were found.
+	 */
+	public static ArrayList<Task> searchTasks(String[] keywords) {
+		ArrayList<Task> foundTasks = new ArrayList<Task>();
+		
+		for (int i = 0; i < TASK_LIST.length; i++) {
+			int keywordIndex = 0;
+			Task currentTask = TASK_LIST[i];
+			
+			// check if currentTask contains all of the keywords before adding to foundTasks
+			while (keywordIndex < keywords.length) {
+				if (!currentTask.getName().contains(keywords[keywordIndex++])) {
+					break;
+				}
+				if (keywordIndex == keywords.length) {
+					foundTasks.add(currentTask);
+				}
+			}
+		}
+		
+		return foundTasks;
+	}
 			
 //	public static Task[] readTask(String name) {
 //		try {
@@ -126,7 +154,7 @@ public class StorageManager {
 //		}
 //	}
 	
-	public static Task[] readAllTask() {
+	public static Task[] readAllTasks() {
 		return TASK_LIST;
 	}
 
@@ -199,8 +227,33 @@ public class StorageManager {
 		}
 	}
 
-	public static void updateTask(Task updateTask) {
-		// TODO Auto-generated method stub
+	/**
+	 * This method updates a task in the task list with the new task.
+	 * 
+	 * @param oldTask		the task to search for and update
+	 * @param newTask		the updated version of the task to replace the old task
+	 * @throws Exception	if there are no tasks or if the old task was not found
+	 */
+	public static void updateTask(Task oldTask, Task newTask) throws Exception {
+		if (TASK_LIST.length == 0) {
+			throw new Exception("You currently do not have any tasks saved.");
+		}
 		
+		Task taskToUpdate = TASK_LIST[0];
+		int index = 0;
+		while (index < TASK_LIST.length) {
+			taskToUpdate = TASK_LIST[index];
+			if (!taskToUpdate.equals(oldTask)) {
+				index++;
+			} else {
+				break;
+			}
+		}
+		
+		if (index == TASK_LIST.length) {
+			throw new Exception("Task \"" + oldTask.getName() + "\" was not found.");
+		} else {	
+			TASK_LIST[index] = newTask;
+		}
 	}
 }
