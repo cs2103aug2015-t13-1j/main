@@ -12,15 +12,32 @@ import java.util.regex.Pattern;
  */
 
 public class CommandParser {
-    private static final int POSITION_COMMAND_TYPE = 0;
+	// error messages for thrown exceptions
+	private static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
+    private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
+	private static final String ERROR_INCORRECT_ARG_UPDATE = "Please indicate the task you want to change "
+																+ "and which values to change.";
+	
+	// positions in the command input
+	private static final int POSITION_COMMAND_TYPE = 0;
     private static final int POSITION_FIRST_PARAM = 1;
+    
     // the regex pattern to split input by spaces, except if there is a quoted string
 	private static final Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
+	
 	// the maximum number of args for command types that take in arguments
 	private static final int MAX_ARG_ADD = 1;
 	private static final int MAX_ARG_REMOVE = 1;
  
-    public static Command getCommandFromInput(String input) {
+	/**
+	 * Parse the input into the appropriate command
+	 * 
+	 * @param input			the input to parse
+	 * @return				the command parsed from the input
+	 * @throws Exception	if there are an incorrect number of arguments for a given command
+	 * 						or if the command is unrecognized
+	 */
+    public static Command getCommandFromInput(String input) throws Exception {
     	ArrayList<String> params = splitInput(input);
     	String commandType = getCommandType(params).toLowerCase();
     	ArrayList<String> args = getCommandArgs(params);
@@ -45,7 +62,7 @@ public class CommandParser {
 	    		return initExitCommand();
 	    		
 	    	default :
-	    		return initInvalidCommand();
+	    		throw new Exception(String.format(ERROR_INVALID_COMMAND, commandType));
     	}
     }
     
@@ -69,46 +86,43 @@ public class CommandParser {
         return new ArrayList<String>(params.subList(POSITION_FIRST_PARAM,
                                                         params.size()));
     }
-
-    private static Command initInvalidCommand() {
-    	return new Command(Command.Type.INVALID);
-    }
     
     private static Command initListCommand() {
-    	return new Command(Command.Type.LIST);
+    	// TODO handle option for List command with search parameters
+    	return new List();
     }
     
     private static Command initExitCommand() {
-    	return new Command(Command.Type.EXIT);
+    	return new Exit();
     }
     
-    private static Command initAddCommand(ArrayList<String> args) {
+    private static Command initAddCommand(ArrayList<String> args) throws Exception {
 		if (args.size() == 0 || args.size() > MAX_ARG_ADD) {    	
-		    	return initInvalidCommand();
-		    }
+	    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "add"));
+	    }
 	
 		Task newTask = new Task(args.get(0));
-		return new Command(Command.Type.ADD, newTask);
+		return new Add(newTask);
     }
     
-    private static Command initRemoveCommand(ArrayList<String> args) {
-    	if (args.size() == 0 || args.size() > MAX_ARG_REMOVE) {    	
-	    	return initInvalidCommand();
-	    }
+    private static Command initRemoveCommand(ArrayList<String> args) throws Exception {
+    	if (args.size() == 0 || args.size() > MAX_ARG_REMOVE) {
+	    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		
+    	}
 
 		Task taskToRemove = new Task(args.get(0));
-		return new Command(Command.Type.REMOVE, taskToRemove);
+		return new Remove(taskToRemove);
     }
 
 
-    private static Command initUpdateCommand(ArrayList<String> args) {
+    private static Command initUpdateCommand(ArrayList<String> args) throws Exception {
     	if (args.size() != 2) {    	
-	    	return initInvalidCommand();
+	    	throw new Exception(ERROR_INCORRECT_ARG_UPDATE);
 	    }
 
-    	// TODO fix the super hacky way of doing things
-    	Task taskToUpdate = new Task(args.get(0));
-    	return new Command(Command.Type.UPDATE, taskToUpdate);
+    	Task oldTask = new Task(args.get(0));
+    	Task newTask = new Task(args.get(1));
+    	return new Update(oldTask, newTask);
     }
 }
 

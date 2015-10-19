@@ -4,54 +4,89 @@ import org.junit.Test;
 
 public class CommandParserTest {
 
-	@Test
+/*	@Test
 	public void testInvalidCommandParsing() {
 		Command c = CommandParser.getCommandFromInput("abc");
 		assertEquals(Command.Type.INVALID, c.getCommandType());
 	}
-
+*/
 	@Test
 	public void testListCommandParsing() {
-		Command c = CommandParser.getCommandFromInput("list");
-		assertEquals(Command.Type.LIST, c.getCommandType());
+		Command c;
+		try {
+			c = CommandParser.getCommandFromInput("list");
+			assertEquals(List.class, c.getClass());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail();
+		}
 	}
 	
 	@Test
 	public void testExitCommandParsing() {
-		Command c1 = CommandParser.getCommandFromInput("exit");
-		assertEquals(Command.Type.EXIT, c1.getCommandType());
-		Command c2 = CommandParser.getCommandFromInput("Quit");
-		assertEquals(Command.Type.EXIT, c2.getCommandType());
+		Command c1;
+		try {
+			c1 = CommandParser.getCommandFromInput("exit");
+			assertEquals(Exit.class, c1.getClass());
+			Command c2 = CommandParser.getCommandFromInput("Quit");
+			assertEquals(Exit.class, c2.getClass());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail();
+		}
 	}
 	
 	@Test
 	public void testAddFloatingTaskCommandParsing() {
-		Command invalid1 = CommandParser.getCommandFromInput("add ");
-		assertEquals(Command.Type.INVALID, invalid1.getCommandType());
+		try {
+			// this should throw an exception
+			Command invalid1 = CommandParser.getCommandFromInput("add ");
+			fail();
+		} catch (Exception e) {
+			assertEquals("Please indicate only one task to add.", e.getMessage());
+		}
 		String newTaskName = "read The Hobbit";
-		// Input like add read The Hobbit shouis invalid; task names with more than 1 word must be quoted
-		Command invalid2 = CommandParser.getCommandFromInput("add " + newTaskName);
-		assertEquals(Command.Type.INVALID, invalid2.getCommandType());
-		
-		Command c = CommandParser.getCommandFromInput("add \"" + newTaskName + "\"");
-		assertEquals(Command.Type.ADD, c.getCommandType());
-		Task t = c.getCommandTask();
-		assertEquals(newTaskName, t.getName());
+		// Input like add read The Hobbit should invalid; task names with more than 1 word must be quoted
+		try {
+			// this should throw an exception
+			Command invalid2 = CommandParser.getCommandFromInput("add " + newTaskName);
+			fail();
+		} catch (Exception e) {
+			assertEquals("Please indicate only one task to add.", e.getMessage());
+		}
+		try {
+			Command c = CommandParser.getCommandFromInput("add \"" + newTaskName + "\"");
+			assertEquals(new Add(new Task(newTaskName)), c);
+		} catch (Exception e) {
+			fail();
+		}
 	}
 
 	@Test
 	public void testRemoveFloatingTaskCommandParsing() {
-		Command invalid1 = CommandParser.getCommandFromInput("remove ");
-		assertEquals(Command.Type.INVALID, invalid1.getCommandType());
+		try {
+			// this should throw an exception
+			Command invalid1 = CommandParser.getCommandFromInput("remove ");
+			fail();
+		} catch (Exception e) {
+			assertEquals("Please indicate only one task to remove.", e.getMessage());
+		}
 		String taskNameToRemove = "read The Hobbit";
 		// Input like remove read The Hobbit shouis invalid; task names with more than 1 word must be quoted
-		Command invalid2 = CommandParser.getCommandFromInput("remove " + taskNameToRemove);
-		assertEquals(Command.Type.INVALID, invalid2.getCommandType());
+		try {
+			// this should throw an exception
+			Command invalid2 = CommandParser.getCommandFromInput("remove " + taskNameToRemove);
+			fail();
+		} catch (Exception e) {
+			assertEquals("Please indicate only one task to remove.", e.getMessage());
+		}
 		
-		Command c = CommandParser.getCommandFromInput("remove \"" + taskNameToRemove + "\"");
-		assertEquals(Command.Type.REMOVE, c.getCommandType());
-		Task t = c.getCommandTask();
-		assertEquals(taskNameToRemove, t.getName());
+		try {
+			Command c = CommandParser.getCommandFromInput("remove \"" + taskNameToRemove + "\"");
+			assertEquals(new Remove(new Task(taskNameToRemove)), c);
+		} catch (Exception e) {
+			fail();
+		}
 	}
 
 }
