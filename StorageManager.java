@@ -41,7 +41,9 @@ public class StorageManager {
 			bufferedReader = new BufferedReader(fileReader);
 			bufferedWriter = new BufferedWriter(fileWriter);
 			
-			TASK_LIST = initiateTaskList();			
+			TASK_LIST = initiateTaskList();	
+			
+			fileWriter = new FileWriter(file.getAbsoluteFile(), false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -147,7 +149,6 @@ public class StorageManager {
 			
 			gson.toJson(taskListToReturn, bufferedWriter);
 			bufferedWriter.flush();
-			// bufferedWriter.write(gson.toString());
 			
 		} catch (Exception e) {
 			
