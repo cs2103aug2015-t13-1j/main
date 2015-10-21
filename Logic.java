@@ -13,47 +13,15 @@ public class Logic {
 		if (isStorageOpen == false) {
 			openStorage(); 
 		}
-		
-		switch(command.getCommandType()) {
-			case ADD :
-				execAdd(command);
-				break;
-				
-			case EXIT :
-				execExit(command);
-				break;
-				
-			case LIST :
-				execList(command);
-				break;
-				
-			case UPDATE :
-				execUpdate(command);
-				// TODO fix this
-				int indexOfNew = userInput.lastIndexOf('\"', userInput.length()-2);
-				String newInput = "add " + userInput.substring(indexOfNew);
-				Command tempCommand = CommandParser.getCommandFromInput(newInput);
-				execAdd(tempCommand);
-				break;
-				
-			case INVALID :
-				// falthrough
-				
-			case REMOVE :
-				execRemove(command);
-				break;
-				
-			default :
-				throw new Exception("Invalid input.");
-		}
-		Ui.displayCommandSuccess(command);
+		command.execute();
+		Ui.showToUser(command.getSuccessMessage() + "\n\n");
 	}
 
 	private static void openStorage() {
 		StorageManager.openStorage();
 		isStorageOpen = true;
 	}
-	
+/*	
 	private static void closeStorage() {
 		StorageManager.closeStorage();
 		isStorageOpen = false;
@@ -83,8 +51,8 @@ public class Logic {
 	}
 	
 	private static void execList(Command command) throws Exception {
-		Task[] tasks = StorageManager.readAllTask();
+		Task[] tasks = StorageManager.readAllTasks();
 		Ui.listTasks(tasks);	
 	}
-
+*/
 }
