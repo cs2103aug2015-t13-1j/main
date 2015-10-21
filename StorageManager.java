@@ -33,7 +33,6 @@ public class StorageManager {
 			File file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
 			
 			if (!file.exists()) {
-				System.out.print("File does not exists");
 				file.createNewFile();
 			}
 
@@ -126,34 +125,6 @@ public class StorageManager {
 		
 		return foundTasks;
 	}
-			
-//	public static Task[] readTask(String name) {
-//		try {
-//			Gson gson = new Gson();
-//			Task[] taskListFromJSON;
-//			Task[] taskListToReturn;
-//			
-//			taskListFromJSON = gson.fromJson(bufferedReader, Task[].class);
-//			taskListToReturn = new Task[taskListFromJSON.length];
-//			
-//			if (taskListFromJSON != null) { 
-//				int j = 0;
-//				
-//				for (int i = 0; i < taskListFromJSON.length; i++) {
-//					if (taskListFromJSON[i].getName().equals(name)) {
-//						taskListToReturn[j] = taskListFromJSON[i];
-//						j++;
-//					}
-//				}
-//			}
-//
-//			return taskListToReturn;
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//	}
 	
 	public static Task[] readAllTasks() {
 		return TASK_LIST;
@@ -164,12 +135,6 @@ public class StorageManager {
 			Gson gson = new Gson();
 			ArrayList<Task> taskListTransition;
 			Task[] taskListToReturn;
-			
-//			taskListFromJSON = gson.fromJson(bufferedReader, Task[].class);
-//			
-//			if (taskListFromJSON == null) {
-//				taskListFromJSON = EMPTY_TASK;
-//			}
 			
 			taskListTransition = new ArrayList<Task> (Arrays.asList(TASK_LIST));
 			
