@@ -43,7 +43,13 @@ public class StorageManager {
 			
 			TASK_LIST = initiateTaskList();	
 			
+			// Set append to false because, we want to be overwriting
 			fileWriter = new FileWriter(file.getAbsoluteFile(), false);
+			
+			// Write to TaskStorage.json as soon as setting fileWrite's append to false
+			Gson gson = new Gson();
+			gson.toJson(TASK_LIST, bufferedWriter);
+			bufferedWriter.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
