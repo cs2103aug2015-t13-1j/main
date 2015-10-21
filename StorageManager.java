@@ -31,17 +31,18 @@ public class StorageManager {
 	public static void openStorage() {
 		try {
 			File file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
-
+			
 			if (!file.exists()) {
+				System.out.print("File does not exists");
 				file.createNewFile();
 			}
 
 			fileReader = new FileReader(file.getAbsoluteFile());
-			fileWriter = new FileWriter(file.getAbsoluteFile());
+			fileWriter = new FileWriter(file.getAbsoluteFile(), true);
 			bufferedReader = new BufferedReader(fileReader);
 			bufferedWriter = new BufferedWriter(fileWriter);
 			
-			TASK_LIST = initiateTaskList();
+			TASK_LIST = initiateTaskList();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
