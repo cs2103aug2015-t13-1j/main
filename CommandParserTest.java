@@ -76,7 +76,7 @@ public class CommandParserTest {
 	@Test
 	public void testAddDeadlineTaskCommandParsing() {
 		String newTaskName = "read Harry Potter by J K Rowling";
-		// boundary case heuristic: 
+		// boundary case heuristic: the word to being present in the title should not cause parsing problems
 		String validDeadlineString = "21-02-2015 14:40";
 		LocalDateTime validDeadline = parseDateTime(validDeadlineString);
 		String invalidDeadlineString = "21-13-2015 14:40";
@@ -107,8 +107,35 @@ try {
     	catch(DateTimeParseException e) {
     	return null;	
     	}
-    	
+	}
+	
+    	@Test
+    	public void testAddEventTaskCommandParsing() {
+    		String newTaskName = "return books borrowed from Ben to him";
+    		// boundary case heuristic: the word from and to being present in the title should not cause parsing problems
+    		String validStartString = "21-02-2015 14:40";
+    		LocalDateTime validStartTime = parseDateTime(validStartString);
+    		String validEndString = "21-02-2015 15:00";
+    		LocalDateTime validEndTime = parseDateTime(validEndString);
+
+    		String invalidEndString = "21-13-2015 14:40";
+    		LocalDateTime invalidEndTime = parseDateTime(invalidEndString);
+    		
+    try {
+    			Add validCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + validEndString);
+    			assertEquals(new Add(new Task(newTaskName, validStartTime, validEndTime)), validCommand);
+    } catch (Exception e) {
+    	fail();
     }
+
+    try {
+    			Add invalidCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + invalidEndString);
+    			fail(); // the above line should trigger an exception
+    } catch (Exception e) {
+
+    }
+    		
+    	}
     
 	@Test
 	public void testRemoveFloatingTaskCommandParsing() {
