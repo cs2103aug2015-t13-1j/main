@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -17,6 +18,7 @@ public class Ui {
 	
 	private static boolean isRunning;
 	private static Scanner keyboard;
+	private static ArrayList<Task> currentTaskList;
 	
 	public static void main(String[] args) {
 		taskBuddyInit();
@@ -70,10 +72,28 @@ public class Ui {
 	 */
 	private static void executeUserInput(String userInput) {
 		try {
-			Logic.processUserInput(userInput);
+			Command command = Logic.processUserInput(userInput);
+			showToUser(command.getSuccessMessage() + "\n\n");
+			// update the current saved task list so that tasks can be referred to by index
+			if (command.getClass() == List.class) {
+				List listCommand = (List) command;
+				currentTaskList = listCommand.getTaskList();
+			} else {
+				currentTaskList = null;
+			}
 		} catch (Exception e) {
 			showToUser(e.getMessage() + "\n\n");
 		}
+	}
+	
+	/**
+	 * Returns the task list that was most recently displayed to the user. 
+	 * 
+	 * @return 	an ArrayList of tasks that were most recently displayed to the user
+	 * 			null if the most recent command was not a List command
+	 */
+	public static ArrayList<Task> getCurrentTaskList() {
+		return currentTaskList;
 	}
 	
 	/**

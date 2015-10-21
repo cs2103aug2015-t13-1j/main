@@ -8,13 +8,13 @@
 public class Logic {
 	private static boolean isStorageOpen = false; // whether storage component is ready to read and write
 	
-	public static void processUserInput(String userInput) throws Exception {
+	public static Command processUserInput(String userInput) throws Exception {
 		Command command = CommandParser.getCommandFromInput(userInput);
 		if (isStorageOpen == false) {
 			openStorage(); 
 		}
 		command.execute();
-		Ui.showToUser(command.getSuccessMessage() + "\n\n");
+		return command;
 	}
 
 	private static void openStorage() {
