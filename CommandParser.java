@@ -1,3 +1,6 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,22 +20,32 @@ public class CommandParser {
     private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
 	private static final String ERROR_INCORRECT_ARG_UPDATE = "Please indicate the task you want to change "
 																+ "and which values to change.";
-	
+	private static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
     private static final int POSITION_FIRST_PARAM = 1;
     
     // the regex pattern to split input by spaces, except if there is a quoted string
+    // because of the way tokenizing is done, an argument like date and time which has a space between them is counted as 2 arguments
 	private static final Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
-	
+// the formatter used to parse date and time
+	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 	// the maximum number of args for command types that take in arguments
-	private static final int MAX_ARG_ADD = 1;
-	private static final int MAX_ARG_REMOVE = 1;
 	
+	private static final int MAX_ARG_REMOVE = 1;
+	// positions in the parameter list for the add command
+	private static final int POSITION_ADD_NAME = 0;
+	private static final int POSITION_ADD_FROM_KEYWORD = 1;
+	private static final int POSITION_ADD_BY_KEYWORD = 1;
+	private static final int POSITION_ADD_TO_KEYWORD = POSITION_ADD_BY_KEYWORD+3;
 	// positions in the parameter list for the update command
 	private static final int POSITION_UPDATE_NEW = 1;
 	private static final int POSITION_UPDATE_OLD = 0;
- 
+// used for the add command to determine what type of task is to be added
+	private enum TASK_TYPE {
+		FLOATING, DEADLINE, EVENT, INVALID
+	}
+	
 	/**
 	 * Parse the input into the appropriate command
 	 * 
@@ -101,14 +114,93 @@ public class CommandParser {
     }
     
     private static Command initAddCommand(ArrayList<String> args) throws Exception {
-		if (args.size() == 0 || args.size() > MAX_ARG_ADD) {    	
-	    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "add"));
-	    }
-	
-		Task newTask = new Task(args.get(0));
+		
+		Task newTask;
+		String name = "";
+		if (args.size() >= 1) {
+			name = args.get(POSITION_ADD_NAME); // name is always present in the same position for all tasks
+		}
+			
+		switch(determineTaskTypeToBeAdded(args)) {
+		case FLOATING:
+			newTask = new Task(name);
+			break;
+		case DEADLINE:
+		{
+			// the date and time occurs as 2 words, concat them to be parsed
+			String deadline = args.get(POSITION_ADD_BY_KEYWORD+1).concat(" ");
+			deadline = deadline.concat(args.get(POSITION_ADD_BY_KEYWORD+2));
+			LocalDateTime endTime = parseDateTime(deadline);
+			
+			if (endTime != null) {
+				newTask = new Task(name, endTime);
+			}
+			else {
+				throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, deadline));
+			}
+			break;
+		}
+		case EVENT:
+			// the date and time occurs as 2 words, concat them to be parsed
+						String start = args.get(POSITION_ADD_FROM_KEYWORD+1).concat(" ");
+						start = start.concat(args.get(POSITION_ADD_FROM_KEYWORD+2));
+						String end = args.get(POSITION_ADD_TO_KEYWORD+1).concat(" ");
+						end = end.concat(args.get(POSITION_ADD_TO_KEYWORD+2));
+						LocalDateTime startTime = parseDateTime(start);
+						LocalDateTime endTime = parseDateTime(end);
+						
+						if (startTime == null) {
+							throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, start));
+						}
+
+						if (endTime == null) {
+							throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, end));
+						}
+// if we get here, all the parameters are correct
+							newTask = new Task(name, startTime, endTime);
+						break;
+			default:
+				throw new Exception("The type of task to be added could not be determined.");
+		}
+		
 		return new Add(newTask);
     }
+
+    private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
+    	switch(args.size()) {
+    	case 1: // floating tasks have only 1 argument, the name
+    		return TASK_TYPE.FLOATING;
+    	case 4: // name, by keyword, date and time = 4 args
+    		if (args.get(POSITION_ADD_BY_KEYWORD).toLowerCase().equals("by")) {
+    			return TASK_TYPE.DEADLINE;
+    		}
+    		else {
+    			return TASK_TYPE.INVALID;
+    		}
+    	case 7: // name, from, to, and 2 dates + 2 times
+    		boolean isFromPresent = args.get(POSITION_ADD_FROM_KEYWORD).toLowerCase().equals("from");
+    		boolean isToPresent= args.get(POSITION_ADD_TO_KEYWORD).toLowerCase().equals("to");
+    		if (isFromPresent && isToPresent) {
+    			return TASK_TYPE.EVENT;
+    		} else {
+    			return TASK_TYPE.INVALID;
+    		}
+    			
+default:
+	return TASK_TYPE.INVALID;
+    	}
+    }
     
+    private static LocalDateTime parseDateTime(String dateTimeString) {
+    	try {
+    	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
+    	return dateTime;
+    	} 
+    	catch(DateTimeParseException e) {
+    	return null;	
+    	}
+    	
+    }
     private static Command initRemoveCommand(ArrayList<String> args) throws Exception {
     	if (args.size() == 0 || args.size() > MAX_ARG_REMOVE) {
 	    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		

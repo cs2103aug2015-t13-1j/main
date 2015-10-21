@@ -48,15 +48,20 @@ public class Task {
 		Task other = (Task)obj;
 		LocalDateTime otherStart = other.getStartDateTime();
 		LocalDateTime otherEnd = other.getEndDateTime();
+		boolean isNameEqual = false, isStartEqual = false, isEndEqual = false;
 		
-		if (!this.getName().equals(other.getName())) {
-			return false;
-		} else if (end != otherEnd || (end != null && end.equals(otherEnd))) {
-			return false;
-		} else if (start != otherStart || (start != null && start.equals(otherStart))) {
-			return false;
-		} else {
-			return true;
+		if (this.getName().equals(other.getName())) {
+			isNameEqual = true;
 		}
+		
+	if ((end == null && end == otherEnd) || (end != null && end.equals(otherEnd))) {
+		isEndEqual = true;
+	}
+	
+	if ((start == null && start == otherStart) || (start != null && start.equals(otherStart))) {
+		isStartEqual = true;
+	}
+	
+	return isNameEqual && isEndEqual && isStartEqual;
 	}
 }
