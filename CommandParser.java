@@ -28,6 +28,10 @@ public class CommandParser {
 	// the maximum number of args for command types that take in arguments
 	private static final int MAX_ARG_ADD = 1;
 	private static final int MAX_ARG_REMOVE = 1;
+	
+	// positions in the parameter list for the update command
+	private static final int POSITION_UPDATE_NEW = 1;
+	private static final int POSITION_UPDATE_OLD = 0;
  
 	/**
 	 * Parse the input into the appropriate command
@@ -120,8 +124,8 @@ public class CommandParser {
 	    	throw new Exception(ERROR_INCORRECT_ARG_UPDATE);
 	    }
 
-    	Task oldTask = new Task(args.get(0));
-    	Task newTask = new Task(args.get(1));
+    	Task oldTask = new Task(args.get(POSITION_UPDATE_OLD));
+    	Task newTask = new Task(args.get(POSITION_UPDATE_NEW));
     	return new Update(oldTask, newTask);
     }
 }

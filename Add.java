@@ -1,5 +1,10 @@
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Add command to handle adding a task to the task list.
+ * @author Katherine Coronado
+ *
+ */
 public class Add extends Command {
 	private static final String SUCCESS_ADD = "\"%s\" was added.";
 	
@@ -12,12 +17,18 @@ public class Add extends Command {
 	}
 	
 	@Override
+	/**
+	 * Add a task to the task list.
+	 */
 	public void execute() throws Exception {
 		StorageManager.writeTask(task);
 		wasExecuted = true;
 	}
 
 	@Override
+	/**
+	 * Remove the task added by this instance of Add.
+	 */
 	public void undo() throws Exception {
 		StorageManager.removeTask(task);
 	}

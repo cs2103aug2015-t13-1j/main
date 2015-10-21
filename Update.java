@@ -1,5 +1,11 @@
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Update command to handle updating the fields of a task.
+ * @author Katherine Coronado
+ *
+ */
+
 public class Update extends Command {
 	private static final String SUCCESS_UPDATE = "\"%s\" was updated to \"%s\".";
 	
@@ -14,12 +20,18 @@ public class Update extends Command {
 	}
 
 	@Override
+	/**
+	 * Update the task.
+	 */
 	public void execute() throws Exception {
 		StorageManager.updateTask(oldTask, newTask);
 		wasExecuted = true;
 	}
 
 	@Override
+	/**
+	 * Restore the task to the old state prior to executing the update command.
+	 */
 	public void undo() throws Exception {
 		StorageManager.updateTask(newTask, oldTask);
 	}

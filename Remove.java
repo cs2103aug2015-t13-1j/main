@@ -1,5 +1,10 @@
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Remove command to handle removing a task from the task list.
+ * @author Katherine Coronado
+ *
+ */
 public class Remove extends Command {
 	private static final String SUCCESS_REMOVE = "\"%s\" was removed.";
 	
@@ -12,12 +17,18 @@ public class Remove extends Command {
 	}
 	
 	@Override
+	/**
+	 * Remove the task from the task list.
+	 */
 	public void execute() throws Exception {
 		StorageManager.removeTask(this.task);
 		wasExecuted = true;
 	}
 
 	@Override
+	/**
+	 * Re-add the task that was removed by this instance of Remove.
+	 */
 	public void undo() throws Exception {
 		StorageManager.writeTask(task);
 	}

@@ -24,6 +24,7 @@ public class StorageManagerTest {
 		ArrayList<Task> actual;
 		
 		// test searching "b"
+		// equivalence partition for searching for one keyword
 		actual = StorageManager.searchTasks(new String[] {"b"});
 		expected.add(banana);
 		expected.add(baby);
@@ -31,12 +32,14 @@ public class StorageManagerTest {
 		assertEquals(expected, actual);
 		
 		// test searching "apple b"
+		// equivalence partition for searching with more than one keyword
 		actual = StorageManager.searchTasks(new String[] {"apple", "b"});
 		expected.clear();
 		expected.add(appleBanana);
 		assertEquals(expected, actual);
 		
 		// test searching "c"
+		// equivalence partition for searching and not finding anything
 		actual = StorageManager.searchTasks(new String[] {"c"});
 		expected.clear();
 		assertEquals(expected, actual);

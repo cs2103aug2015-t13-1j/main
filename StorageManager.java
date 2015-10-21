@@ -1,16 +1,15 @@
-import java.io.File;
-import java.io.IOException;
-
-import java.io.FileReader;
-import java.io.FileWriter;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-
-import com.google.gson.Gson;
-
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import com.google.gson.Gson;
 
 /**
  * StorageManager is a class that read/write/delete appropriate task information to the Storage.
@@ -106,8 +105,9 @@ public class StorageManager {
 	 * 					The ArrayList will be empty if no tasks were found.
 	 */
 	public static ArrayList<Task> searchTasks(String[] keywords) {
-		ArrayList<Task> foundTasks = new ArrayList<Task>();
+		assertNotEquals(null, keywords);
 		
+		ArrayList<Task> foundTasks = new ArrayList<Task>();		
 		for (int i = 0; i < TASK_LIST.length; i++) {
 			int keywordIndex = 0;
 			Task currentTask = TASK_LIST[i];
