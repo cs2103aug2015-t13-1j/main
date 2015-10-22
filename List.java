@@ -1,6 +1,7 @@
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -11,6 +12,11 @@ import java.util.Arrays;
  */
 public class List extends Command {
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
+	private static final String MESSAGE_LIST_HEADER = "#   Start date/time\t | End date/time\t | Name\n";
+	private static final String MESSAGE_FLOATING = "%d. \t\t\t | \t\t\t | %s\n";
+	private static final String MESSAGE_DEADLINE = "%d. \t\t\t | %02d-%02d-%02d %d:%02d\t | %s\n";
+	private static final String MESSAGE_EVENT = "%d. %02d-%02d-%02d %d:%02d\t | %02d-%02d-%02d %d:%02d\t | %s\n";
+	
 	private Task task;
 	private String[] keywords;
 	private ArrayList<Task> taskList;
@@ -71,9 +77,21 @@ public class List extends Command {
 		assertTrue(wasExecuted);
 		if (taskList.size() > 0) {
 			StringBuilder message = new StringBuilder();
+			message.append(MESSAGE_LIST_HEADER);
 			int taskNumber = 1;
 			for (Task task : taskList) {
-				message.append((taskNumber++) + ". " + task.getName() + "\n");
+				LocalDateTime start = task.getStartDateTime();
+				LocalDateTime end = task.getEndDateTime();
+				if (end == null && start == null) {
+					message.append(String.format(MESSAGE_FLOATING, taskNumber++, task.getName()));
+				} else if (start == null) {
+					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, end.getDayOfMonth(), end.getMonthValue(),
+							end.getYear(), end.getHour(), end.getMinute(), task.getName()));
+				} else {
+					message.append(String.format(MESSAGE_EVENT, taskNumber++, start.getDayOfMonth(), start.getMonthValue(),
+							start.getYear(), start.getHour(), start.getMinute(), end.getDayOfMonth(), end.getMonthValue(),
+							end.getYear(), end.getHour(), end.getMinute(),task.getName()));
+				}
 			}
 			// TODO format for tasks with dates
 			return message.toString();
