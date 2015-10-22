@@ -18,6 +18,7 @@ public class StorageManager {
 	private static final String DIRECTORY = "./";
 	private static final String FILE_NAME = "TaskStorage";
 	private static final String FILE_TYPE = ".json";
+	private static File file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
 	private static FileReader fileReader;
 	private static FileWriter fileWriter;
 	private static BufferedReader bufferedReader;
@@ -30,8 +31,6 @@ public class StorageManager {
 
 	public static void openStorage() {
 		try {
-			File file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
-			
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -44,7 +43,8 @@ public class StorageManager {
 			TASK_LIST = initiateTaskList();	
 			
 			// Set append to false because, we want to be overwriting
-			fileWriter = new FileWriter(file.getAbsoluteFile(), false);
+			fileWriter = new FileWriter(file.getAbsoluteFile());
+			bufferedWriter = new BufferedWriter(fileWriter);
 			
 			// Write to TaskStorage.json as soon as setting fileWrite's append to false
 			Gson gson = new Gson();
@@ -153,6 +153,10 @@ public class StorageManager {
 			TASK_LIST = new Task[taskListToReturn.length];
 			TASK_LIST = taskListToReturn;
 			
+			// hacky
+			fileWriter = new FileWriter(file.getAbsoluteFile());
+			bufferedWriter = new BufferedWriter(fileWriter);
+			
 			gson.toJson(taskListToReturn, bufferedWriter);
 			bufferedWriter.flush();
 			
@@ -183,6 +187,10 @@ public class StorageManager {
 			
 			TASK_LIST = new Task[taskListToUpdate.length];
 			TASK_LIST = taskListToUpdate;
+			
+			// hacky
+			fileWriter = new FileWriter(file.getAbsoluteFile());
+			bufferedWriter = new BufferedWriter(fileWriter);
 			
 			gson.toJson(taskListToUpdate, bufferedWriter);
 			bufferedWriter.flush();
