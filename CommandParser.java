@@ -206,8 +206,10 @@ default:
 	    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		
     	}
 
-		Task taskToRemove = new Task(args.get(0));
-		return new Remove(taskToRemove);
+//		Task taskToRemove = new Task(args.get(0));
+//		return new Remove(taskToRemove);
+    	// TODO error checking here
+    	return new Remove(Integer.parseInt(args.get(0)));
     }
 
 
@@ -216,9 +218,10 @@ default:
 	    	throw new Exception(ERROR_INCORRECT_ARG_UPDATE);
 	    }
 
-    	Task oldTask = new Task(args.get(POSITION_UPDATE_OLD));
+//    	Task oldTask = new Task(args.get(POSITION_UPDATE_OLD));
+    	
     	Task newTask = new Task(args.get(POSITION_UPDATE_NEW));
-    	return new Update(oldTask, newTask);
+    	return new Update(Integer.parseInt(args.get(0)), newTask);
     }
 }
 

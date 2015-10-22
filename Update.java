@@ -1,5 +1,7 @@
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+
 /**
  * Update command to handle updating the fields of a task.
  * @author Katherine Coronado
@@ -11,11 +13,13 @@ public class Update extends Command {
 	
 	private Task oldTask;
 	private Task newTask;
+	private int index;
 	private boolean wasExecuted;
 	
-	public Update(Task oldTask, Task newTask) {
-		this.oldTask = oldTask;
+	public Update(int taskNumber, Task newTask) {
+		this.oldTask = null;
 		this.newTask = newTask;
+		this.index = taskNumber - 1;
 		this.wasExecuted = false;
 	}
 
@@ -24,7 +28,13 @@ public class Update extends Command {
 	 * Update the task.
 	 */
 	public void execute() throws Exception {
-		StorageManager.updateTask(oldTask, newTask);
+		ArrayList<Task> taskList = Ui.getCurrentTaskList();
+		if (index >= 0 && index < taskList.size()) {
+			oldTask = taskList.get(index);
+			StorageManager.updateTask(oldTask, newTask);
+		} else {
+			throw new Exception("The index specified is not valid.");
+		}
 		wasExecuted = true;
 	}
 

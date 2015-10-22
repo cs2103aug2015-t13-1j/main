@@ -1,5 +1,7 @@
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+
 /**
  * Remove command to handle removing a task from the task list.
  * @author Katherine Coronado
@@ -9,11 +11,13 @@ public class Remove extends Command {
 	private static final String SUCCESS_REMOVE = "\"%s\" was removed.";
 	
 	private Task task;
+	private int index;
 	private boolean wasExecuted;
 	
-	public Remove(Task task) {
-		this.task = task;
+	public Remove(int taskNumber) {
+		this.index = taskNumber - 1;
 		this.wasExecuted = false;
+		this.task = null;
 	}
 	
 	@Override
@@ -21,7 +25,13 @@ public class Remove extends Command {
 	 * Remove the task from the task list.
 	 */
 	public void execute() throws Exception {
-		StorageManager.removeTask(this.task);
+		ArrayList<Task> taskList = Ui.getCurrentTaskList();
+		if (index >= 0 && index < taskList.size()) {
+			task = taskList.get(index);
+			StorageManager.removeTask(task);
+		} else {
+			throw new Exception("The index specified is not valid.");
+		}
 		wasExecuted = true;
 	}
 
