@@ -8,7 +8,7 @@ import java.util.Scanner;
  * Exceptions thrown by the Logic component to indicate errors are handled by UI. 
  * 
  * @author Katherine Coronado
- *;
+ *
  */
 
 public class Ui {

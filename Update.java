@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 public class Update extends Command {
 	private static final String SUCCESS_UPDATE = "\"%s\" was updated to \"%s\".";
+	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
 	
 	private Task oldTask;
 	private Task newTask;
@@ -33,7 +34,7 @@ public class Update extends Command {
 			oldTask = taskList.get(index);
 			StorageManager.updateTask(oldTask, newTask);
 		} else {
-			throw new Exception("The index specified is not valid.");
+			throw new Exception(ERROR_INDEX_INVALID);
 		}
 		wasExecuted = true;
 	}

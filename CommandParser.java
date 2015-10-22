@@ -18,6 +18,7 @@ public class CommandParser {
 	// error messages for thrown exceptions
 	private static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
     private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
+    private static final String ERROR_NUMBER_FORMAT = "Please specify the number of the task you want to %s.";
 	private static final String ERROR_INCORRECT_ARG_UPDATE = "Please indicate the task you want to change "
 																+ "and which values to change.";
 	private static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
@@ -205,11 +206,12 @@ default:
     	if (args.size() == 0 || args.size() > MAX_ARG_REMOVE) {
 	    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		
     	}
-
-//		Task taskToRemove = new Task(args.get(0));
-//		return new Remove(taskToRemove);
-    	// TODO error checking here
-    	return new Remove(Integer.parseInt(args.get(0)));
+    	
+    	try {
+        	return new Remove(Integer.parseInt(args.get(0)));
+    	} catch (NumberFormatException e) {
+    		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "remove"));
+    	}
     }
 
 
@@ -217,11 +219,13 @@ default:
     	if (args.size() != 2) {    	
 	    	throw new Exception(ERROR_INCORRECT_ARG_UPDATE);
 	    }
-
-//    	Task oldTask = new Task(args.get(POSITION_UPDATE_OLD));
     	
-    	Task newTask = new Task(args.get(POSITION_UPDATE_NEW));
-    	return new Update(Integer.parseInt(args.get(0)), newTask);
+    	try {
+        	Task newTask = new Task(args.get(POSITION_UPDATE_NEW));
+    		return new Update(Integer.parseInt(args.get(POSITION_UPDATE_OLD)), newTask);
+    	} catch (NumberFormatException e) {
+    		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "update"));
+    	}
     }
 }
 

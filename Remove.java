@@ -9,6 +9,7 @@ import java.util.ArrayList;
  */
 public class Remove extends Command {
 	private static final String SUCCESS_REMOVE = "\"%s\" was removed.";
+	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
 	
 	private Task task;
 	private int index;
@@ -30,7 +31,7 @@ public class Remove extends Command {
 			task = taskList.get(index);
 			StorageManager.removeTask(task);
 		} else {
-			throw new Exception("The index specified is not valid.");
+			throw new Exception(ERROR_INDEX_INVALID);
 		}
 		wasExecuted = true;
 	}

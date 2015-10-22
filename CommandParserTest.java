@@ -155,13 +155,14 @@ try {
 		} catch (Exception e) {
 			assertEquals("Please indicate only one task to remove.", e.getMessage());
 		}
-		
+		/*
 		try {
-			Command c = CommandParser.getCommandFromInput("remove \"" + taskNameToRemove + "\"");
-			assertEquals(new Remove(new Task(taskNameToRemove)), c);
+			Command c = CommandParser.getCommandFromInput("remove 1");
+			assertEquals(new Remove(1), c);
 		} catch (Exception e) {
 			fail();
-		}
+		}*/
+		
 	}
 
 }
