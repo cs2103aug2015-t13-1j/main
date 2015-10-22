@@ -1,5 +1,3 @@
-import static org.junit.Assert.assertNotEquals;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -105,37 +103,10 @@ public class StorageManager {
 		return taskListToReturn;
 	}
 	
-	/**
-	 * This method searches the task list for tasks containing all of the given keywords
-	 * 
-	 * @param keywords	the array of keywords to search for in the task names
-	 * @return			an ArrayList of the tasks containing all of the keywords
-	 * 					The ArrayList will be empty if no tasks were found.
-	 */
-	public static ArrayList<Task> searchTasks(String[] keywords) {
-		assertNotEquals(null, keywords);
-		
-		ArrayList<Task> foundTasks = new ArrayList<Task>();		
-		for (int i = 0; i < TASK_LIST.length; i++) {
-			int keywordIndex = 0;
-			Task currentTask = TASK_LIST[i];
-			
-			// check if currentTask contains all of the keywords before adding to foundTasks
-			while (keywordIndex < keywords.length) {
-				if (!currentTask.getName().contains(keywords[keywordIndex++])) {
-					break;
-				}
-				if (keywordIndex == keywords.length) {
-					foundTasks.add(currentTask);
-				}
-			}
-		}
-		
-		return foundTasks;
-	}
-	
-	public static Task[] readAllTasks() {
-		return TASK_LIST;
+	public static ArrayList<Task> readAllTasks() {
+		ArrayList<Task> taskArrayList = new ArrayList<Task>();
+		taskArrayList.addAll(Arrays.asList(TASK_LIST));
+		return taskArrayList;
 	}
 
 	public static void writeTask(Task task) {

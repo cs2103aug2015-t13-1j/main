@@ -3,7 +3,6 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * List command used for listing all tasks or for performing a search on the task list
@@ -55,11 +54,9 @@ public class List extends Command {
 	 */
 	public void execute() throws Exception {
 		if (task != null) {
-			taskList = StorageManager.searchTasks(keywords);
+			taskList = Logic.searchTasks(keywords);
 		} else {
-			taskList = new ArrayList<Task>();
-			Task[] taskArray = StorageManager.readAllTasks();
-			taskList.addAll(Arrays.asList(taskArray));
+			taskList = StorageManager.readAllTasks();
 		}
 		wasExecuted = true;
 	}
