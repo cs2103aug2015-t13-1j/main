@@ -56,9 +56,16 @@ public class CommandParser {
 	 * 						or if the command is unrecognized
 	 */
     public static Command getCommandFromInput(String input) throws Exception {
+    	assert(input != null);
+    	// exit early if this is an empty string (which happens when the user types nothing before pressing enter)
+    	// this requires special handling because attempting to split this empty string into params causes a size 0 array
+    	if (input.equals("")) {
+    		throw new Exception("Please enter a command.");
+    	}
+    	
     	ArrayList<String> params = splitInput(input);
     	String commandType = getCommandType(params).toLowerCase();
-    	ArrayList<String> args = getCommandArgs(params);
+    	ArrayList<String> args     	= getCommandArgs(params); 
     	
     	switch(commandType) {
 	    	case "add" :
@@ -97,6 +104,7 @@ public class CommandParser {
     }
     
     private static String getCommandType(ArrayList<String> params) {
+    	assert(params.size() > 0);
         return params.get(POSITION_COMMAND_TYPE);
     }
 
