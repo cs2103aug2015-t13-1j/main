@@ -63,6 +63,38 @@ public class Logic {
 		
 		return foundTasks;
 	}
+	
+	/**
+	 * This method searches for all of the tasks marked as done by the user.
+	 * 
+	 * @return	an ArrayList of tasks marked as done
+	 */
+	public static ArrayList<Task> getCompletedTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> completed = new ArrayList<Task>();
+		for (Task task : taskList) {
+			if (task.isDone()) {
+				completed.add(task);
+			}
+		}
+		return completed;
+	}
+	
+	/**
+	 * This method searches for all of the tasks that are not marked as done by the user.
+	 * 
+	 * @return	an ArrayList of tasks marked as not done
+	 */
+	public static ArrayList<Task> getUncompletedTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> uncompleted = new ArrayList<Task>();
+		for (Task task : taskList) {
+			if (!task.isDone()) {
+				uncompleted.add(task);
+			}
+		}
+		return uncompleted;
+	}
 /*	
 	private static void closeStorage() {
 		StorageManager.closeStorage();

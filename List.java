@@ -53,13 +53,13 @@ public class List extends Command {
 	
 	@Override
 	/**
-	 * This method handles whether to search the task list or get the entire task list. 
+	 * This method handles whether to search the task list or get the uncompleted tasks list. 
 	 */
 	public void execute() throws Exception {
 		if (task != null) {
 			taskList = Logic.searchTasks(keywords);
 		} else {
-			taskList = StorageManager.readAllTasks();
+			taskList = Logic.getUncompletedTasks();
 		}
 		wasExecuted = true;
 	}
