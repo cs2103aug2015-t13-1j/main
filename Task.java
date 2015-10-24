@@ -40,6 +40,10 @@ boolean isDone; // used to mark tasks as complete
 	public boolean isDone() {
 		return isDone;
 	}
+
+	public void setDone(boolean isDone) {
+		this.isDone = isDone;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {
