@@ -8,20 +8,21 @@ public class Task {
 	private String name;
 	private LocalDateTime start = null;
 	private LocalDateTime end = null;
+boolean isDone; // used to mark tasks as complete
 
-	public Task(String name) {
-		this.name = name;
+	public Task(String name, boolean isDone) {
+		this(name, null, null, isDone);
 	}
 	
-	public Task(String name, LocalDateTime end) {
-		this.name = name;
-		this.end = end;
+	public Task(String name, LocalDateTime end, boolean isDone) {
+		this(name, null, end, isDone);
 	}
 	
-	public Task(String name, LocalDateTime start, LocalDateTime end) {
+	public Task(String name, LocalDateTime start, LocalDateTime end, boolean isDone) {
 		this.name = name;
 		this.start = start;
 		this.end = end;
+		this.isDone = isDone;
 	}
 	    
 	public String getName() {
@@ -35,6 +36,10 @@ public class Task {
 	public LocalDateTime getEndDateTime() {
 		return this.end;
 	} 
+	
+	public boolean isDone() {
+		return isDone;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {

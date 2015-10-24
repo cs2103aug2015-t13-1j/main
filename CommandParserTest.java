@@ -47,7 +47,16 @@ public class CommandParserTest {
 		try {
 			// boundary case: the only thing entered is the command name with no trailing spaces and further arguments
 			// this should throw an exception
-			Command invalid1 = CommandParser.getCommandFromInput("add ");
+			Command invalid = CommandParser.getCommandFromInput("add ");
+			fail();
+		} catch (Exception e) {
+			// assertEquals("Please indicate only one task to add.", e.getMessage());
+		}
+		
+		try {
+			// boundary case: nothing is typed before the user presses enter
+			// this should throw an exception
+			Command invalid = CommandParser.getCommandFromInput("");
 			fail();
 		} catch (Exception e) {
 			// assertEquals("Please indicate only one task to add.", e.getMessage());
@@ -65,7 +74,7 @@ public class CommandParserTest {
 		
 		try {
 			Command c = CommandParser.getCommandFromInput("add \"" + newTaskName + "\"");
-			assertEquals(new Add(new Task(newTaskName)), c);
+			assertEquals(new Add(new Task(newTaskName, false)), c);
 		} catch (Exception e) {
 			fail();
 		}
@@ -85,7 +94,7 @@ public class CommandParserTest {
 try {
 			Add validCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by " + validDeadlineString);
 			assertEquals(validCommand.getTask().getEndDateTime(), validDeadline);
-			assertEquals(new Add(new Task(newTaskName, validDeadline)), validCommand);
+			assertEquals(new Add(new Task(newTaskName, validDeadline, false)), validCommand);
 } catch (Exception e) {
 	fail();
 }
@@ -123,7 +132,7 @@ try {
     		
     try {
     			Add validCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + validEndString);
-    			assertEquals(new Add(new Task(newTaskName, validStartTime, validEndTime)), validCommand);
+    			assertEquals(new Add(new Task(newTaskName, validStartTime, validEndTime, false)), validCommand);
     } catch (Exception e) {
     	fail();
     }

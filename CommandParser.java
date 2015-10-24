@@ -124,7 +124,7 @@ public class CommandParser {
 			
 		switch(determineTaskTypeToBeAdded(args)) {
 		case FLOATING:
-			newTask = new Task(name);
+			newTask = new Task(name, false);
 			break;
 		case DEADLINE:
 		{
@@ -134,7 +134,7 @@ public class CommandParser {
 			LocalDateTime endTime = parseDateTime(deadline);
 			
 			if (endTime != null) {
-				newTask = new Task(name, endTime);
+				newTask = new Task(name, endTime, false);
 			}
 			else {
 				throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, deadline));
@@ -158,7 +158,7 @@ public class CommandParser {
 							throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, end));
 						}
 // if we get here, all the parameters are correct
-							newTask = new Task(name, startTime, endTime);
+							newTask = new Task(name, startTime, endTime, false);
 						break;
 			default:
 				throw new Exception("The type of task to be added could not be determined.");
@@ -221,7 +221,7 @@ default:
 	    }
     	
     	try {
-        	Task newTask = new Task(args.get(POSITION_UPDATE_NEW));
+        	Task newTask = new Task(args.get(POSITION_UPDATE_NEW), false);
     		return new Update(Integer.parseInt(args.get(POSITION_UPDATE_OLD)), newTask);
     	} catch (NumberFormatException e) {
     		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "update"));

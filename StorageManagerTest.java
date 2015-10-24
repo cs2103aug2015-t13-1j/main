@@ -10,9 +10,9 @@ public class StorageManagerTest {
 	public void testUpdateTask() {
 		StorageManager.openStorage();
 		
-		Task oldTask = new Task("old task");
-		Task newTask = new Task("new task");
-		Task notFound = new Task("not found");
+		Task oldTask = new Task("old task", false);
+		Task newTask = new Task("new task", false);
+		Task notFound = new Task("not found", false);
 		
 		// test thrown exception for no tasks in list
 		try {
