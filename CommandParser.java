@@ -18,7 +18,7 @@ public class CommandParser {
 	// error messages for thrown exceptions
 	private static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
     private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
-    private static final String ERROR_NUMBER_FORMAT = "Please specify the number of the task you want to %s.";
+    private static final String ERROR_NUMBER_FORMAT = "Please specify a valid number for the task you want to %s.";
 	private static final String ERROR_INCORRECT_ARG_UPDATE = "Please indicate the task you want to change "
 																+ "and which values to change.";
 	private static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
@@ -32,13 +32,16 @@ public class CommandParser {
 // the formatter used to parse date and time
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 	// the maximum number of args for command types that take in arguments
-	
+	// the max arguments for add command varies depending on the form used, so it is not listed here
 	private static final int MAX_ARG_REMOVE = 1;
+	private static final int MAX_ARG_DONE = 1;
+	
 	// positions in the parameter list for the add command
 	private static final int POSITION_ADD_NAME = 0;
 	private static final int POSITION_ADD_FROM_KEYWORD = 1;
 	private static final int POSITION_ADD_BY_KEYWORD = 1;
 	private static final int POSITION_ADD_TO_KEYWORD = POSITION_ADD_BY_KEYWORD+3;
+	
 	// positions in the parameter list for the update command
 	private static final int POSITION_UPDATE_NEW = 1;
 	private static final int POSITION_UPDATE_OLD = 0;
@@ -70,6 +73,9 @@ public class CommandParser {
     	switch(commandType) {
 	    	case "add" :
 	    		return initAddCommand(args);
+	    		
+	    	case "done" :
+	    		return initDoneCommand(args);
 	    		
 	    	case "list" :
 	    		return initListCommand();
@@ -210,6 +216,7 @@ default:
     	}
     	
     }
+    
     private static Command initRemoveCommand(ArrayList<String> args) throws Exception {
     	if (args.size() == 0 || args.size() > MAX_ARG_REMOVE) {
 	    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		
@@ -222,7 +229,19 @@ default:
     	}
     }
 
-
+    private static Command initDoneCommand(ArrayList<String> args) throws Exception {
+    	if (args.size() == 0 || args.size() > MAX_ARG_DONE) {
+	    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "mark as completed"));    		
+    	}
+    	
+    	try {
+    		int taskNum = Integer.parseInt(args.get(0));
+        	return new Done(taskNum);
+    	} catch (NumberFormatException e) {
+    		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "mark as completed"));
+    	}
+    }
+    
     private static Command initUpdateCommand(ArrayList<String> args) throws Exception {
     	if (args.size() != 2) {    	
 	    	throw new Exception(ERROR_INCORRECT_ARG_UPDATE);

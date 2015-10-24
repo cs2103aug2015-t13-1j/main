@@ -1,5 +1,7 @@
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+
 /**
  * Done command to mark a Task as complete. 
  * @author Dickson
@@ -8,11 +10,15 @@ import static org.junit.Assert.assertTrue;
 
 public class Done extends Command {
 	private static final String SUCCESS_DONE = "\"%s\" is now marked completed.";
+	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
 	private boolean wasExecuted;
 	private Task completedTask;
-	public Done(Task task) {
+	private int taskIndex; // 0-based indexing
+	
+	public Done(int taskNum) {
 		this.wasExecuted = false;
-		completedTask = task;
+		completedTask = null;
+		taskIndex = taskNum - 1;
 	}
 	
 	@Override
@@ -20,12 +26,23 @@ public class Done extends Command {
 	 * Calls the necessary methods to mark a task as completed
 	 */
 	public void execute() throws Exception {
+		completedTask = getTaskFromList();
 		StorageManager.removeTask(completedTask);
 		completedTask.setDone(true);
 		StorageManager.writeTask(completedTask);
 		wasExecuted = true;
 	}
 
+	private Task getTaskFromList() throws Exception {
+		ArrayList<Task> taskList = Ui.getCurrentTaskList();
+		if (taskIndex >= 0 && taskIndex < taskList.size()) {
+			return taskList.get(taskIndex);
+		} else {
+			throw new Exception(ERROR_INDEX_INVALID);
+		}
+		
+	}
+	
 	@Override
 	public void undo() throws Exception {
 		StorageManager.removeTask(completedTask);
