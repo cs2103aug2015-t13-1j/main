@@ -2,7 +2,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 
 import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * List command used for listing all tasks or for performing a search on the task list
@@ -11,10 +13,11 @@ import java.util.ArrayList;
  */
 public class List extends Command {
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_LIST_HEADER = "#   Start date/time\t | End date/time\t | Name\n";
-	private static final String MESSAGE_FLOATING = "%d. \t\t\t | \t\t\t | %s\n";
-	private static final String MESSAGE_DEADLINE = "%d. \t\t\t | %02d-%02d-%02d %d:%02d\t | %s\n";
-	private static final String MESSAGE_EVENT = "%d. %02d-%02d-%02d %d:%02d\t | %02d-%02d-%02d %d:%02d\t | %s\n";
+	private static final String MESSAGE_LIST_HEADER = "#   Start\t | End\t\t | Name\n";
+	private static final String MESSAGE_FLOATING = "%d. \t\t | \t\t | %s\n";
+	private static final String MESSAGE_DEADLINE = "%d. \t\t | %s\t | %s\n";
+	private static final String MESSAGE_EVENT = "%d. %s\t | %s\t | %s\n";
+	private static final String MESSAGE_DATE_TIME_FORMAT = "%02d %s %d:%02d";
 	
 	private Task task;
 	private String[] keywords;
@@ -82,19 +85,29 @@ public class List extends Command {
 				if (end == null && start == null) {
 					message.append(String.format(MESSAGE_FLOATING, taskNumber++, task.getName()));
 				} else if (start == null) {
-					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, end.getDayOfMonth(), end.getMonthValue(),
-							end.getYear(), end.getHour(), end.getMinute(), task.getName()));
+					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, 
+							getDateTimeFormat(end), task.getName()));
 				} else {
-					message.append(String.format(MESSAGE_EVENT, taskNumber++, start.getDayOfMonth(), start.getMonthValue(),
-							start.getYear(), start.getHour(), start.getMinute(), end.getDayOfMonth(), end.getMonthValue(),
-							end.getYear(), end.getHour(), end.getMinute(),task.getName()));
+					message.append(String.format(MESSAGE_EVENT, taskNumber++, getDateTimeFormat(start), 
+							getDateTimeFormat(end), task.getName()));
 				}
 			}
-			// TODO format for tasks with dates
 			return message.toString();
 		} else {
 			return MESSAGE_NO_TASKS;
 		}
+	}
+	
+	/**
+	 * This method creates a String in the format dd mmm hh:mm, i.e. 24 Oct 13:00
+	 * 
+	 * @param dateTime	The LocalDateTime with the date and time to format
+	 * @return			a String in the format dd mmm hh:mm
+	 */
+	private String getDateTimeFormat(LocalDateTime dateTime) {
+		String month = dateTime.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+		return String.format(MESSAGE_DATE_TIME_FORMAT, dateTime.getDayOfMonth(), 
+				month, dateTime.getHour(), dateTime.getMinute());
 	}
 	
 	@Override

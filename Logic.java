@@ -1,6 +1,7 @@
 import static org.junit.Assert.assertNotEquals;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 /*
  *The logic class will process user input from UI, and return the result of the processing to UI.
@@ -11,13 +12,20 @@ import java.util.ArrayList;
 
 public class Logic {
 	private static boolean isStorageOpen = false; // whether storage component is ready to read and write
+	private static Stack<Command> commandHistory = new Stack<Command>();
 	
 	public static Command processUserInput(String userInput) throws Exception {
 		Command command = CommandParser.getCommandFromInput(userInput);
 		if (isStorageOpen == false) {
 			openStorage(); 
 		}
+		// this may throw an Exception depending on the command
 		command.execute();
+		// TODO check for undo command (do not push undo commands to the stack)
+		if (command.getClass() != List.class) {
+			commandHistory.push(command);
+		}
+		// else if undo: pop from the stack
 		return command;
 	}
 
@@ -59,34 +67,6 @@ public class Logic {
 	private static void closeStorage() {
 		StorageManager.closeStorage();
 		isStorageOpen = false;
-	}
-	
-	private static void execUpdate(Command command) throws Exception {
-		Task updateTask = command.getCommandTask();
-//		StorageManager.updateTask(updateTask);
-		// TODO temp code: delete the task and then go back and re-add the new task
-		StorageManager.removeTask(updateTask);
-	}
-	
-	private static void execAdd(Command command) throws Exception {
-		Task newTask = command.getCommandTask();
-		StorageManager.writeTask(newTask);	
-	}
-	
-	private static void execExit(Command command) {
-		closeStorage();
-		Ui.displayCommandSuccess(command);
-		System.exit(0);
-	}
-	
-	private static void execRemove(Command command) throws Exception {
-		Task taskToRemove = command.getCommandTask();
-		StorageManager.removeTask(taskToRemove);	
-	}
-	
-	private static void execList(Command command) throws Exception {
-		Task[] tasks = StorageManager.readAllTasks();
-		Ui.listTasks(tasks);	
 	}
 */
 }
