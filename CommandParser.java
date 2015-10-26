@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
 
 public class CommandParser {
 	// error messages for thrown exceptions
+	private static final String ERROR_NOTHING_ENTERED = "Please enter a command.";
+	private static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
 	private static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
     private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
     private static final String ERROR_NUMBER_FORMAT = "Please specify a valid number for the task you want to %s.";
@@ -63,7 +65,12 @@ public class CommandParser {
     	// exit early if this is an empty string (which happens when the user types nothing before pressing enter)
     	// this requires special handling because attempting to split this empty string into params causes a size 0 array
     	if (input.equals("")) {
-    		throw new Exception("Please enter a command.");
+    		throw new Exception(ERROR_NOTHING_ENTERED);
+    	}
+    	
+    	// also check that if quotes are present, there is a corresponding closing quote. There should be either 0 or 2 quotes, depending on command
+    	if (isNumberOfQuotesValid(input) == false){
+    		throw new Exception(ERROR_INVALID_QUOTE_COUNT);
     	}
     	
     	ArrayList<String> params = splitInput(input);
@@ -254,5 +261,17 @@ default:
     		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "update"));
     	}
     }
+    
+    private static boolean isNumberOfQuotesValid(String input) {
+    	int quoteCount= 0;
+    	for (int i=0; i<input.length(); i++) {
+    		if (input.charAt(i) == '"') {
+    			quoteCount++;
+    		}
+    	}
+    	
+    	return quoteCount == 0 || quoteCount == 2;
+    }
+    
 }
 
