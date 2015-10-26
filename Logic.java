@@ -95,6 +95,12 @@ public class Logic {
 		}
 		return uncompleted;
 	}
+	
+	public static ArrayList<Task> getSortedTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		taskList.sort(null);
+		return taskList;
+	}
 /*	
 	private static void closeStorage() {
 		StorageManager.closeStorage();
