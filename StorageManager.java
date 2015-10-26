@@ -106,6 +106,7 @@ public class StorageManager {
 	public static ArrayList<Task> readAllTasks() {
 		ArrayList<Task> taskArrayList = new ArrayList<Task>();
 		taskArrayList.addAll(Arrays.asList(TASK_LIST));
+		taskArrayList.sort(null);
 		return taskArrayList;
 	}
 
