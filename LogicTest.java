@@ -10,10 +10,10 @@ public class LogicTest {
 	public void testSearchTasks() {
 		StorageManager.openStorage();
 		
-		Task apple = new Task("apple");
-		Task banana = new Task("banana");
-		Task baby = new Task("baby");
-		Task appleBanana = new Task("apple banana");
+		Task apple = new Task("apple", false);
+		Task banana = new Task("banana", false);
+		Task baby = new Task("baby", false);
+		Task appleBanana = new Task("apple banana", false);
 		
 		StorageManager.writeTask(apple);
 		StorageManager.writeTask(banana);
