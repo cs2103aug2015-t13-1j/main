@@ -65,11 +65,6 @@ public class List extends Command {
 	}
 
 	@Override
-	public void undo() throws Exception {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	/**
 	 * Prints out all the tasks in the taskList
 	 */

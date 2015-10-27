@@ -1,6 +1,7 @@
 import static org.junit.Assert.assertNotEquals;
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 /*
@@ -12,7 +13,7 @@ import java.util.Stack;
 
 public class Logic {
 	private static boolean isStorageOpen = false; // whether storage component is ready to read and write
-	private static Stack<Command> commandHistory = new Stack<Command>();
+	private static Stack<Undoable> commandHistory = new Stack<Undoable>();
 	
 	public static Command processUserInput(String userInput) throws Exception {
 		Command command = CommandParser.getCommandFromInput(userInput);
@@ -21,11 +22,13 @@ public class Logic {
 		}
 		// this may throw an Exception depending on the command
 		command.execute();
-		// TODO check for undo command (do not push undo commands to the stack)
-		if (command.getClass() != List.class) {
-			commandHistory.push(command);
+		
+		// update command history depending on the command
+		if (command.getClass() == Undo.class && !commandHistory.isEmpty()) {
+			commandHistory.pop();
+		} else if (Undoable.class.isAssignableFrom(command.getClass())) {
+			commandHistory.push((Undoable)command);
 		}
-		// else if undo: pop from the stack
 		return command;
 	}
 
@@ -96,10 +99,14 @@ public class Logic {
 		return uncompleted;
 	}
 	
-	public static ArrayList<Task> getSortedTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
-		taskList.sort(null);
-		return taskList;
+	/**
+	 * Get the last undoable command executed by the program.
+	 * 
+	 * @return	the last Undoable command stored in the command history
+	 * @throws EmptyStackException	if there are no more commands in the stack
+	 */
+	public static Undoable getLastCommand() throws EmptyStackException {
+		return commandHistory.peek();
 	}
 /*	
 	private static void closeStorage() {

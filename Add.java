@@ -5,8 +5,9 @@ import static org.junit.Assert.assertTrue;
  * @author Katherine Coronado
  *
  */
-public class Add extends Command {
+public class Add extends Command implements Undoable {
 	private static final String SUCCESS_ADD = "\"%s\" was added.";
+	private static final String SUCCESS_ADD_UNDO = "\"%s\" was removed.";
 	
 	private Task task;
 	private boolean wasExecuted;
@@ -58,5 +59,11 @@ public class Add extends Command {
 		
 	public Task getTask() {
 		return this.task;
+	}
+
+	@Override
+	public String getUndoMessage() {
+		assertTrue(wasExecuted);
+		return String.format(SUCCESS_ADD_UNDO, task.getName());
 	}
 }

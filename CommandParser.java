@@ -93,6 +93,9 @@ public class CommandParser {
 	    	case "update" :
 	    		return initUpdateCommand(args);
 	    		
+	    	case "undo" :
+	    		return initUndoCommand();
+	    		
 	    	case "exit" :
 	    		// fallthrough
 	    		
@@ -103,8 +106,8 @@ public class CommandParser {
 	    		throw new Exception(String.format(ERROR_INVALID_COMMAND, commandType));
     	}
     }
-    
-    private static ArrayList<String> splitInput(String input) {
+
+	private static ArrayList<String> splitInput(String input) {
     	ArrayList<String> params = new ArrayList<String>();
     	Matcher m = splitter.matcher(input);
     	
@@ -187,6 +190,11 @@ public class CommandParser {
 		
 		return new Add(newTask);
     }
+    
+    private static Command initUndoCommand() {
+    	// TODO check command length
+		return new Undo();
+	}
 
     private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
     	switch(args.size()) {

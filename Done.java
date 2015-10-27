@@ -8,8 +8,9 @@ import java.util.ArrayList;
  *
  */
 
-public class Done extends Command {
+public class Done extends Command implements Undoable {
 	private static final String SUCCESS_DONE = "\"%s\" is now marked completed.";
+	private static final String SUCCESS_DONE_UNDO = "\"%s\" is now marked as uncompleted.";
 	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
 	private boolean wasExecuted;
 	private Task completedTask;
@@ -71,4 +72,10 @@ public class Done extends Command {
 		Done other = (Done)obj;		
 		return this.getTask().equals(other.getTask());
 				}
+
+	@Override
+	public String getUndoMessage() {
+		assertTrue(wasExecuted);
+		return String.format(SUCCESS_DONE_UNDO, completedTask.getName());
+	}
 	}
