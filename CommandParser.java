@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import DeltaTask.FIELD_ACTION;
+
 
 /**
  * CommandParser parses user's input to create Command objects that have the
@@ -27,7 +27,7 @@ public class CommandParser {
 	private static final String ERROR_INCORRECT_ARG_UPDATE = "Please indicate the task you want to change "
 																+ "and which values to change.";
 	private static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
-	private static final String ERROR_INVALID_FIELD_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
+	private static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
 	private static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
 	private static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
 	// positions in the command input
@@ -289,7 +289,7 @@ default:
     				nameAction = DeltaTask.FIELD_ACTION.UPDATE;
     				i+=2; // skip over the new name we just added
     			} else {
-    			throw new Exception(String.format(ERROR_INVALID_FIELD_UPDATE, "name", arg));
+    			throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "name", arg));
     		}
     			break;
     		case "+end":
@@ -300,7 +300,7 @@ default:
     				newEnd = parseDateTime(date + " " + time);
     				endAction = DeltaTask.FIELD_ACTION.UPDATE;
     			} else {
-    				throw new Exception(String.format(ERROR_INVALID_FIELD_UPDATE, "date and time", arg));
+    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
     			}
     			break;
     		case "-end":
@@ -321,7 +321,7 @@ default:
     				newStart = parseDateTime(date + " " + time);
     				startAction = DeltaTask.FIELD_ACTION.UPDATE;
     			} else {
-    				throw new Exception(String.format(ERROR_INVALID_FIELD_UPDATE, "date and time", arg));
+    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
     			}
     			break;
     		case "-start":
