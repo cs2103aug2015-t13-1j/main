@@ -24,12 +24,6 @@ public class Exit extends Command {
 	}
 
 	@Override
-	public void undo() throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public String getSuccessMessage() {
 		assertTrue(wasExecuted);
 		return "Goodbye\n";

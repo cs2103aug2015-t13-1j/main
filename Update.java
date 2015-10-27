@@ -8,8 +8,9 @@ import java.util.ArrayList;
  *
  */
 
-public class Update extends Command {
+public class Update extends Command implements Undoable {
 	private static final String SUCCESS_UPDATE = "\"%s\" was updated to \"%s\".";
+	private static final String SUCCESS_UPDATE_UNDO = "Update undone";
 	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
 	
 	private Task oldTask;
@@ -79,5 +80,11 @@ public class Update extends Command {
 	
 	public Task getNewTask() {
 		return this.newTask;
+	}
+
+	@Override
+	public String getUndoMessage() {
+		// TODO update message with which fields were modified
+		return SUCCESS_UPDATE_UNDO;
 	}
 }

@@ -7,8 +7,9 @@ import java.util.ArrayList;
  * @author Katherine Coronado
  *
  */
-public class Remove extends Command {
+public class Remove extends Command implements Undoable {
 	private static final String SUCCESS_REMOVE = "\"%s\" was removed.";
+	private static final String SUCCESS_REMOVE_UNDO = "\"%s\" was re-added.";
 	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
 	
 	private Task task;
@@ -69,5 +70,11 @@ public class Remove extends Command {
 
 	public Task getTask() {
 		return this.task;
+	}
+
+	@Override
+	public String getUndoMessage() {
+		assertTrue(wasExecuted);
+		return String.format(SUCCESS_REMOVE_UNDO, task.getName());
 	}
 }
