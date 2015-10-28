@@ -2,8 +2,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+
 
 /**
  * CommandParser parses user's input to create Command objects that have the
@@ -21,9 +24,11 @@ public class CommandParser {
 	private static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
     private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
     private static final String ERROR_NUMBER_FORMAT = "Please specify a valid number for the task you want to %s.";
-	private static final String ERROR_INCORRECT_ARG_UPDATE = "Please indicate the task you want to change "
-																+ "and which values to change.";
 	private static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
+	private static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the fields to be modified or removed.";
+	private static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
+	private static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
+	private static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
     private static final int POSITION_FIRST_PARAM = 1;
@@ -45,8 +50,8 @@ public class CommandParser {
 	private static final int POSITION_ADD_TO_KEYWORD = POSITION_ADD_BY_KEYWORD+3;
 	
 	// positions in the parameter list for the update command
-	private static final int POSITION_UPDATE_NEW = 1;
-	private static final int POSITION_UPDATE_OLD = 0;
+	
+	private static final int POSITION_UPDATE_INDEX = 0;
 // used for the add command to determine what type of task is to be added
 	private enum TASK_TYPE {
 		FLOATING, DEADLINE, EVENT, INVALID
@@ -258,16 +263,95 @@ default:
     }
     
     private static Command initUpdateCommand(ArrayList<String> args) throws Exception {
-    	if (args.size() != 2) {    	
-	    	throw new Exception(ERROR_INCORRECT_ARG_UPDATE);
-	    }
+    	int taskNumToBeUpdated;
     	
     	try {
-        	Task newTask = new Task(args.get(POSITION_UPDATE_NEW), false);
-    		return new Update(Integer.parseInt(args.get(POSITION_UPDATE_OLD)), newTask);
+    		taskNumToBeUpdated = Integer.parseInt(args.get(POSITION_UPDATE_INDEX));
     	} catch (NumberFormatException e) {
     		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "update"));
     	}
+    	
+    	if (args.size() <= 1) {
+    		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
+    	}
+    	
+    	DeltaTask changes = getRequestedChanges(args);
+    	return new Update(taskNumToBeUpdated, changes);
+    }
+    
+    private static DeltaTask getRequestedChanges(ArrayList<String> params) throws Exception {
+    	String newName = null; 
+    	LocalDateTime newStart = null, newEnd = null;
+    	boolean isNameParsed = false, isStartParsed = false, isEndParsed = false; // to prevent multiple modifications of the same field in 1 update command
+    	DeltaTask.FIELD_ACTION nameAction = DeltaTask.FIELD_ACTION.NONE, startAction = DeltaTask.FIELD_ACTION.NONE, endAction = DeltaTask.FIELD_ACTION.NONE;
+    	
+    	for (int i= POSITION_UPDATE_INDEX+1; i<params.size(); ) {
+    		String arg = params.get(i).toLowerCase();
+    		
+    		switch(arg) {
+    		case "+name":
+    			if (isNameParsed == false && i+1<params.size()) {
+    				isNameParsed = true;
+    				newName = params.get(i+1);
+    				nameAction = DeltaTask.FIELD_ACTION.UPDATE;
+    				i+=2; // skip over the new name we just added
+    			} else {
+    			throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "name", arg));
+    		}
+    			break;
+    			
+    		case "+end":
+    			if (isEndParsed == false && i+2 < params.size()) {
+    				isEndParsed = true;
+    				String date = params.get(i+1);
+    				String time = params.get(i+2);
+    				newEnd = parseDateTime(date + " " + time);
+    				endAction = DeltaTask.FIELD_ACTION.UPDATE;
+    				i+=3; // skip past 2 words, which is the new date and time 
+    			} else {
+    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
+    			}
+    			break;
+    			
+    		case "-end":
+    			if (isEndParsed == false) {
+    				endAction = DeltaTask.FIELD_ACTION.REMOVE;
+    				isEndParsed = true;
+    				i++;
+    			} else {
+    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_REMOVE, "end date"));
+    			}
+    			break;
+    			
+    		case "+start":
+    			if (isStartParsed == false && i+2<params.size()) {
+    				isStartParsed = true;
+    				String date = params.get(i+1);
+    				String time = params.get(i+2);
+    				newStart = parseDateTime(date + " " + time);
+    				startAction = DeltaTask.FIELD_ACTION.UPDATE;
+    				i+=3; // skip past 2 words, which is the new date and time
+    			} else {
+    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
+    			}
+    			break;
+    			
+    		case "-start":
+    			if (isStartParsed == false) {
+    				startAction = DeltaTask.FIELD_ACTION.REMOVE;
+    				isStartParsed = true;
+    				i++;
+    			} else {
+    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_REMOVE, "start date"));
+    			}
+    			break;
+    		
+    			default:
+    				throw new Exception(String.format(ERROR_UNRECOGNIZED_UPDATE_TOKEN, arg));
+    	}
+    	}
+    	
+    	return new DeltaTask(nameAction, newName, startAction, newStart, endAction, newEnd);
     }
     
     private static boolean isNumberOfQuotesValid(String input) {
@@ -280,6 +364,6 @@ default:
     	
     	return quoteCount == 0 || quoteCount == 2;
     }
-    
+
 }
 
