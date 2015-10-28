@@ -12,29 +12,36 @@ import java.util.Stack;
  */
 
 public class Logic {
-	private static boolean isStorageOpen = false; // whether storage component is ready to read and write
-	private static Stack<Undoable> commandHistory = new Stack<Undoable>();
+	private static Stack<Undoable> undoableHistory = new Stack<Undoable>();
+	private static Command lastExecutedCommand = null;
 	
 	public static Command processUserInput(String userInput) throws Exception {
 		Command command = CommandParser.getCommandFromInput(userInput);
-		if (isStorageOpen == false) {
-			openStorage(); 
-		}
+		
 		// this may throw an Exception depending on the command
-		command.execute();
+		try {
+			command.execute();
+		} catch (Exception e) {
+			lastExecutedCommand = null;
+			throw new Exception(e.getMessage());
+		}
 		
 		// update command history depending on the command
-		if (command.getClass() == Undo.class && !commandHistory.isEmpty()) {
-			commandHistory.pop();
+		lastExecutedCommand = command;
+		if (command.getClass() == Undo.class && !undoableHistory.isEmpty()) {
+			undoableHistory.pop();
 		} else if (Undoable.class.isAssignableFrom(command.getClass())) {
-			commandHistory.push((Undoable)command);
+			undoableHistory.push((Undoable)command);
 		}
 		return command;
 	}
-
-	private static void openStorage() {
+	
+	public static void init() {
 		StorageManager.openStorage();
-		isStorageOpen = true;
+	}
+	
+	public static void close() {
+		StorageManager.closeStorage();
 	}
 	
 	/**
@@ -63,7 +70,6 @@ public class Logic {
 				}
 			}
 		}
-		
 		return foundTasks;
 	}
 	
@@ -74,15 +80,25 @@ public class Logic {
 	 */
 	public static ArrayList<Task> getCompletedTasks() {
 		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getCompletedTasks(taskList);
+	}
+	
+	/**
+	 * This method searches for all of the tasks marked as done in a given task list
+	 * 
+	 * @param taskList	the ArrayList to search through to get the completed tasks
+	 * @return			an ArrayList of the completed tasks
+	 */
+	public static ArrayList<Task> getCompletedTasks(ArrayList<Task> taskList) {
 		ArrayList<Task> completed = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (task.isDone()) {
 				completed.add(task);
 			}
 		}
-		return completed;
+		return completed;	
 	}
-	
+
 	/**
 	 * This method searches for all of the tasks that are not marked as done by the user.
 	 * 
@@ -90,6 +106,15 @@ public class Logic {
 	 */
 	public static ArrayList<Task> getUncompletedTasks() {
 		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getUncompletedTasks(taskList);
+	}
+
+	/**
+	 * This methods searches for all of the tasks that are not marked as done in a given task list
+	 * @param taskList	the ArrayList to search through to get the uncompleted tasks
+	 * @return			an ArrayList of the uncompleted tasks
+	 */
+	public static ArrayList<Task> getUncompletedTasks(ArrayList<Task> taskList) {
 		ArrayList<Task> uncompleted = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (!task.isDone()) {
@@ -100,18 +125,119 @@ public class Logic {
 	}
 	
 	/**
+	 * This method searches for all of the floating tasks in the entire task list
+	 * @return	an ArrayList of the floating tasks
+	 */
+	public static ArrayList<Task> getFloatingTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getFloatingTasks(taskList);
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in a specified task list
+	 * 
+	 * @param taskList	the specified task list to filter for floating tasks
+	 * @return			an ArrayList of the found floating tasks
+	 */
+	public static ArrayList<Task> getFloatingTasks(ArrayList<Task> taskList) {
+		ArrayList<Task> floating = new ArrayList<Task>();
+		for (Task task : taskList) {
+			if (task.getStartDateTime() == null && task.getEndDateTime() == null) {
+				floating.add(task);
+			}
+		}
+		return floating;	
+	}
+	
+	/**
+	 * This method searches for all of the deadline tasks in the entire task list
+	 * @return	an ArrayList of the deadline tasks
+	 */
+	public static ArrayList<Task> getDeadlineTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getDeadlineTasks(taskList);
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in a specified task list
+	 * 
+	 * @param taskList	the specified task list to filter for floating tasks
+	 * @return			an ArrayList of the found floating tasks
+	 */
+	public static ArrayList<Task> getDeadlineTasks(ArrayList<Task> taskList) {
+		ArrayList<Task> deadlines = new ArrayList<Task>();
+		for (Task task : taskList) {
+			if (task.getStartDateTime() == null && task.getEndDateTime() != null) {
+				deadlines.add(task);
+			}
+		}
+		return deadlines;	
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in the entire task list
+	 * @return	an ArrayList of the floating tasks
+	 */
+	public static ArrayList<Task> getEvents() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getEvents(taskList);
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in a specified task list
+	 * 
+	 * @param taskList	the specified task list to filter for floating tasks
+	 * @return			an ArrayList of the found floating tasks
+	 */
+	public static ArrayList<Task> getEvents(ArrayList<Task> taskList) {
+		ArrayList<Task> events = new ArrayList<Task>();
+		for (Task task : taskList) {
+			if (task.getStartDateTime() != null && task.getEndDateTime() != null) {
+				events.add(task);
+			}
+		}
+		return events;	
+	}
+	
+	/**
 	 * Get the last undoable command executed by the program.
 	 * 
 	 * @return	the last Undoable command stored in the command history
 	 * @throws EmptyStackException	if there are no more commands in the stack
 	 */
-	public static Undoable getLastCommand() throws EmptyStackException {
-		return commandHistory.peek();
+	public static Undoable getLastUndoable() throws EmptyStackException {
+		return undoableHistory.peek();
 	}
-/*	
-	private static void closeStorage() {
-		StorageManager.closeStorage();
-		isStorageOpen = false;
+
+	private static ArrayList<Task> getDefaultTaskList() {
+		return getUncompletedTasks();
 	}
-*/
+
+	/**
+	 * Get the task list to correspond to subsequent references by index
+	 * 
+	 * @return	the list of tasks
+	 */
+	public static ArrayList<Task> updateCurrentTaskList() {
+		if (lastExecutedCommand != null && lastExecutedCommand.getClass() == List.class) {
+			List command = (List)lastExecutedCommand;
+			return command.getTaskList();
+		} else {
+			return getDefaultTaskList();
+		}
+	}
+	
+	/**
+	 * Generate the default view depending on whether a list was just shown or not
+	 * 
+	 * @return	a string representation of the default view to show
+	 */
+	public static String getDefaultView() {
+		if (lastExecutedCommand != null && lastExecutedCommand.getClass() == List.class) {
+			return "";
+		} else {
+			ArrayList<Task> taskList = Ui.getCurrentTaskList();
+			return Ui.createTaskListDisplay(taskList) + "\n\n";
+		}
+	}
 }

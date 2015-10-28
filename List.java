@@ -1,31 +1,25 @@
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 
-import java.time.LocalDateTime;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.EnumSet;
 
 /**
  * List command used for listing all tasks or for performing a search on the task list
  * @author Katherine Coronado
  *
  */
-public class List extends Command {
-	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_LIST_HEADER = "#   Start\t | End\t\t | Name\n";
-	private static final String MESSAGE_FLOATING = "%d. \t\t | \t\t | %s\n";
-	private static final String MESSAGE_DEADLINE = "%d. \t\t | %s\t | %s\n";
-	private static final String MESSAGE_EVENT = "%d. %s\t | %s\t | %s\n";
-	private static final String MESSAGE_DATE_TIME_FORMAT = "%02d %s %d:%02d";
-	
+public class List extends Command {	
 	private Task task;
 	private String[] keywords;
 	private ArrayList<Task> taskList;
+	EnumSet<LIST_FLAGS> flags;
 	private boolean wasExecuted;
-	// TODO ArrayList<Tag> tags;
 	
-	// TODO constructor taking ArrayList<Task> as parameter for search refining
+	public enum LIST_FLAGS {
+		FLOATING, DEADLINE, EVENT, COMPLETED, UNCOMPLETED;
+	}
+	public static final EnumSet<LIST_FLAGS> LIST_FLAGS_ENUM_SET = EnumSet.allOf(LIST_FLAGS.class);
 	
 	/**
 	 * Constructs a List object to search for tasks containing specific words or dates
@@ -38,6 +32,7 @@ public class List extends Command {
 		// TODO is this the best way to split the keywords? can make a parameter
 		this.keywords = keywordsList.split(" ");
 		this.taskList = null;
+		this.flags = null;
 		this.wasExecuted = false;
 	}
 	
@@ -48,9 +43,18 @@ public class List extends Command {
 		this.task = null;
 		this.keywords = null;
 		this.taskList = null;
+		this.flags = null;
 		this.wasExecuted = false;
 	}
 	
+	public List(EnumSet<LIST_FLAGS> listFlags) {
+		this.task = null;
+		this.keywords = null;
+		this.taskList = null;
+		this.flags = listFlags;
+		this.wasExecuted = false;
+	}
+
 	@Override
 	/**
 	 * This method handles whether to search the task list or get the uncompleted tasks list. 
@@ -58,10 +62,34 @@ public class List extends Command {
 	public void execute() throws Exception {
 		if (task != null) {
 			taskList = Logic.searchTasks(keywords);
+		} else if (flags != null) {
+			taskList = getFlaggedTasks();
 		} else {
 			taskList = Logic.getUncompletedTasks();
 		}
 		wasExecuted = true;
+	}
+
+	private ArrayList<Task> getFlaggedTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		
+		// keep refining the task list based on which flags are marked
+		if (flags.contains(LIST_FLAGS.COMPLETED)) {
+			taskList = Logic.getCompletedTasks(taskList);
+		}
+		if (flags.contains(LIST_FLAGS.UNCOMPLETED)) {
+			taskList = Logic.getUncompletedTasks(taskList);
+		}		
+		if (flags.contains(LIST_FLAGS.FLOATING)) {
+			taskList = Logic.getFloatingTasks(taskList);
+		}
+		if (flags.contains(LIST_FLAGS.DEADLINE)) {
+			taskList = Logic.getDeadlineTasks(taskList);
+		}
+		if (flags.contains(LIST_FLAGS.EVENT)) {
+			taskList = Logic.getEvents(taskList);
+		}
+		return taskList;
 	}
 
 	@Override
@@ -70,39 +98,7 @@ public class List extends Command {
 	 */
 	public String getSuccessMessage() {
 		assertTrue(wasExecuted);
-		if (taskList.size() > 0) {
-			StringBuilder message = new StringBuilder();
-			message.append(MESSAGE_LIST_HEADER);
-			int taskNumber = 1;
-			for (Task task : taskList) {
-				LocalDateTime start = task.getStartDateTime();
-				LocalDateTime end = task.getEndDateTime();
-				if (end == null && start == null) {
-					message.append(String.format(MESSAGE_FLOATING, taskNumber++, task.getName()));
-				} else if (start == null) {
-					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, 
-							getDateTimeFormat(end), task.getName()));
-				} else {
-					message.append(String.format(MESSAGE_EVENT, taskNumber++, getDateTimeFormat(start), 
-							getDateTimeFormat(end), task.getName()));
-				}
-			}
-			return message.toString();
-		} else {
-			return MESSAGE_NO_TASKS;
-		}
-	}
-	
-	/**
-	 * This method creates a String in the format dd mmm hh:mm, i.e. 24 Oct 13:00
-	 * 
-	 * @param dateTime	The LocalDateTime with the date and time to format
-	 * @return			a String in the format dd mmm hh:mm
-	 */
-	private String getDateTimeFormat(LocalDateTime dateTime) {
-		String month = dateTime.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-		return String.format(MESSAGE_DATE_TIME_FORMAT, dateTime.getDayOfMonth(), 
-				month, dateTime.getHour(), dateTime.getMinute());
+		return Ui.createTaskListDisplay(taskList);
 	}
 	
 	@Override
