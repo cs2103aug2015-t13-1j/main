@@ -4,6 +4,6 @@
  *
  */
 public interface Undoable {
-  public void undo() throws Exception;
-  public String getUndoMessage();
+	public void undo() throws Exception;
+	public String getUndoMessage();
 }
