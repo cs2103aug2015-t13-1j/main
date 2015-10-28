@@ -74,15 +74,25 @@ public class Logic {
 	 */
 	public static ArrayList<Task> getCompletedTasks() {
 		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getCompletedTasks(taskList);
+	}
+	
+	/**
+	 * This method searches for all of the tasks marked as done in a given task list
+	 * 
+	 * @param taskList	the ArrayList to search through to get the completed tasks
+	 * @return			an ArrayList of the completed tasks
+	 */
+	public static ArrayList<Task> getCompletedTasks(ArrayList<Task> taskList) {
 		ArrayList<Task> completed = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (task.isDone()) {
 				completed.add(task);
 			}
 		}
-		return completed;
+		return completed;	
 	}
-	
+
 	/**
 	 * This method searches for all of the tasks that are not marked as done by the user.
 	 * 
@@ -90,6 +100,15 @@ public class Logic {
 	 */
 	public static ArrayList<Task> getUncompletedTasks() {
 		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getUncompletedTasks(taskList);
+	}
+
+	/**
+	 * This methods searches for all of the tasks that are not marked as done in a given task list
+	 * @param taskList	the ArrayList to search through to get the uncompleted tasks
+	 * @return			an ArrayList of the uncompleted tasks
+	 */
+	public static ArrayList<Task> getUncompletedTasks(ArrayList<Task> taskList) {
 		ArrayList<Task> uncompleted = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (!task.isDone()) {
@@ -97,6 +116,81 @@ public class Logic {
 			}
 		}
 		return uncompleted;
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in the entire task list
+	 * @return	an ArrayList of the floating tasks
+	 */
+	public static ArrayList<Task> getFloatingTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getFloatingTasks(taskList);
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in a specified task list
+	 * 
+	 * @param taskList	the specified task list to filter for floating tasks
+	 * @return			an ArrayList of the found floating tasks
+	 */
+	public static ArrayList<Task> getFloatingTasks(ArrayList<Task> taskList) {
+		ArrayList<Task> floating = new ArrayList<Task>();
+		for (Task task : taskList) {
+			if (task.getStartDateTime() == null && task.getEndDateTime() == null) {
+				floating.add(task);
+			}
+		}
+		return floating;	
+	}
+	
+	/**
+	 * This method searches for all of the deadline tasks in the entire task list
+	 * @return	an ArrayList of the deadline tasks
+	 */
+	public static ArrayList<Task> getDeadlineTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getDeadlineTasks(taskList);
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in a specified task list
+	 * 
+	 * @param taskList	the specified task list to filter for floating tasks
+	 * @return			an ArrayList of the found floating tasks
+	 */
+	public static ArrayList<Task> getDeadlineTasks(ArrayList<Task> taskList) {
+		ArrayList<Task> deadlines = new ArrayList<Task>();
+		for (Task task : taskList) {
+			if (task.getStartDateTime() == null && task.getEndDateTime() != null) {
+				deadlines.add(task);
+			}
+		}
+		return deadlines;	
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in the entire task list
+	 * @return	an ArrayList of the floating tasks
+	 */
+	public static ArrayList<Task> getEvents() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getEvents(taskList);
+	}
+	
+	/**
+	 * This method searches for all of the floating tasks in a specified task list
+	 * 
+	 * @param taskList	the specified task list to filter for floating tasks
+	 * @return			an ArrayList of the found floating tasks
+	 */
+	public static ArrayList<Task> getEvents(ArrayList<Task> taskList) {
+		ArrayList<Task> events = new ArrayList<Task>();
+		for (Task task : taskList) {
+			if (task.getStartDateTime() != null && task.getEndDateTime() != null) {
+				events.add(task);
+			}
+		}
+		return events;	
 	}
 	
 	/**

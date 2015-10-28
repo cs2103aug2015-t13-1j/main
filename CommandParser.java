@@ -2,7 +2,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-
+import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,7 +93,7 @@ public class CommandParser {
 	    		return initDoneCommand(args);
 	    		
 	    	case "list" :
-	    		return initListCommand();
+	    		return initListCommand(args);
 	    		
 	    	case "remove" :
 	    		return initRemoveCommand(args);
@@ -137,9 +137,55 @@ public class CommandParser {
                                                         params.size()));
     }
     
-    private static Command initListCommand() {
+    private static Command initListCommand(ArrayList<String> args) {
     	// TODO handle option for List command with search parameters
-    	return new List();
+    	if (args.size() == 0) {
+    		return new List();
+    	} else {
+    		// parse the flags
+    		EnumSet<List.LIST_FLAGS> listFlags = EnumSet.noneOf(List.LIST_FLAGS.class);
+    		for (int i = 0; i < args.size(); i++) {
+    			String flag = args.get(i);
+    			
+    			// if -all flag is marked, remove all flags and break out of the loop
+    			if (flag.equals("-all")) {
+    				listFlags = EnumSet.noneOf(List.LIST_FLAGS.class);
+    				break;
+    			}
+    			
+    			switch (flag) {
+    				case "-floating" :
+    					listFlags.add(List.LIST_FLAGS.FLOATING);
+    					break;
+    					
+    				case "-deadline" :
+    					listFlags.add(List.LIST_FLAGS.DEADLINE);
+    					break;
+    					
+    				case "-event" :
+    					listFlags.add(List.LIST_FLAGS.EVENT);
+    					break;
+    					
+    				case "-done" :
+    					// fallthrough
+    					
+    				case "-completed" :
+    					// fallthrough
+    					
+    				case "-finished" :
+    					listFlags.add(List.LIST_FLAGS.COMPLETED);
+    					break;
+    					
+    				case "-uncompleted" :
+    					listFlags.add(List.LIST_FLAGS.UNCOMPLETED);
+    					break;
+    					
+					default :
+						break;
+    			}
+    		}
+    		return new List(listFlags);
+    	}
     }
     
     private static Command initExitCommand() {

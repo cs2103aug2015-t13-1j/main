@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotEquals;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Locale;
 
 /**
@@ -22,10 +23,13 @@ public class List extends Command {
 	private Task task;
 	private String[] keywords;
 	private ArrayList<Task> taskList;
+	EnumSet<LIST_FLAGS> flags;
 	private boolean wasExecuted;
-	// TODO ArrayList<Tag> tags;
 	
-	// TODO constructor taking ArrayList<Task> as parameter for search refining
+	public enum LIST_FLAGS {
+		FLOATING, DEADLINE, EVENT, COMPLETED, UNCOMPLETED;
+	}
+	public static final EnumSet<LIST_FLAGS> LIST_FLAGS_ENUM_SET = EnumSet.allOf(LIST_FLAGS.class);
 	
 	/**
 	 * Constructs a List object to search for tasks containing specific words or dates
@@ -38,6 +42,7 @@ public class List extends Command {
 		// TODO is this the best way to split the keywords? can make a parameter
 		this.keywords = keywordsList.split(" ");
 		this.taskList = null;
+		this.flags = null;
 		this.wasExecuted = false;
 	}
 	
@@ -48,9 +53,18 @@ public class List extends Command {
 		this.task = null;
 		this.keywords = null;
 		this.taskList = null;
+		this.flags = null;
 		this.wasExecuted = false;
 	}
 	
+	public List(EnumSet<LIST_FLAGS> listFlags) {
+		this.task = null;
+		this.keywords = null;
+		this.taskList = null;
+		this.flags = listFlags;
+		this.wasExecuted = false;
+	}
+
 	@Override
 	/**
 	 * This method handles whether to search the task list or get the uncompleted tasks list. 
@@ -58,10 +72,34 @@ public class List extends Command {
 	public void execute() throws Exception {
 		if (task != null) {
 			taskList = Logic.searchTasks(keywords);
+		} else if (flags != null) {
+			taskList = getFlaggedTasks();
 		} else {
 			taskList = Logic.getUncompletedTasks();
 		}
 		wasExecuted = true;
+	}
+
+	private ArrayList<Task> getFlaggedTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		
+		// keep refining the task list based on which flags are marked
+		if (flags.contains(LIST_FLAGS.COMPLETED)) {
+			taskList = Logic.getCompletedTasks(taskList);
+		}
+		if (flags.contains(LIST_FLAGS.UNCOMPLETED)) {
+			taskList = Logic.getUncompletedTasks(taskList);
+		}		
+		if (flags.contains(LIST_FLAGS.FLOATING)) {
+			taskList = Logic.getFloatingTasks(taskList);
+		}
+		if (flags.contains(LIST_FLAGS.DEADLINE)) {
+			taskList = Logic.getDeadlineTasks(taskList);
+		}
+		if (flags.contains(LIST_FLAGS.EVENT)) {
+			taskList = Logic.getEvents(taskList);
+		}
+		return taskList;
 	}
 
 	@Override
