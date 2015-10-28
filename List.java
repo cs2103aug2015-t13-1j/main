@@ -115,16 +115,23 @@ public class List extends Command {
 			for (Task task : taskList) {
 				LocalDateTime start = task.getStartDateTime();
 				LocalDateTime end = task.getEndDateTime();
+				String taskName;
+				if (task.isDone()) {
+					taskName = "*" + task.getName();
+				} else {
+					taskName = task.getName();
+				}
 				if (end == null && start == null) {
-					message.append(String.format(MESSAGE_FLOATING, taskNumber++, task.getName()));
+					message.append(String.format(MESSAGE_FLOATING, taskNumber++, taskName));
 				} else if (start == null) {
 					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, 
-							getDateTimeFormat(end), task.getName()));
+							getDateTimeFormat(end), taskName));
 				} else {
 					message.append(String.format(MESSAGE_EVENT, taskNumber++, getDateTimeFormat(start), 
-							getDateTimeFormat(end), task.getName()));
+							getDateTimeFormat(end), taskName));
 				}
 			}
+			message.append("\n* = completed tasks\n");
 			return message.toString();
 		} else {
 			return MESSAGE_NO_TASKS;
