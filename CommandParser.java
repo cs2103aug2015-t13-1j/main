@@ -29,6 +29,7 @@ public class CommandParser {
 	private static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
 	private static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
 	private static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
+	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
     private static final int POSITION_FIRST_PARAM = 1;
@@ -36,8 +37,10 @@ public class CommandParser {
     // the regex pattern to split input by spaces, except if there is a quoted string
     // because of the way tokenizing is done, an argument like date and time which has a space between them is counted as 2 arguments
 	private static final Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
-// the formatter used to parse date and time
+	
+	// the formatter used to parse date and time
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+	
 	// the maximum number of args for command types that take in arguments
 	// the max arguments for add command varies depending on the form used, so it is not listed here
 	private static final int MAX_ARG_REMOVE = 1;
@@ -50,9 +53,9 @@ public class CommandParser {
 	private static final int POSITION_ADD_TO_KEYWORD = POSITION_ADD_BY_KEYWORD+3;
 	
 	// positions in the parameter list for the update command
-	
 	private static final int POSITION_UPDATE_INDEX = 0;
-// used for the add command to determine what type of task is to be added
+	
+	// used for the add command to determine what type of task is to be added
 	private enum TASK_TYPE {
 		FLOATING, DEADLINE, EVENT, INVALID
 	}
@@ -80,7 +83,7 @@ public class CommandParser {
     	
     	ArrayList<String> params = splitInput(input);
     	String commandType = getCommandType(params).toLowerCase();
-    	ArrayList<String> args     	= getCommandArgs(params); 
+    	ArrayList<String> args = getCommandArgs(params); 
     	
     	switch(commandType) {
 	    	case "add" :
@@ -144,53 +147,53 @@ public class CommandParser {
     }
     
     private static Command initAddCommand(ArrayList<String> args) throws Exception {
-		
 		Task newTask;
 		String name = "";
 		if (args.size() >= 1) {
 			name = args.get(POSITION_ADD_NAME); // name is always present in the same position for all tasks
 		}
 			
+		LocalDateTime endTime, startTime;
 		switch(determineTaskTypeToBeAdded(args)) {
-		case FLOATING:
-			newTask = new Task(name, false);
-			break;
-		case DEADLINE:
-		{
-			// the date and time occurs as 2 words, concat them to be parsed
-			String deadline = args.get(POSITION_ADD_BY_KEYWORD+1).concat(" ");
-			deadline = deadline.concat(args.get(POSITION_ADD_BY_KEYWORD+2));
-			LocalDateTime endTime = parseDateTime(deadline);
-			
-			if (endTime != null) {
-				newTask = new Task(name, endTime, false);
-			}
-			else {
-				throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, deadline));
-			}
-			break;
-		}
-		case EVENT:
-			// the date and time occurs as 2 words, concat them to be parsed
-						String start = args.get(POSITION_ADD_FROM_KEYWORD+1).concat(" ");
-						start = start.concat(args.get(POSITION_ADD_FROM_KEYWORD+2));
-						String end = args.get(POSITION_ADD_TO_KEYWORD+1).concat(" ");
-						end = end.concat(args.get(POSITION_ADD_TO_KEYWORD+2));
-						LocalDateTime startTime = parseDateTime(start);
-						LocalDateTime endTime = parseDateTime(end);
-						
-						if (startTime == null) {
-							throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, start));
-						}
-
-						if (endTime == null) {
-							throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, end));
-						}
-// if we get here, all the parameters are correct
-							newTask = new Task(name, startTime, endTime, false);
-						break;
-			default:
-				throw new Exception("The type of task to be added could not be determined.");
+			case FLOATING :
+				newTask = new Task(name, false);
+				break;
+				
+			case DEADLINE :
+				// the date and time occurs as 2 words, concat them to be parsed
+				String deadline = args.get(POSITION_ADD_BY_KEYWORD+1).concat(" ");
+				deadline = deadline.concat(args.get(POSITION_ADD_BY_KEYWORD+2));
+				endTime = parseDateTime(deadline);
+				
+				if (endTime != null) {
+					newTask = new Task(name, endTime, false);
+				} else {
+					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, deadline));
+				}
+				break;
+				
+			case EVENT :
+				// the date and time occurs as 2 words, concat them to be parsed
+				String start = args.get(POSITION_ADD_FROM_KEYWORD+1).concat(" ");
+				start = start.concat(args.get(POSITION_ADD_FROM_KEYWORD+2));
+				String end = args.get(POSITION_ADD_TO_KEYWORD+1).concat(" ");
+				end = end.concat(args.get(POSITION_ADD_TO_KEYWORD+2));
+				startTime = parseDateTime(start);
+				endTime = parseDateTime(end);
+				
+				if (startTime == null) {
+					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, start));
+				}
+		
+				if (endTime == null) {
+					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, end));
+				}
+				// if we get here, all the parameters are correct
+				newTask = new Task(name, startTime, endTime, false);
+				break;
+				
+				default :
+					throw new Exception("The type of task to be added could not be determined.");
 		}
 		
 		return new Add(newTask);
@@ -203,36 +206,36 @@ public class CommandParser {
 
     private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
     	switch(args.size()) {
-    	case 1: // floating tasks have only 1 argument, the name
-    		return TASK_TYPE.FLOATING;
-    	case 4: // name, by keyword, date and time = 4 args
-    		if (args.get(POSITION_ADD_BY_KEYWORD).toLowerCase().equals("by")) {
-    			return TASK_TYPE.DEADLINE;
-    		}
-    		else {
-    			return TASK_TYPE.INVALID;
-    		}
-    	case 7: // name, from, to, and 2 dates + 2 times
-    		boolean isFromPresent = args.get(POSITION_ADD_FROM_KEYWORD).toLowerCase().equals("from");
-    		boolean isToPresent= args.get(POSITION_ADD_TO_KEYWORD).toLowerCase().equals("to");
-    		if (isFromPresent && isToPresent) {
-    			return TASK_TYPE.EVENT;
-    		} else {
-    			return TASK_TYPE.INVALID;
-    		}
-    			
-default:
-	return TASK_TYPE.INVALID;
+	    	case 1 : // floating tasks have only 1 argument, the name
+	    		return TASK_TYPE.FLOATING;
+	    		
+	    	case 4 : // name, by keyword, date and time = 4 args
+	    		if (args.get(POSITION_ADD_BY_KEYWORD).toLowerCase().equals("by")) {
+	    			return TASK_TYPE.DEADLINE;
+	    		} else {
+	    			return TASK_TYPE.INVALID;
+	    		}
+	    	case 7 : // name, from, to, and 2 dates + 2 times
+	    		boolean isFromPresent = args.get(POSITION_ADD_FROM_KEYWORD).toLowerCase().equals("from");
+	    		boolean isToPresent= args.get(POSITION_ADD_TO_KEYWORD).toLowerCase().equals("to");
+	    		if (isFromPresent && isToPresent) {
+	    			return TASK_TYPE.EVENT;
+	    		} else {
+	    			return TASK_TYPE.INVALID;
+	    		}
+	    			
+			default :
+				return TASK_TYPE.INVALID;
     	}
     }
     
     private static LocalDateTime parseDateTime(String dateTimeString) {
     	try {
-    	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
-    	return dateTime;
+	    	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
+	    	return dateTime;
     	} 
-    	catch(DateTimeParseException e) {
-    	return null;	
+	    	catch(DateTimeParseException e) {
+	    	return null;	
     	}
     	
     }
@@ -282,81 +285,84 @@ default:
     private static DeltaTask getRequestedChanges(ArrayList<String> params) throws Exception {
     	String newName = null; 
     	LocalDateTime newStart = null, newEnd = null;
-    	boolean isNameParsed = false, isStartParsed = false, isEndParsed = false; // to prevent multiple modifications of the same field in 1 update command
-    	DeltaTask.FIELD_ACTION nameAction = DeltaTask.FIELD_ACTION.NONE, startAction = DeltaTask.FIELD_ACTION.NONE, endAction = DeltaTask.FIELD_ACTION.NONE;
+    	// boolean flags to prevent multiple modifications of the same field in 1 update command
+    	boolean isNameParsed = false, isStartParsed = false, isEndParsed = false; 
     	
-    	for (int i= POSITION_UPDATE_INDEX+1; i<params.size(); ) {
+    	DeltaTask.FIELD_ACTION nameAction = DeltaTask.FIELD_ACTION.NONE;
+    	DeltaTask.FIELD_ACTION startAction = DeltaTask.FIELD_ACTION.NONE;
+    	DeltaTask.FIELD_ACTION endAction = DeltaTask.FIELD_ACTION.NONE;
+    	
+    	for (int i = POSITION_UPDATE_INDEX + 1; i < params.size(); ) {
     		String arg = params.get(i).toLowerCase();
-    		
     		switch(arg) {
-    		case "+name":
-    			if (isNameParsed == false && i+1<params.size()) {
-    				isNameParsed = true;
-    				newName = params.get(i+1);
-    				nameAction = DeltaTask.FIELD_ACTION.UPDATE;
-    				i+=2; // skip over the new name we just added
-    			} else {
-    			throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "name", arg));
-    		}
-    			break;
+	    		case "+name" :
+	    			if (isNameParsed == false && (i + 1) < params.size()) {
+	    				isNameParsed = true;
+	    				newName = params.get(i + 1);
+	    				nameAction = DeltaTask.FIELD_ACTION.UPDATE;
+	    				i += 2; // skip over the new name we just added
+	    			} else {
+	    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "name", arg));
+	    			}
+	    			break;
+	    			
+	    		case "+end" :
+	    			if (isEndParsed == false && (i + 2) < params.size()) {
+	    				isEndParsed = true;
+	    				String date = params.get(i + 1);
+	    				String time = params.get(i + 2);
+	    				newEnd = parseDateTime(date + " " + time);
+	    				endAction = DeltaTask.FIELD_ACTION.UPDATE;
+	    				i += 3; // skip past 2 words, which is the new date and time 
+	    			} else {
+	    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
+	    			}
+	    			break;
     			
-    		case "+end":
-    			if (isEndParsed == false && i+2 < params.size()) {
-    				isEndParsed = true;
-    				String date = params.get(i+1);
-    				String time = params.get(i+2);
-    				newEnd = parseDateTime(date + " " + time);
-    				endAction = DeltaTask.FIELD_ACTION.UPDATE;
-    				i+=3; // skip past 2 words, which is the new date and time 
-    			} else {
-    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
-    			}
-    			break;
+	    		case "-end" :
+	    			if (isEndParsed == false) {
+	    				endAction = DeltaTask.FIELD_ACTION.REMOVE;
+	    				isEndParsed = true;
+	    				i++;
+	    			} else {
+	    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_REMOVE, "end date"));
+	    			}
+	    			break;
+	    			
+	    		case "+start" :
+	    			if (isStartParsed == false && (i + 2) < params.size()) {
+	    				isStartParsed = true;
+	    				String date = params.get(i + 1);
+	    				String time = params.get(i + 2);
+	    				newStart = parseDateTime(date + " " + time);
+	    				startAction = DeltaTask.FIELD_ACTION.UPDATE;
+	    				i += 3; // skip past 2 words, which is the new date and time
+	    			} else {
+	    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
+	    			}
+	    			break;
     			
-    		case "-end":
-    			if (isEndParsed == false) {
-    				endAction = DeltaTask.FIELD_ACTION.REMOVE;
-    				isEndParsed = true;
-    				i++;
-    			} else {
-    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_REMOVE, "end date"));
-    			}
-    			break;
-    			
-    		case "+start":
-    			if (isStartParsed == false && i+2<params.size()) {
-    				isStartParsed = true;
-    				String date = params.get(i+1);
-    				String time = params.get(i+2);
-    				newStart = parseDateTime(date + " " + time);
-    				startAction = DeltaTask.FIELD_ACTION.UPDATE;
-    				i+=3; // skip past 2 words, which is the new date and time
-    			} else {
-    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
-    			}
-    			break;
-    			
-    		case "-start":
-    			if (isStartParsed == false) {
-    				startAction = DeltaTask.FIELD_ACTION.REMOVE;
-    				isStartParsed = true;
-    				i++;
-    			} else {
-    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_REMOVE, "start date"));
-    			}
-    			break;
-    		
-    			default:
+	    		case "-start" :
+	    			if (isStartParsed == false) {
+	    				startAction = DeltaTask.FIELD_ACTION.REMOVE;
+	    				isStartParsed = true;
+	    				i++;
+	    			} else {
+	    				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_REMOVE, "start date"));
+	    			}
+	    			break;
+	    		
+    			default :
     				throw new Exception(String.format(ERROR_UNRECOGNIZED_UPDATE_TOKEN, arg));
-    	}
+	    	}
     	}
     	
     	return new DeltaTask(nameAction, newName, startAction, newStart, endAction, newEnd);
     }
     
     private static boolean isNumberOfQuotesValid(String input) {
-    	int quoteCount= 0;
-    	for (int i=0; i<input.length(); i++) {
+    	int quoteCount = 0;
+    	for (int i = 0; i < input.length(); i++) {
     		if (input.charAt(i) == '"') {
     			quoteCount++;
     		}

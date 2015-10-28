@@ -47,7 +47,7 @@ public LocalDateTime getNewStart() {
 	return start;
 }
 
-public LocalDateTime getNewend() {
+public LocalDateTime getNewEnd() {
 	return end;
 }
 

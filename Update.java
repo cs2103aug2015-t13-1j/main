@@ -13,7 +13,7 @@ public class Update extends Command implements Undoable {
 	private static final String SUCCESS_UPDATE = "\"%s\" was updated to \"%s\".";
 	private static final String SUCCESS_UPDATE_UNDO = "Update undone";
 	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
-private static final String ERROR_UPDATED_TASK_IS_INVALID = "The update failed because performing these changes would have resulted in an invalid task.";	
+	private static final String ERROR_UPDATED_TASK_IS_INVALID = "The update failed because performing these changes would have resulted in an invalid task.";	
 	private Task oldTask;
 	private Task newTask;
 	private DeltaTask changes;
@@ -48,43 +48,50 @@ private static final String ERROR_UPDATED_TASK_IS_INVALID = "The update failed b
 		String newName = null;
 		
 		switch(changes.getNameAction()) {
-		case UPDATE:
-			newName = changes.getNewName();
-			break;
-		case NONE:
-			newName = oldTask.getName();
-			break;
-		case REMOVE:
-			// command parser should not allow name's action to be initialized to REMOVE
-			assert("A request to remove task name slipped through command parser's defences, execution should not reach here" == null);
+			case UPDATE :
+				newName = changes.getNewName();
+				break;
+				
+			case NONE :
+				newName = oldTask.getName();
+				break;
+				
+			case REMOVE :
+				// command parser should not allow name's action to be initialized to REMOVE
+				assert("A request to remove task name slipped through command parser's "
+						+ "defences, execution should not reach here" == null);
 		}
 		
 		assert(newName != null);
 		
-		// for requests to remove non-existent fields, like removing the start date off a floating task, forgive and ignore the error
+		// for requests to remove non-existent fields, like removing the start date 
+		// off a floating task, forgive and ignore the error
 		LocalDateTime newStart = null;
-		
 		switch(changes.getStartAction()) {
-		case UPDATE:
-			newStart = changes.getNewStart();
-			break;
-		case NONE:
-			newStart = oldTask.getStartDateTime();
-			break;
-		case REMOVE:
-			newStart = null;
+			case UPDATE :
+				newStart = changes.getNewStart();
+				break;
+				
+			case NONE :
+				newStart = oldTask.getStartDateTime();
+				break;
+				
+			case REMOVE :
+				newStart = null;
 		}
 	
 		LocalDateTime newEnd = null;
 		switch(changes.getEndAction()) {
-		case UPDATE:
-			newEnd = changes.getNewend();
-			break;
-		case NONE:
-			newEnd = oldTask.getEndDateTime();
-			break;
-		case REMOVE:
-			newEnd = null;
+			case UPDATE :
+				newEnd = changes.getNewEnd();
+				break;
+				
+			case NONE :
+				newEnd = oldTask.getEndDateTime();
+				break;
+				
+			case REMOVE :
+				newEnd = null;
 		}
 	
 		// now check that the combination of newName, newStart and newEnd is valid e.g forms one of the 3 task types
