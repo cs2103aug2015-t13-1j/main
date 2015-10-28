@@ -12,29 +12,36 @@ import java.util.Stack;
  */
 
 public class Logic {
-	private static boolean isStorageOpen = false; // whether storage component is ready to read and write
-	private static Stack<Undoable> commandHistory = new Stack<Undoable>();
+	private static Stack<Undoable> undoableHistory = new Stack<Undoable>();
+	private static Command lastExecutedCommand = null;
 	
 	public static Command processUserInput(String userInput) throws Exception {
 		Command command = CommandParser.getCommandFromInput(userInput);
-		if (isStorageOpen == false) {
-			openStorage(); 
-		}
+		
 		// this may throw an Exception depending on the command
-		command.execute();
+		try {
+			command.execute();
+		} catch (Exception e) {
+			lastExecutedCommand = null;
+			throw new Exception(e.getMessage());
+		}
 		
 		// update command history depending on the command
-		if (command.getClass() == Undo.class && !commandHistory.isEmpty()) {
-			commandHistory.pop();
+		lastExecutedCommand = command;
+		if (command.getClass() == Undo.class && !undoableHistory.isEmpty()) {
+			undoableHistory.pop();
 		} else if (Undoable.class.isAssignableFrom(command.getClass())) {
-			commandHistory.push((Undoable)command);
+			undoableHistory.push((Undoable)command);
 		}
 		return command;
 	}
-
-	private static void openStorage() {
+	
+	public static void init() {
 		StorageManager.openStorage();
-		isStorageOpen = true;
+	}
+	
+	public static void close() {
+		StorageManager.closeStorage();
 	}
 	
 	/**
@@ -63,7 +70,6 @@ public class Logic {
 				}
 			}
 		}
-		
 		return foundTasks;
 	}
 	
@@ -199,13 +205,39 @@ public class Logic {
 	 * @return	the last Undoable command stored in the command history
 	 * @throws EmptyStackException	if there are no more commands in the stack
 	 */
-	public static Undoable getLastCommand() throws EmptyStackException {
-		return commandHistory.peek();
+	public static Undoable getLastUndoable() throws EmptyStackException {
+		return undoableHistory.peek();
 	}
-/*	
-	private static void closeStorage() {
-		StorageManager.closeStorage();
-		isStorageOpen = false;
+
+	private static ArrayList<Task> getDefaultTaskList() {
+		return getUncompletedTasks();
 	}
-*/
+
+	/**
+	 * Get the task list to correspond to subsequent references by index
+	 * 
+	 * @return	the list of tasks
+	 */
+	public static ArrayList<Task> updateCurrentTaskList() {
+		if (lastExecutedCommand != null && lastExecutedCommand.getClass() == List.class) {
+			List command = (List)lastExecutedCommand;
+			return command.getTaskList();
+		} else {
+			return getDefaultTaskList();
+		}
+	}
+	
+	/**
+	 * Generate the default view depending on whether a list was just shown or not
+	 * 
+	 * @return	a string representation of the default view to show
+	 */
+	public static String getDefaultView() {
+		if (lastExecutedCommand != null && lastExecutedCommand.getClass() == List.class) {
+			return "";
+		} else {
+			ArrayList<Task> taskList = Ui.getCurrentTaskList();
+			return Ui.createTaskListDisplay(taskList) + "\n\n";
+		}
+	}
 }

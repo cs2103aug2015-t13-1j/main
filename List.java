@@ -1,25 +1,15 @@
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 
-import java.time.LocalDateTime;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Locale;
 
 /**
  * List command used for listing all tasks or for performing a search on the task list
  * @author Katherine Coronado
  *
  */
-public class List extends Command {
-	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_LIST_HEADER = "#   Start\t | End\t\t | Name\n";
-	private static final String MESSAGE_FLOATING = "%d. \t\t | \t\t | %s\n";
-	private static final String MESSAGE_DEADLINE = "%d. \t\t | %s\t | %s\n";
-	private static final String MESSAGE_EVENT = "%d. %s\t | %s\t | %s\n";
-	private static final String MESSAGE_DATE_TIME_FORMAT = "%02d %s %d:%02d";
-	
+public class List extends Command {	
 	private Task task;
 	private String[] keywords;
 	private ArrayList<Task> taskList;
@@ -108,46 +98,7 @@ public class List extends Command {
 	 */
 	public String getSuccessMessage() {
 		assertTrue(wasExecuted);
-		if (taskList.size() > 0) {
-			StringBuilder message = new StringBuilder();
-			message.append(MESSAGE_LIST_HEADER);
-			int taskNumber = 1;
-			for (Task task : taskList) {
-				LocalDateTime start = task.getStartDateTime();
-				LocalDateTime end = task.getEndDateTime();
-				String taskName;
-				if (task.isDone()) {
-					taskName = "*" + task.getName();
-				} else {
-					taskName = task.getName();
-				}
-				if (end == null && start == null) {
-					message.append(String.format(MESSAGE_FLOATING, taskNumber++, taskName));
-				} else if (start == null) {
-					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, 
-							getDateTimeFormat(end), taskName));
-				} else {
-					message.append(String.format(MESSAGE_EVENT, taskNumber++, getDateTimeFormat(start), 
-							getDateTimeFormat(end), taskName));
-				}
-			}
-			message.append("\n* = completed tasks\n");
-			return message.toString();
-		} else {
-			return MESSAGE_NO_TASKS;
-		}
-	}
-	
-	/**
-	 * This method creates a String in the format dd mmm hh:mm, i.e. 24 Oct 13:00
-	 * 
-	 * @param dateTime	The LocalDateTime with the date and time to format
-	 * @return			a String in the format dd mmm hh:mm
-	 */
-	private String getDateTimeFormat(LocalDateTime dateTime) {
-		String month = dateTime.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-		return String.format(MESSAGE_DATE_TIME_FORMAT, dateTime.getDayOfMonth(), 
-				month, dateTime.getHour(), dateTime.getMinute());
+		return Ui.createTaskListDisplay(taskList);
 	}
 	
 	@Override
