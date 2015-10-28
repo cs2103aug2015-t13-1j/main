@@ -13,9 +13,9 @@ import com.google.gson.Gson;
  * StorageManager is a class that read/write/delete appropriate task information to the Storage.
  */
 public class StorageManager {
-	private static final String DIRECTORY = "./";
-	private static final String FILE_NAME = "TaskStorage";
-	private static final String FILE_TYPE = ".json";
+	private static String DIRECTORY = "./";
+	private static String FILE_NAME = "TaskStorage";
+	private static String FILE_TYPE = ".json";
 	private static File file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
 	private static FileReader fileReader;
 	private static FileWriter fileWriter;
@@ -81,6 +81,16 @@ public class StorageManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void changeStorageLocation(String directory) {
+		DIRECTORY = directory;
+		file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
+	}
+	
+	public static void changeStorageName(String name) {
+		FILE_NAME = name;
+		file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
 	}
 	
 	/**
