@@ -1,5 +1,3 @@
-import static org.junit.Assert.assertNotEquals;
-
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
@@ -52,7 +50,7 @@ public class Logic {
 	 * 					The ArrayList will be empty if no tasks were found.
 	 */
 	public static ArrayList<Task> searchTasks(String[] keywords) {
-		assertNotEquals(null, keywords);
+		assert(keywords != null);
 		
 		ArrayList<Task> taskList = StorageManager.readAllTasks();
 		ArrayList<Task> foundTasks = new ArrayList<Task>();		

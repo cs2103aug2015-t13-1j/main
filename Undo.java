@@ -1,5 +1,4 @@
 import java.util.EmptyStackException;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Undo command to handle undoing the last command that made changes to the task list.
@@ -29,7 +28,7 @@ public class Undo extends Command {
 
 	@Override
 	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return lastExecuted.getUndoMessage();
 	}
 

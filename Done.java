@@ -1,5 +1,3 @@
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 
 /**
@@ -53,7 +51,7 @@ public class Done extends Command implements Undoable {
 
 	@Override
 	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return String.format(SUCCESS_DONE, completedTask.getName());
 	}
 	
@@ -75,7 +73,7 @@ public class Done extends Command implements Undoable {
 
 	@Override
 	public String getUndoMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return String.format(SUCCESS_DONE_UNDO, completedTask.getName());
 	}
 }

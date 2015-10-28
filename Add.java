@@ -1,5 +1,3 @@
-import static org.junit.Assert.assertTrue;
-
 /**
  * Add command to handle adding a task to the task list.
  * @author Katherine Coronado
@@ -36,7 +34,7 @@ public class Add extends Command implements Undoable {
 
 	@Override
 	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return String.format(SUCCESS_ADD, task.getName());
 	}
 	
@@ -63,7 +61,7 @@ public class Add extends Command implements Undoable {
 
 	@Override
 	public String getUndoMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return String.format(SUCCESS_ADD_UNDO, task.getName());
 	}
 }

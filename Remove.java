@@ -1,5 +1,3 @@
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 
 /**
@@ -47,7 +45,7 @@ public class Remove extends Command implements Undoable {
 
 	@Override
 	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return String.format(SUCCESS_REMOVE, task.getName());
 	}
 	
@@ -74,7 +72,7 @@ public class Remove extends Command implements Undoable {
 
 	@Override
 	public String getUndoMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return String.format(SUCCESS_REMOVE_UNDO, task.getName());
 	}
 }

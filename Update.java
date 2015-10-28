@@ -1,5 +1,3 @@
-import static org.junit.Assert.assertTrue;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -132,7 +130,7 @@ public class Update extends Command implements Undoable {
 
 	@Override
 	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		// TODO check which fields were modified and display only those fields in message
 		return String.format(SUCCESS_UPDATE, oldTask.getName(), newTask.getName());
 	}

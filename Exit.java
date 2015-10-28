@@ -1,5 +1,3 @@
-import static org.junit.Assert.assertTrue;
-
 /**
  * Exit command to handle closing TaskBuddy cleanly. 
  * @author Katherine Coronado
@@ -25,7 +23,7 @@ public class Exit extends Command {
 
 	@Override
 	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return "Goodbye\n";
 	}
 

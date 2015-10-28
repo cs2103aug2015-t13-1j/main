@@ -1,6 +1,3 @@
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotEquals;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 
@@ -97,7 +94,7 @@ public class List extends Command {
 	 * Prints out all the tasks in the taskList
 	 */
 	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
+		assert(wasExecuted);
 		return Ui.createTaskListDisplay(taskList);
 	}
 	
@@ -126,7 +123,7 @@ public class List extends Command {
 	 */
 	public ArrayList<Task> getTaskList() {
 		// assert that this instance of List has been executed before returning
-		assertNotEquals(null, taskList);
+		assert(taskList != null);
 		return this.taskList;
 	}
 	
