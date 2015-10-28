@@ -78,4 +78,4 @@ public class Done extends Command implements Undoable {
 		assertTrue(wasExecuted);
 		return String.format(SUCCESS_DONE_UNDO, completedTask.getName());
 	}
-	}
+}
