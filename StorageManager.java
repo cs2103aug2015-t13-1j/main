@@ -191,22 +191,7 @@ public class StorageManager {
 		if (TASK_LIST.length == 0) {
 			throw new Exception("You currently do not have any tasks saved.");
 		}
-		
-		Task taskToUpdate = TASK_LIST[0];
-		int index = 0;
-		while (index < TASK_LIST.length) {
-			taskToUpdate = TASK_LIST[index];
-			if (!taskToUpdate.equals(oldTask)) {
-				index++;
-			} else {
-				break;
-			}
-		}
-		
-		if (index == TASK_LIST.length) {
-			throw new Exception("Task \"" + oldTask.getName() + "\" was not found.");
-		} else {	
-			TASK_LIST[index] = newTask;
-		}
+		removeTask(oldTask);
+		writeTask(newTask);
 	}
 }
