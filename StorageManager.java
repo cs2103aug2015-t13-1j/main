@@ -168,7 +168,7 @@ public class StorageManager {
 			bufferedWriter.flush();
 			
 		} catch (Exception e) {
-//			e.printStackTrace();
+			// e.printStackTrace();
 			// TODO is this what would throw the exception?
 			// if so we should re-add the removed task to the local copy to reflect the file
 			isRemoved = false;
