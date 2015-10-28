@@ -9,129 +9,129 @@ import java.util.EnumSet;
  * @author Katherine Coronado
  *
  */
-public class List extends Command {	
-	private Task task;
-	private String[] keywords;
-	private ArrayList<Task> taskList;
-	EnumSet<LIST_FLAGS> flags;
-	private boolean wasExecuted;
-	
-	public enum LIST_FLAGS {
-		FLOATING, DEADLINE, EVENT, COMPLETED, UNCOMPLETED;
-	}
-	public static final EnumSet<LIST_FLAGS> LIST_FLAGS_ENUM_SET = EnumSet.allOf(LIST_FLAGS.class);
-	
-	/**
-	 * Constructs a List object to search for tasks containing specific words or dates
-	 * 
-	 * @param task	the Task specifying search words and/or dates
-	 */
-	public List(Task task) {
-		this.task = task;
-		String keywordsList = task.getName();
-		// TODO is this the best way to split the keywords? can make a parameter
-		this.keywords = keywordsList.split(" ");
-		this.taskList = null;
-		this.flags = null;
-		this.wasExecuted = false;
-	}
-	
-	/** 
-	 * Constructs a List object to list all tasks
-	 */
-	public List() {
-		this.task = null;
-		this.keywords = null;
-		this.taskList = null;
-		this.flags = null;
-		this.wasExecuted = false;
-	}
-	
-	public List(EnumSet<LIST_FLAGS> listFlags) {
-		this.task = null;
-		this.keywords = null;
-		this.taskList = null;
-		this.flags = listFlags;
-		this.wasExecuted = false;
-	}
+public class List extends Command { 
+  private Task task;
+  private String[] keywords;
+  private ArrayList<Task> taskList;
+  EnumSet<LIST_FLAGS> flags;
+  private boolean wasExecuted;
+  
+  public enum LIST_FLAGS {
+    FLOATING, DEADLINE, EVENT, COMPLETED, UNCOMPLETED;
+  }
+  public static final EnumSet<LIST_FLAGS> LIST_FLAGS_ENUM_SET = EnumSet.allOf(LIST_FLAGS.class);
+  
+  /**
+   * Constructs a List object to search for tasks containing specific words or dates
+   * 
+   * @param task  the Task specifying search words and/or dates
+   */
+  public List(Task task) {
+    this.task = task;
+    String keywordsList = task.getName();
+    // TODO is this the best way to split the keywords? can make a parameter
+    this.keywords = keywordsList.split(" ");
+    this.taskList = null;
+    this.flags = null;
+    this.wasExecuted = false;
+  }
+  
+  /** 
+   * Constructs a List object to list all tasks
+   */
+  public List() {
+    this.task = null;
+    this.keywords = null;
+    this.taskList = null;
+    this.flags = null;
+    this.wasExecuted = false;
+  }
+  
+  public List(EnumSet<LIST_FLAGS> listFlags) {
+    this.task = null;
+    this.keywords = null;
+    this.taskList = null;
+    this.flags = listFlags;
+    this.wasExecuted = false;
+  }
 
-	@Override
-	/**
-	 * This method handles whether to search the task list or get the uncompleted tasks list. 
-	 */
-	public void execute() throws Exception {
-		if (task != null) {
-			taskList = Logic.searchTasks(keywords);
-		} else if (flags != null) {
-			taskList = getFlaggedTasks();
-		} else {
-			taskList = Logic.getUncompletedTasks();
-		}
-		wasExecuted = true;
-	}
+  @Override
+  /**
+   * This method handles whether to search the task list or get the uncompleted tasks list. 
+   */
+  public void execute() throws Exception {
+    if (task != null) {
+      taskList = Logic.searchTasks(keywords);
+    } else if (flags != null) {
+      taskList = getFlaggedTasks();
+    } else {
+      taskList = Logic.getUncompletedTasks();
+    }
+    wasExecuted = true;
+  }
 
-	private ArrayList<Task> getFlaggedTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
-		
-		// keep refining the task list based on which flags are marked
-		if (flags.contains(LIST_FLAGS.COMPLETED)) {
-			taskList = Logic.getCompletedTasks(taskList);
-		}
-		if (flags.contains(LIST_FLAGS.UNCOMPLETED)) {
-			taskList = Logic.getUncompletedTasks(taskList);
-		}		
-		if (flags.contains(LIST_FLAGS.FLOATING)) {
-			taskList = Logic.getFloatingTasks(taskList);
-		}
-		if (flags.contains(LIST_FLAGS.DEADLINE)) {
-			taskList = Logic.getDeadlineTasks(taskList);
-		}
-		if (flags.contains(LIST_FLAGS.EVENT)) {
-			taskList = Logic.getEvents(taskList);
-		}
-		return taskList;
-	}
+  private ArrayList<Task> getFlaggedTasks() {
+    ArrayList<Task> taskList = StorageManager.readAllTasks();
+    
+    // keep refining the task list based on which flags are marked
+    if (flags.contains(LIST_FLAGS.COMPLETED)) {
+      taskList = Logic.getCompletedTasks(taskList);
+    }
+    if (flags.contains(LIST_FLAGS.UNCOMPLETED)) {
+      taskList = Logic.getUncompletedTasks(taskList);
+    }   
+    if (flags.contains(LIST_FLAGS.FLOATING)) {
+      taskList = Logic.getFloatingTasks(taskList);
+    }
+    if (flags.contains(LIST_FLAGS.DEADLINE)) {
+      taskList = Logic.getDeadlineTasks(taskList);
+    }
+    if (flags.contains(LIST_FLAGS.EVENT)) {
+      taskList = Logic.getEvents(taskList);
+    }
+    return taskList;
+  }
 
-	@Override
-	/**
-	 * Prints out all the tasks in the taskList
-	 */
-	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
-		return Ui.createTaskListDisplay(taskList);
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		if (obj == null || obj.getClass() != this.getClass()) { 
-			return false; 
-		}
-		
-		List other = (List)obj;		
-		// TODO check if keywords are the same?
-		if (!this.getTask().equals(other.getTask())) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
-	 * This method returns the tasks that contain the keywords.
-	 * 
-	 * @return	ArrayList of tasks generated by the execute() method
-	 */
-	public ArrayList<Task> getTaskList() {
-		// assert that this instance of List has been executed before returning
-		assertNotEquals(null, taskList);
-		return this.taskList;
-	}
-	
-	public Task getTask() {
-		return this.task;
-	}
+  @Override
+  /**
+   * Prints out all the tasks in the taskList
+   */
+  public String getSuccessMessage() {
+    assertTrue(wasExecuted);
+    return Ui.createTaskListDisplay(taskList);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (obj == null || obj.getClass() != this.getClass()) { 
+      return false; 
+    }
+    
+    List other = (List)obj;   
+    // TODO check if keywords are the same?
+    if (!this.getTask().equals(other.getTask())) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  
+  /**
+   * This method returns the tasks that contain the keywords.
+   * 
+   * @return  ArrayList of tasks generated by the execute() method
+   */
+  public ArrayList<Task> getTaskList() {
+    // assert that this instance of List has been executed before returning
+    assertNotEquals(null, taskList);
+    return this.taskList;
+  }
+  
+  public Task getTask() {
+    return this.task;
+  }
 
 }

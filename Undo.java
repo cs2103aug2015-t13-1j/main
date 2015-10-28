@@ -8,29 +8,29 @@ import static org.junit.Assert.assertTrue;
  */
 
 public class Undo extends Command {
-	boolean wasExecuted;
-	Undoable lastExecuted;
-	
-	public Undo() {
-		this.wasExecuted = false;
-		this.lastExecuted = null;
-	}
-	
-	@Override
-	public void execute() throws Exception {
-		try {
-			lastExecuted = Logic.getLastUndoable();
-		} catch (EmptyStackException e) {
-			throw new Exception("No commands to undo.");
-		}
-		lastExecuted.undo();
-		wasExecuted = true;
-	}
+  boolean wasExecuted;
+  Undoable lastExecuted;
+  
+  public Undo() {
+    this.wasExecuted = false;
+    this.lastExecuted = null;
+  }
+  
+  @Override
+  public void execute() throws Exception {
+    try {
+      lastExecuted = Logic.getLastUndoable();
+    } catch (EmptyStackException e) {
+      throw new Exception("No commands to undo.");
+    }
+    lastExecuted.undo();
+    wasExecuted = true;
+  }
 
-	@Override
-	public String getSuccessMessage() {
-		assertTrue(wasExecuted);
-		return lastExecuted.getUndoMessage();
-	}
+  @Override
+  public String getSuccessMessage() {
+    assertTrue(wasExecuted);
+    return lastExecuted.getUndoMessage();
+  }
 
 }
