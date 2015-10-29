@@ -21,10 +21,10 @@ public class Ui {
 	
 	/** messages and message formats for tasks in the task list display **/
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_LIST_HEADER = "#   Start\t | End\t\t | Name\n";
-	private static final String MESSAGE_FLOATING = "%d. \t\t | \t\t | %s\n";
-	private static final String MESSAGE_DEADLINE = "%d. \t\t | %s\t | %s\n";
-	private static final String MESSAGE_EVENT = "%d. %s\t | %s\t | %s\n";
+	private static final String MESSAGE_LIST_HEADER = " #  Start\t\t | End\t\t | Name\n";
+	private static final String MESSAGE_FLOATING = "%2d. \t\t\t | \t\t | %s\n";
+	private static final String MESSAGE_DEADLINE = "%2d. \t\t\t | %s\t | %s\n";
+	private static final String MESSAGE_EVENT = "%2d. %s \t | %s\t | %s\n";
 	private static final String MESSAGE_DATE_TIME_FORMAT = "%02d %s %d:%02d";
 	
 	private static boolean isRunning;

@@ -207,8 +207,45 @@ public class Logic {
 		return undoableHistory.peek();
 	}
 
+	/**
+	 * Generate the default task list for the default view.
+	 * @return
+	 */
 	private static ArrayList<Task> getDefaultTaskList() {
-		return getUncompletedTasks();
+		ArrayList<Task> defaultTasks = new ArrayList<Task>();
+		ArrayList<Task> uncompleted = getUncompletedTasks();
+		ArrayList<Task> uncompletedFloating = getFloatingTasks(uncompleted);
+		ArrayList<Task> uncompletedDeadlines = getDeadlineTasks(uncompleted);
+		ArrayList<Task> uncompletedEvents = getEvents(uncompleted);
+		
+		int index = 0;
+		int numTasks = 0;
+		int tasksForView;
+		// display up to 15 tasks
+		if (uncompleted.size() < 15) {
+			tasksForView = uncompleted.size();
+		} else {
+			tasksForView = 15;
+		}
+		// display an even amount of each task type.
+		// if there are not enough tasks of a task type, then distribute between the remaining types.
+		while (numTasks < tasksForView) {
+			if (index < uncompletedEvents.size()) {
+				defaultTasks.add(uncompletedEvents.get(index));
+				numTasks++;
+			}
+			if (index < uncompletedDeadlines.size()) {
+				defaultTasks.add(uncompletedDeadlines.get(index));
+				numTasks++;
+			}
+			if (index < uncompletedFloating.size()) {
+				defaultTasks.add(uncompletedFloating.get(index));
+				numTasks++;
+			}
+			index++;
+		}
+		defaultTasks.sort(null);
+		return defaultTasks;
 	}
 
 	/**
