@@ -8,8 +8,8 @@ import java.util.ArrayList;
  */
 
 public class Update extends Command implements Undoable {
-	private static final String SUCCESS_UPDATE = "\"%s\" was updated to \"%s\".";
-	private static final String SUCCESS_UPDATE_UNDO = "Update undone";
+	private static final String SUCCESS_UPDATE = "\"%s\" updated to %s.";
+	private static final String SUCCESS_UPDATE_UNDO = "Update of \"%s\" undone to %s";
 	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
 	private static final String ERROR_UPDATED_TASK_IS_INVALID = "The update failed because performing these changes would have resulted in an invalid task.";	
 	private Task oldTask;
@@ -92,7 +92,7 @@ public class Update extends Command implements Undoable {
 				newEnd = null;
 		}
 	
-		// now check that the combination of newName, newStart and newEnd is valid e.g forms one of the 3 task types
+		
 		if (isTaskParametersValid(newName, newStart, newEnd) == false) {
 			throw new Exception(ERROR_UPDATED_TASK_IS_INVALID);
 		}
@@ -102,22 +102,7 @@ public class Update extends Command implements Undoable {
 	
 	private static boolean isTaskParametersValid(String name, LocalDateTime start, LocalDateTime end) {
 		assert(name != null);
-		
-		boolean isFloating = false, isDeadline = false, isEvent = false;
-		
-		if (start == null && end == null) {
-			isFloating = true;
-		}
-		
-		if (start == null && end != null) {
-			isDeadline = true;
-		}
-		
-		if (start != null && end != null) {
-			isEvent = true;
-		}
-		
-		return isFloating || isDeadline || isEvent;
+		return !(start != null && end == null);
 	}
 	
 	@Override
@@ -131,8 +116,7 @@ public class Update extends Command implements Undoable {
 	@Override
 	public String getSuccessMessage() {
 		assert(wasExecuted);
-		// TODO check which fields were modified and display only those fields in message
-		return String.format(SUCCESS_UPDATE, oldTask.getName(), newTask.getName());
+		return String.format(SUCCESS_UPDATE, oldTask.getName(), Ui.getPrintableTaskString(newTask));
 	}
 	
 	@Override
@@ -164,7 +148,7 @@ public class Update extends Command implements Undoable {
 
 	@Override
 	public String getUndoMessage() {
-		// TODO update message with which fields were modified
-		return SUCCESS_UPDATE_UNDO;
+		return String.format(SUCCESS_UPDATE_UNDO, newTask.getName(), Ui.getPrintableTaskString(oldTask));
 	}
-}
+	
+	}

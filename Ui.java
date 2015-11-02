@@ -143,6 +143,25 @@ public class Ui {
 				month, dateTime.getHour(), dateTime.getMinute());
 	}
 	
+	/*
+	 *Converts the information in Task to a String more suitable for printing.  
+	 *This is not for UI's column task list display, but is for providing confirmation for commands like add and undo
+	 */
+
+	public static String getPrintableTaskString(Task task) {
+		String str = "\"" + task.getName() + "\"";
+		LocalDateTime start = task.getStartDateTime();
+		LocalDateTime end = task.getEndDateTime();
+		
+		if (start != null && end != null) {
+			str += ", scheduled from " + getDateTimeFormat(start) + " to " + getDateTimeFormat(end);
+		} else if (start == null && end != null) {
+			str += ", due by " + getDateTimeFormat(end);
+		}
+		
+		return str;
+	}
+
 	/**
 	 * Returns the task list that was most recently displayed to the user. 
 	 * 
