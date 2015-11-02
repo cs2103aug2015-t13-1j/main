@@ -85,7 +85,7 @@ public class Ui {
 	 * 
 	 * @param userInput	the string entered by the user
 	 */
-	private static void executeUserInput(String userInput) {
+	public static void executeUserInput(String userInput) {
 		try {
 			Command command = Logic.processUserInput(userInput);
 			showToUser(command.getSuccessMessage() + "\n\n");

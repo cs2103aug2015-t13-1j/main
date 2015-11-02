@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
  */
 
 public class CommandParser {
+	private static final String ERROR_NAME_NOT_IN_QUOTES = "The task name must be enclosed in quotations marks.";
 	// error messages for thrown exceptions
 	private static final String ERROR_NOTHING_ENTERED = "Please enter a command.";
 	private static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
@@ -120,7 +121,7 @@ public class CommandParser {
   	Matcher m = splitter.matcher(input);
   	
   	while(m.find()) {
-  		String param = m.group(1).replace("\"", "");
+  		String param = m.group(1);
 	    params.add(param);
   	}
   	
@@ -146,36 +147,36 @@ public class CommandParser {
   		for (int i = 0; i < args.size(); i++) {
   			String flag = args.get(i);
   			
-  			// if -all flag is marked, remove all flags and break out of the loop
-  			if (flag.equals("-all")) {
+  			// if "all" flag is marked, remove all flags and break out of the loop
+  			if (flag.equals("all")) {
   				listFlags = EnumSet.noneOf(List.LIST_FLAGS.class);
   				break;
   			}
   			
   			switch (flag) {
-  				case "-floating" :
+  				case "floating" :
   					listFlags.add(List.LIST_FLAGS.FLOATING);
   					break;
   					
-  				case "-deadline" :
+  				case "deadline" :
   					listFlags.add(List.LIST_FLAGS.DEADLINE);
   					break;
   					
-  				case "-event" :
+  				case "event" :
   					listFlags.add(List.LIST_FLAGS.EVENT);
   					break;
   					
-  				case "-done" :
+  				case "done" :
   					// fallthrough
   					
-  				case "-completed" :
+  				case "completed" :
   					// fallthrough
   					
-  				case "-finished" :
+  				case "finished" :
   					listFlags.add(List.LIST_FLAGS.COMPLETED);
   					break;
   					
-  				case "-uncompleted" :
+  				case "uncompleted" :
   					listFlags.add(List.LIST_FLAGS.UNCOMPLETED);
   					break;
   					
@@ -198,6 +199,10 @@ public class CommandParser {
 		
 		if (args.size() >= 1) {
 			name = args.get(POSITION_ADD_NAME); // name is always present in the same position for all tasks
+			if (!name.startsWith("\"")) {
+				throw new Exception(ERROR_NAME_NOT_IN_QUOTES);
+			}
+	  		name = name.replace("\"", "");
 		}
 			
 		LocalDateTime endTime, startTime;
@@ -347,6 +352,10 @@ public class CommandParser {
     			if (isNameParsed == false && (i + 1) < params.size()) {
     				isNameParsed = true;
     				newName = params.get(i + 1);
+    				if (!newName.startsWith("\"")) {
+    					throw new Exception(ERROR_NAME_NOT_IN_QUOTES);
+    				}
+    		  		newName = newName.replace("\"", "");
     				nameAction = DeltaTask.FIELD_ACTION.UPDATE;
     				i += 2; // skip over the new name we just added
     			} else {
