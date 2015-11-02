@@ -137,33 +137,41 @@ public class CommandParser {
     return new ArrayList<String>(params.subList(POSITION_FIRST_PARAM, params.size()));
   }
     
-  private static Command initListCommand(ArrayList<String> args) {
-		// TODO handle option for List command with search parameters
+  private static Command initListCommand(ArrayList<String> args) throws Exception {
 		if (args.size() == 0) {
 			return new List();
 		} else {
-  		// parse the flags
+  		// parse the flags and keywords
   		EnumSet<List.LIST_FLAGS> listFlags = EnumSet.noneOf(List.LIST_FLAGS.class);
+  		String[] keywords = null;
+  		boolean isAllMarked = false;
   		for (int i = 0; i < args.size(); i++) {
   			String flag = args.get(i);
   			
   			// if "all" flag is marked, remove all flags and break out of the loop
   			if (flag.equals("all")) {
   				listFlags = EnumSet.noneOf(List.LIST_FLAGS.class);
+  				isAllMarked = true;
   				break;
   			}
   			
   			switch (flag) {
   				case "floating" :
-  					listFlags.add(List.LIST_FLAGS.FLOATING);
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.FLOATING);
+  					}
   					break;
   					
   				case "deadline" :
-  					listFlags.add(List.LIST_FLAGS.DEADLINE);
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.DEADLINE);
+  					}
   					break;
   					
   				case "event" :
-  					listFlags.add(List.LIST_FLAGS.EVENT);
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.EVENT);
+  					}
   					break;
   					
   				case "done" :
@@ -173,19 +181,33 @@ public class CommandParser {
   					// fallthrough
   					
   				case "finished" :
-  					listFlags.add(List.LIST_FLAGS.COMPLETED);
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.COMPLETED);
+  					}
   					break;
   					
   				case "uncompleted" :
-  					listFlags.add(List.LIST_FLAGS.UNCOMPLETED);
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.UNCOMPLETED);
+  					}
   					break;
   					
   				default :
+  					// if there are quotation marks, it is a keywords string
+  					if (flag.startsWith("\"")) {
+  						flag = flag.replace("\"", "");
+  						keywords = flag.split(" ");
+  					} else {
+  						throw new Exception("\"" + flag + "\" is not a recognized marker");
+  					}
   					break;
 				}
   		}
-  		
-  		return new List(listFlags);
+  		if (keywords == null) {
+  			return new List(listFlags);
+  		} else {
+  			return new List(listFlags, keywords);
+  		}
   	}
   }
     

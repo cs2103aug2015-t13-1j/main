@@ -7,7 +7,6 @@ import java.util.EnumSet;
  *
  */
 public class List extends Command {	
-	private Task task;
 	private String[] keywords;
 	private ArrayList<Task> taskList;
 	EnumSet<LIST_FLAGS> flags;
@@ -18,26 +17,10 @@ public class List extends Command {
 	}
 	public static final EnumSet<LIST_FLAGS> LIST_FLAGS_ENUM_SET = EnumSet.allOf(LIST_FLAGS.class);
 	
-	/**
-	 * Constructs a List object to search for tasks containing specific words or dates
-	 * 
-	 * @param task	the Task specifying search words and/or dates
-	 */
-	public List(Task task) {
-		this.task = task;
-		String keywordsList = task.getName();
-		// TODO is this the best way to split the keywords? can make a parameter
-		this.keywords = keywordsList.split(" ");
-		this.taskList = null;
-		this.flags = null;
-		this.wasExecuted = false;
-	}
-	
 	/** 
 	 * Constructs a List object to list all tasks
 	 */
 	public List() {
-		this.task = null;
 		this.keywords = null;
 		this.taskList = null;
 		this.flags = null;
@@ -45,48 +28,53 @@ public class List extends Command {
 	}
 	
 	public List(EnumSet<LIST_FLAGS> listFlags) {
-		this.task = null;
-		this.keywords = null;
-		this.taskList = null;
+		this();
 		this.flags = listFlags;
-		this.wasExecuted = false;
+	}
+
+	public List(EnumSet<LIST_FLAGS> listFlags, String[] keywords) {
+		this(listFlags);
+		this.keywords = keywords;
 	}
 
 	@Override
 	/**
-	 * This method handles whether to search the task list or get the uncompleted tasks list. 
+	 * This method handles whether to filter the task list or get the uncompleted tasks list. 
 	 */
 	public void execute() throws Exception {
-		if (task != null) {
-			taskList = Logic.searchTasks(keywords);
-		} else if (flags != null) {
-			taskList = getFlaggedTasks();
+		if (keywords != null || flags != null) {
+			ArrayList<Task> tasks = StorageManager.readAllTasks();
+			if (keywords != null) {
+				tasks = Logic.searchTasks(keywords);
+			}
+			if (flags != null) {
+				tasks = getFlaggedTasks(tasks);
+			}
+			taskList = tasks;
 		} else {
 			taskList = Logic.getUncompletedTasks();
 		}
 		wasExecuted = true;
 	}
 
-	private ArrayList<Task> getFlaggedTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
-		
+	private ArrayList<Task> getFlaggedTasks(ArrayList<Task> flaggedTasks) {
 		// keep refining the task list based on which flags are marked
 		if (flags.contains(LIST_FLAGS.COMPLETED)) {
-			taskList = Logic.getCompletedTasks(taskList);
+			flaggedTasks = Logic.getCompletedTasks(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.UNCOMPLETED)) {
-			taskList = Logic.getUncompletedTasks(taskList);
+			flaggedTasks = Logic.getUncompletedTasks(flaggedTasks);
 		}		
 		if (flags.contains(LIST_FLAGS.FLOATING)) {
-			taskList = Logic.getFloatingTasks(taskList);
+			flaggedTasks = Logic.getFloatingTasks(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.DEADLINE)) {
-			taskList = Logic.getDeadlineTasks(taskList);
+			flaggedTasks = Logic.getDeadlineTasks(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.EVENT)) {
-			taskList = Logic.getEvents(taskList);
+			flaggedTasks = Logic.getEvents(flaggedTasks);
 		}
-		return taskList;
+		return flaggedTasks;
 	}
 
 	@Override
@@ -108,12 +96,8 @@ public class List extends Command {
 		}
 		
 		List other = (List)obj;		
-		// TODO check if keywords are the same?
-		if (!this.getTask().equals(other.getTask())) {
-			return false;
-		} else {
-			return true;
-		}
+		// TODO comparison 
+		return true;
 	}
 	
 	/**
@@ -126,9 +110,4 @@ public class List extends Command {
 		assert(taskList != null);
 		return this.taskList;
 	}
-	
-	public Task getTask() {
-		return this.task;
-	}
-
 }
