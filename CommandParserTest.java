@@ -188,8 +188,116 @@ try {
 		Command invalid = CommandParser.getCommandFromInput("update");
 		fail();
 	} catch (Exception e) {
+		// we should get an exception
+	}
+		
+		try {
+		Command invalid = CommandParser.getCommandFromInput("update 1");
+		fail();
+	} catch (Exception e) {
 		
 	}
 		
+		// boundary case heuristic: the word from and to being present in the title should not cause parsing problems
+		String newName = "return books borrowed from Ben to him";
+		
+		String validStartString = "21-02-2015 14:40";
+		LocalDateTime validStartTime = parseDateTime(validStartString);
+		String validEndString = "21-02-2015 15:00";
+		LocalDateTime validEndTime = parseDateTime(validEndString);
+
+		String invalidEndString = "21-13-2015 14:40";
+		LocalDateTime invalidEndTime = parseDateTime(invalidEndString);
+
+		try {
+			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +name \"" + newName + "\"");
+			DeltaTask changes = valid.getChanges();
+			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
+			assertEquals(startAction, DeltaTask.FIELD_ACTION.NONE);
+			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
+			assertEquals(nameAction, DeltaTask.FIELD_ACTION.UPDATE);
+			assertEquals(changes.getNewName(), newName);
+		} catch(Exception E) {
+			fail();
+		}
+		
+		try {
+			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +end " + validEndString);
+			DeltaTask changes = valid.getChanges();
+			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
+			assertEquals(startAction, DeltaTask.FIELD_ACTION.NONE);
+			assertEquals(endAction, DeltaTask.FIELD_ACTION.UPDATE);
+			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
+			assertEquals(changes.getNewEnd(), validEndTime);
+		} catch(Exception E) {
+			fail();
+		}
+		
+		try {
+			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +start " + validStartString);
+			DeltaTask changes = valid.getChanges();
+			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
+			assertEquals(startAction, DeltaTask.FIELD_ACTION.UPDATE);
+			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
+			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
+			assertEquals(changes.getNewStart(), validStartTime);
+		} catch(Exception E) {
+			fail();
+		}
+		
+		try {
+			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +name \"" + newName + "\" +start " + validStartString + " +end " + validEndString);
+			DeltaTask changes = valid.getChanges();
+			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
+			assertEquals(startAction, DeltaTask.FIELD_ACTION.UPDATE);
+			assertEquals(endAction, DeltaTask.FIELD_ACTION.UPDATE);
+			assertEquals(nameAction, DeltaTask.FIELD_ACTION.UPDATE);
+			assertEquals(changes.getNewStart(), validStartTime);
+			assertEquals(changes.getNewEnd(), validEndTime);
+			assertEquals(changes.getNewName(), newName);
+		} catch(Exception E) {
+			fail();
+		}
+		
+		try {
+			Update valid = (Update)CommandParser.getCommandFromInput("update 1 -end ");
+			DeltaTask changes = valid.getChanges();
+			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
+			assertEquals(startAction, DeltaTask.FIELD_ACTION.NONE);
+			assertEquals(endAction, DeltaTask.FIELD_ACTION.REMOVE);
+			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
+		} catch(Exception E) {
+			fail();
+		}
+		
+		try {
+			Update valid = (Update)CommandParser.getCommandFromInput("update 1 -start");
+			DeltaTask changes = valid.getChanges();
+			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
+			assertEquals(startAction, DeltaTask.FIELD_ACTION.REMOVE);
+			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
+			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
+		} catch(Exception E) {
+			fail();
+		}
+		
+		try {
+			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 -name");
+		fail();
+		} catch(Exception E) {
+// we should get an exception
+		}
+		
+		try {
+			Update valid = (Update)CommandParser.getCommandFromInput("update 1 -start -end");
+			DeltaTask changes = valid.getChanges();
+			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
+			assertEquals(startAction, DeltaTask.FIELD_ACTION.REMOVE);
+			assertEquals(endAction, DeltaTask.FIELD_ACTION.REMOVE);
+		} catch(Exception E) {
+			fail();
+		}
+		
 	}
+	
 }

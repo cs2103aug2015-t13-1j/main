@@ -18,18 +18,18 @@ import java.util.regex.Pattern;
  */
 
 public class CommandParser {
-	private static final String ERROR_NAME_NOT_IN_QUOTES = "The task name must be enclosed in quotations marks.";
-	// error messages for thrown exceptions
-	private static final String ERROR_NOTHING_ENTERED = "Please enter a command.";
-	private static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
-	private static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
-  private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
-  private static final String ERROR_NUMBER_FORMAT = "Please specify a valid number for the task you want to %s.";
-	private static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
-	private static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the task to be updated, and fields to be modified or removed.";
-	private static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
-	private static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
-	private static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
+	// error messages for thrown exceptions, public to facilitate testing
+	public static final String ERROR_NAME_NOT_IN_QUOTES = "The task name must be enclosed in quotations marks.";
+	public static final String ERROR_NOTHING_ENTERED = "Please enter a command.";
+	public static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
+	public static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
+  public static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
+  public static final String ERROR_NUMBER_FORMAT = "Please specify a valid number for the task you want to %s.";
+	public static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the task to be updated, and fields to be modified or removed.";
+	public static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
+	public static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
+	public static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
 	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
