@@ -1,3 +1,4 @@
+//@@author A0126270N
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -5,8 +6,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-
 
 /**
  * CommandParser parses user's input to create Command objects that have the
@@ -289,7 +288,6 @@ public class CommandParser {
   }
     
   private static Command initUndoCommand() {
-  	// TODO check command length
   	return new Undo();
   }
   

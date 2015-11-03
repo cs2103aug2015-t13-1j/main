@@ -352,6 +352,16 @@ assertEquals(e.getMessage(), String.format(CommandParser.ERROR_UNRECOGNIZED_UPDA
 		} catch(Exception e) {
 			fail("exception thrown");
 			}
-		
 	}
+	
+		@Test
+		public void testUndoParsing() {
+			try {
+				Undo valid = (Undo)CommandParser.getCommandFromInput("undo");
+				assertEquals(valid, new Undo());
+			} catch (Exception e) {
+				fail("exception thrown");
+			}
+		}
+	
 }

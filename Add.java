@@ -37,7 +37,7 @@ public class Add extends Command implements Undoable {
 		assert(wasExecuted);
 		return String.format(SUCCESS_ADD, Ui.getPrintableTaskString(task));
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
