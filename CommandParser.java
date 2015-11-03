@@ -23,7 +23,7 @@ public class CommandParser {
 	public static final String ERROR_NOTHING_ENTERED = "Please enter a command.";
 	public static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
 	public static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
-  public static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
+  public static final String ERROR_EXPECTED_ONE_TASK_NUM = "Please indicate only one task to %s.";
   public static final String ERROR_NUMBER_FORMAT = "Please specify a valid task number.";
 	public static final String ERROR_INVALID_DATE_AND_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
 	public static final String ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD = "The type of task to be added could not be determined.";
@@ -352,7 +352,7 @@ public class CommandParser {
   	}
   	
   		if (args.size() > MAX_ARG_REMOVE) {
-    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		
+    	throw new Exception(String.format(ERROR_EXPECTED_ONE_TASK_NUM, "remove"));    		
   	}
   
     	return new Remove(parseInt(args.get(0)));
@@ -360,7 +360,7 @@ public class CommandParser {
 
   private static Command initDoneCommand(ArrayList<String> args) throws Exception {
   	if (args.size() == 0 || args.size() > MAX_ARG_DONE) {
-    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "mark as completed"));    		
+    	throw new Exception(String.format(ERROR_EXPECTED_ONE_TASK_NUM, "mark as completed"));    		
   	}
   	
   		int taskNum = parseInt(args.get(0));

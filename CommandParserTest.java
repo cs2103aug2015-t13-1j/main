@@ -7,7 +7,6 @@ import java.time.format.DateTimeParseException;
 
 import org.junit.Test;
 
-
 public class CommandParserTest {
 	
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -26,7 +25,6 @@ public class CommandParserTest {
 			c = CommandParser.getCommandFromInput("list");
 			assertEquals(List.class, c.getClass());
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			fail();
 		}
 	}
@@ -40,8 +38,7 @@ public class CommandParserTest {
 			Command c2 = CommandParser.getCommandFromInput("Quit");
 			assertEquals(Exit.class, c2.getClass());
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			fail();
+			fail("exception was thrown");
 		}
 	}
 	
@@ -49,11 +46,10 @@ public class CommandParserTest {
 	public void testParsingOfEmptyString() {
 		try {
 			// boundary case: nothing is typed before the user presses enter
-			// this should throw an exception
 			Command invalid = CommandParser.getCommandFromInput("");
-			fail();
+			fail("exception not thrown");
 		} catch (Exception e) {
-			
+			assertEquals(e.getMessage(), CommandParser.ERROR_NOTHING_ENTERED);	
 		}
 		
 	}
@@ -62,11 +58,10 @@ public class CommandParserTest {
 	public void testAddFloatingTaskCommandParsing() {
 		try {
 			// boundary case: the only thing entered is the command name with no trailing spaces and further arguments
-			// this should throw an exception
 			Command invalid = CommandParser.getCommandFromInput("add ");
-			fail();
+			fail("exception not thrown");
 		} catch (Exception e) {
-			
+			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD);
 		}
 		
 		
@@ -84,100 +79,100 @@ public class CommandParserTest {
 			Command valid = CommandParser.getCommandFromInput("add \"" + newTaskName + "\"");
 			assertEquals(new Add(new Task(newTaskName, false)), valid);
 		} catch (Exception e) {
-			fail();
+			fail("exception thrown");
 		}
 		
 			
 	}
 
 	@Test
-	public void testAddDeadlineTaskCommandParsing() {
+	public void testAddDeadlineTaskCommandParsing() throws Exception {
 		String newTaskName = "read Harry Potter by J K Rowling";
 		// boundary case heuristic: the word to being present in the title should not cause parsing problems
 		String validDeadlineString = "21-12-2015 14:40";
-		LocalDateTime validDeadline = parseDateTime(validDeadlineString);
+		LocalDateTime validDeadline = CommandParser.parseDateTime(validDeadlineString);
 		String invalidDeadlineString = "21-13-2015 14:40";
-		LocalDateTime invalidDeadline = parseDateTime(invalidDeadlineString);
 		
 try {
 			Add validCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by " + validDeadlineString);
 			assertEquals(validCommand.getTask().getEndDateTime(), validDeadline);
 			assertEquals(new Add(new Task(newTaskName, validDeadline, false)), validCommand);
 } catch (Exception e) {
-	fail();
+	fail("exception thrown");
 }
 
 try {
 			Add invalidCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by " + invalidDeadlineString);
-			fail();
+			fail("exception not thrown");
 } catch (Exception e) {
-
+assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_DATE_AND_TIME, invalidDeadlineString));
 }
 
 try {
 	// boundary case: the "by" keyword is present without any date
 	Add invalidCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by ");
-	fail();
+	fail("exception not thrown");
 } catch (Exception e) {
-
+assertEquals(e.getMessage(), CommandParser.ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD);
 }
 
 	}
 	
-	private LocalDateTime parseDateTime(String dateTimeString) {
-    	try {
-    	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
-    	return dateTime;
-    	} 
-    	catch(DateTimeParseException e) {
-    	return null;	
-    	}
-	}
-	
-    	@Test
-    	public void testAddEventTaskCommandParsing() {
+		@Test
+    	public void testAddEventTaskCommandParsing() throws Exception {
     		String newTaskName = "return books borrowed from Ben to him";
     		// boundary case heuristic: the word from and to being present in the title should not cause parsing problems
     		String validStartString = "21-02-2015 14:40";
-    		LocalDateTime validStartTime = parseDateTime(validStartString);
+    		LocalDateTime validStartTime = CommandParser.parseDateTime(validStartString);
     		String validEndString = "21-02-2015 15:00";
-    		LocalDateTime validEndTime = parseDateTime(validEndString);
-
+    		LocalDateTime validEndTime = CommandParser.parseDateTime(validEndString);
     		String invalidEndString = "21-13-2015 14:40";
-    		
     		
     try {
     			Add validCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + validEndString);
     			assertEquals(new Add(new Task(newTaskName, validStartTime, validEndTime, false)), validCommand);
     } catch (Exception e) {
-    	fail();
+    	fail("exception thrown");
     }
 
     try {
     			Add invalidCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + invalidEndString);
-    			fail(); // the above line should trigger an exception
+    			fail("exception not thrown");
     } catch (Exception e) {
-
+assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_DATE_AND_TIME, invalidEndString));
     }
     		
     	}
     
 	@Test
-	public void testRemoveFloatingTaskCommandParsing() {
+	public void testRemoveTaskCommandParsing() {
 		try {
-			Command invalid1 = CommandParser.getCommandFromInput("remove ");
+			Command invalid = CommandParser.getCommandFromInput("remove ");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE);
 		}
 		
-		/*
 		try {
-			Command c = CommandParser.getCommandFromInput("remove 1");
-			assertEquals(new Remove(1), c);
+			Command invalid = CommandParser.getCommandFromInput("remove thisIsNotAnInteger");
+			fail("exception not thrown");
 		} catch (Exception e) {
-			fail();
-		}*/
+			assertEquals(e.getMessage(), CommandParser.ERROR_NUMBER_FORMAT);
+		}
+		
+		try {
+			Command invalid = CommandParser.getCommandFromInput("remove 1 2");
+			fail("exception not thrown");
+		} catch (Exception e) {
+			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_EXPECTED_ONE_TASK_NUM, "remove"));
+		}
+		
+		try {
+			Command valid = CommandParser.getCommandFromInput("remove 1");
+			assertEquals(new Remove(1), valid);
+		} catch (Exception e) {
+			fail("exception thrown");
+		}
 		
 	}
 
@@ -222,7 +217,7 @@ try {
 			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
 			assertEquals(nameAction, DeltaTask.FIELD_ACTION.UPDATE);
 			assertEquals(changes.getNewName(), newName);
-		} catch(Exception E) {
+		} catch(Exception e) {
 			fail("exception thrown");
 		}
 		
@@ -234,7 +229,7 @@ try {
 			assertEquals(endAction, DeltaTask.FIELD_ACTION.UPDATE);
 			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
 			assertEquals(changes.getNewEnd(), validEndTime);
-		} catch(Exception E) {
+		} catch(Exception e) {
 			fail("exception thrown");
 		}
 

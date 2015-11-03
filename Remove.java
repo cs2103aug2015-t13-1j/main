@@ -12,11 +12,11 @@ public class Remove extends Command implements Undoable {
 	
 	private Task task;
 	private int index;
-	private boolean wasExecuted;
+	private boolean isExecuted;
 	
 	public Remove(int taskNumber) {
 		this.index = taskNumber - 1;
-		this.wasExecuted = false;
+		this.isExecuted = false;
 		this.task = null;
 	}
 	
@@ -32,7 +32,7 @@ public class Remove extends Command implements Undoable {
 		} else {
 			throw new Exception(ERROR_INDEX_INVALID);
 		}
-		wasExecuted = true;
+		isExecuted = true;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class Remove extends Command implements Undoable {
 
 	@Override
 	public String getSuccessMessage() {
-		assert(wasExecuted);
+		assert(isExecuted);
 		return String.format(SUCCESS_REMOVE, task.getName());
 	}
 	
@@ -54,25 +54,36 @@ public class Remove extends Command implements Undoable {
 		if (obj == this) {
 			return true;
 		}
+		
 		if (obj == null || obj.getClass() != this.getClass()) { 
 			return false; 
 		}
 		
-		Remove other = (Remove)obj;		
-		if (!this.getTask().equals(other.getTask())) {
-			return false;
-		} else {
-			return true;
+		Remove other = (Remove)obj;
+		boolean isTaskEqual = false;
+		
+		if ((task == null && other.getTask() == null) || task.equals(other.getTask())) {
+			isTaskEqual = true;
 		}
-	}
-
-	public Task getTask() {
+		
+		return isTaskEqual && isExecuted == other.isExecuted() && index == other.getTaskIndex();
+		}
+	
+		public Task getTask() {
 		return this.task;
 	}
 
+	public int getTaskIndex() {
+		return index;
+	}
+	
+	public boolean isExecuted() {
+		return isExecuted;
+	}
+	
 	@Override
 	public String getUndoMessage() {
-		assert(wasExecuted);
+		assert(isExecuted);
 		return String.format(SUCCESS_REMOVE_UNDO, task.getName());
 	}
 }
