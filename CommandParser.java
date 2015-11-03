@@ -24,8 +24,11 @@ public class CommandParser {
 	public static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
 	public static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
   public static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
-  public static final String ERROR_NUMBER_FORMAT = "Please specify a valid number for the task you want to %s.";
-	public static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
+  public static final String ERROR_NUMBER_FORMAT = "Please specify a valid task number.";
+	public static final String ERROR_INVALID_DATE_AND_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
+	public static final String ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD = "The type of task to be added could not be determined.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD = "Please specify the name for the new task, and its start and end date and time if appropriate";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE = "Please specify the task number to be removed";
 	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the task to be updated, and fields to be modified or removed.";
 	public static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
 	public static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
@@ -236,17 +239,19 @@ public class CommandParser {
   }
   
   private static Command initAddCommand(ArrayList<String> args) throws Exception {
+	  if (args.size() == 0) {
+		  throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD);
+	  }
+	  
 		Task newTask;
 		String name = "";
-		
-		if (args.size() >= 1) {
+	
 			name = args.get(POSITION_ADD_NAME); // name is always present in the same position for all tasks
 			if (!name.startsWith("\"")) {
 				throw new Exception(ERROR_NAME_NOT_IN_QUOTES);
 			}
 	  		name = name.replace("\"", "");
-		}
-			
+		
 		LocalDateTime endTime, startTime;
 		
 		switch(determineTaskTypeToBeAdded(args)) {
@@ -260,11 +265,7 @@ public class CommandParser {
 				deadline = deadline.concat(args.get(POSITION_ADD_BY_KEYWORD+2));
 				endTime = parseDateTime(deadline);
 				
-				if (endTime != null) {
 					newTask = new Task(name, endTime, false);
-				} else {
-					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, deadline));
-				}
 				break;
 				
 			case EVENT :
@@ -276,19 +277,11 @@ public class CommandParser {
 				startTime = parseDateTime(start);
 				endTime = parseDateTime(end);
 				
-				if (startTime == null) {
-					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, start));
-				}
-		
-				if (endTime == null) {
-					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, end));
-				}
-				// if we get here, all the parameters are correct
 				newTask = new Task(name, startTime, endTime, false);
 				break;
 				
 			default :
-				throw new Exception("The type of task to be added could not be determined.");
+				throw new Exception(ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD);
 		}
 		
 		return new Add(newTask);
@@ -328,29 +321,41 @@ public class CommandParser {
     
   /*
    *Parses the given string into a LocalDateTime based on the dateAndTimeFormatter string
-   *Null is returned on failure
+   *An exception is thrown if there was an error parsing the String 
    */
-  private static LocalDateTime parseDateTime(String dateTimeString) {
+  public static LocalDateTime parseDateTime(String dateTimeString) throws Exception {
   	try {
     	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
     	return dateTime;
   	} 
     	catch(DateTimeParseException e) {
-    	return null;	
+    		throw new Exception(String.format(ERROR_INVALID_DATE_AND_TIME, dateTimeString));	
   	}
   	
   }
     
+  /*
+   * Converts the integer represented by this String into an int
+   *An exception is thrown if a parsing error error was encountered 
+   */
+  private static int parseInt(String integerString) throws Exception {
+	  try {
+	  return Integer.parseInt(integerString);
+	  } catch (NumberFormatException e) {
+	  		throw new Exception(ERROR_NUMBER_FORMAT);
+  }
+  }
+  
   private static Command initRemoveCommand(ArrayList<String> args) throws Exception {
-  	if (args.size() == 0 || args.size() > MAX_ARG_REMOVE) {
-    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		
+  	if (args.size() == 0) {
+  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE);
   	}
   	
-  	try {
-    	return new Remove(Integer.parseInt(args.get(0)));
-  	} catch (NumberFormatException e) {
-  		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "remove"));
+  		if (args.size() > MAX_ARG_REMOVE) {
+    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		
   	}
+  
+    	return new Remove(parseInt(args.get(0)));
   }
 
   private static Command initDoneCommand(ArrayList<String> args) throws Exception {
@@ -358,12 +363,8 @@ public class CommandParser {
     	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "mark as completed"));    		
   	}
   	
-  	try {
-  		int taskNum = Integer.parseInt(args.get(0));
+  		int taskNum = parseInt(args.get(0));
     	return new Done(taskNum);
-  	} catch (NumberFormatException e) {
-  		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "mark as completed"));
-  	}
   }
     
   private static Command initUpdateCommand(ArrayList<String> args) throws Exception {
@@ -372,15 +373,8 @@ public class CommandParser {
 	  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
 	  	}
 	  	
-  	int taskNumToBeUpdated;
-  	
-  	try {
-  		taskNumToBeUpdated = Integer.parseInt(args.get(POSITION_UPDATE_INDEX));
-  	} catch (NumberFormatException e) {
-  		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "update"));
-  	}
-  	
-  	DeltaTask changes = getRequestedChanges(args);
+  	int taskNumToBeUpdated = parseInt(args.get(POSITION_UPDATE_INDEX));
+  		DeltaTask changes = getRequestedChanges(args);
   	return new Update(taskNumToBeUpdated, changes);
   }
     

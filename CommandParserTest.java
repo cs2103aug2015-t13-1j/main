@@ -144,7 +144,7 @@ try {
     		LocalDateTime validEndTime = parseDateTime(validEndString);
 
     		String invalidEndString = "21-13-2015 14:40";
-    		LocalDateTime invalidEndTime = parseDateTime(invalidEndString);
+    		
     		
     try {
     			Add validCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + validEndString);
@@ -165,11 +165,10 @@ try {
 	@Test
 	public void testRemoveFloatingTaskCommandParsing() {
 		try {
-			// this should throw an exception
 			Command invalid1 = CommandParser.getCommandFromInput("remove ");
-			fail();
+			fail("exception not thrown");
 		} catch (Exception e) {
-			assertEquals("Please indicate only one task to remove.", e.getMessage());
+			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE);
 		}
 		
 		/*
@@ -183,32 +182,38 @@ try {
 	}
 
 	@Test
-	public void testUpdateCommandParsing() {
+	public void testUpdateCommandParsing() throws Exception {
 		try {
 		Command invalid = CommandParser.getCommandFromInput("update");
-		fail();
+		fail("exception not thrown");
 	} catch (Exception e) {
-		// we should get an exception
+		assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
 	}
 		
 		try {
 		Command invalid = CommandParser.getCommandFromInput("update 1");
-		fail();
+		fail("exception not thrown");
 	} catch (Exception e) {
-		
+		assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
 	}
+	
+		try {
+			Command invalid = CommandParser.getCommandFromInput("update thisIsNotAnInteger -end");
+			fail("exception not thrown");
+		} catch (Exception e) {
+			assertEquals(e.getMessage(), CommandParser.ERROR_NUMBER_FORMAT);
+		}
 		
 		// boundary case heuristic: the word from and to being present in the title should not cause parsing problems
 		String newName = "return books borrowed from Ben to him";
 		
 		String validStartString = "21-02-2015 14:40";
-		LocalDateTime validStartTime = parseDateTime(validStartString);
+		LocalDateTime validStartTime = CommandParser.parseDateTime(validStartString);
 		String validEndString = "21-02-2015 15:00";
-		LocalDateTime validEndTime = parseDateTime(validEndString);
+		LocalDateTime validEndTime = CommandParser.parseDateTime(validEndString);
 
 		String invalidEndString = "21-13-2015 14:40";
-		LocalDateTime invalidEndTime = parseDateTime(invalidEndString);
-
+	
 		try {
 			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +name \"" + newName + "\"");
 			DeltaTask changes = valid.getChanges();
@@ -218,7 +223,7 @@ try {
 			assertEquals(nameAction, DeltaTask.FIELD_ACTION.UPDATE);
 			assertEquals(changes.getNewName(), newName);
 		} catch(Exception E) {
-			fail();
+			fail("exception thrown");
 		}
 		
 		try {
@@ -230,9 +235,37 @@ try {
 			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
 			assertEquals(changes.getNewEnd(), validEndTime);
 		} catch(Exception E) {
-			fail();
+			fail("exception thrown");
+		}
+
+		try {
+			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 +end " + invalidEndString);
+			fail("exception not thrown");
+		} catch(Exception e) {
+			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_DATE_AND_TIME, invalidEndString));
 		}
 		
+		try {
+			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 +end");
+fail();
+		} catch(Exception e) {
+			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "date and time", "+end"));
+		}
+
+		try {
+			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 +start");
+fail();
+		} catch(Exception e) {
+			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "date and time", "+start"));
+		}
+
+		try {
+			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 +name");
+fail();
+		} catch(Exception e) {
+			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "name", "+name"));
+		}
+
 		try {
 			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +start " + validStartString);
 			DeltaTask changes = valid.getChanges();
@@ -241,7 +274,7 @@ try {
 			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
 			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
 			assertEquals(changes.getNewStart(), validStartTime);
-		} catch(Exception E) {
+		} catch(Exception e) {
 			fail();
 		}
 		
@@ -255,8 +288,8 @@ try {
 			assertEquals(changes.getNewStart(), validStartTime);
 			assertEquals(changes.getNewEnd(), validEndTime);
 			assertEquals(changes.getNewName(), newName);
-		} catch(Exception E) {
-			fail();
+		} catch(Exception e) {
+			fail("Exception thrown");
 		}
 		
 		try {
@@ -266,8 +299,8 @@ try {
 			assertEquals(startAction, DeltaTask.FIELD_ACTION.NONE);
 			assertEquals(endAction, DeltaTask.FIELD_ACTION.REMOVE);
 			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
-		} catch(Exception E) {
-			fail();
+		} catch(Exception e) {
+			fail("exception thrown");
 		}
 		
 		try {
@@ -277,15 +310,15 @@ try {
 			assertEquals(startAction, DeltaTask.FIELD_ACTION.REMOVE);
 			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
 			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
-		} catch(Exception E) {
-			fail();
+		} catch(Exception e) {
+			fail("exception thrown");
 		}
 		
 		try {
 			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 -name");
 		fail();
-		} catch(Exception E) {
-// we should get an exception
+		} catch(Exception e) {
+assertEquals(e.getMessage(), String.format(CommandParser.ERROR_UNRECOGNIZED_UPDATE_TOKEN, "-name"));
 		}
 		
 		try {
@@ -294,8 +327,8 @@ try {
 			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
 			assertEquals(startAction, DeltaTask.FIELD_ACTION.REMOVE);
 			assertEquals(endAction, DeltaTask.FIELD_ACTION.REMOVE);
-		} catch(Exception E) {
-			fail();
+		} catch(Exception e) {
+			fail("exception thrown");
 		}
 		
 	}
