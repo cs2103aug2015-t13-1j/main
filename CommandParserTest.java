@@ -46,6 +46,19 @@ public class CommandParserTest {
 	}
 	
 	@Test
+	public void testParsingOfEmptyString() {
+		try {
+			// boundary case: nothing is typed before the user presses enter
+			// this should throw an exception
+			Command invalid = CommandParser.getCommandFromInput("");
+			fail();
+		} catch (Exception e) {
+			
+		}
+		
+	}
+	
+	@Test
 	public void testAddFloatingTaskCommandParsing() {
 		try {
 			// boundary case: the only thing entered is the command name with no trailing spaces and further arguments
@@ -53,17 +66,9 @@ public class CommandParserTest {
 			Command invalid = CommandParser.getCommandFromInput("add ");
 			fail();
 		} catch (Exception e) {
-			// assertEquals("Please indicate only one task to add.", e.getMessage());
+			
 		}
 		
-		try {
-			// boundary case: nothing is typed before the user presses enter
-			// this should throw an exception
-			Command invalid = CommandParser.getCommandFromInput("");
-			fail();
-		} catch (Exception e) {
-			// assertEquals("Please indicate only one task to add.", e.getMessage());
-		}
 		
 		String newTaskName = "read To Kill a Mockingbird";
 		// Multi-word task names should invalid; task names with more than 1 word must be quoted
@@ -72,12 +77,12 @@ public class CommandParserTest {
 			Command invalid2 = CommandParser.getCommandFromInput("add " + newTaskName);
 			fail();
 		} catch (Exception e) {
-			// assertEquals("Please indicate only one task to add.", e.getMessage());
+			
 		}
 		
 		try {
-			Command c = CommandParser.getCommandFromInput("add \"" + newTaskName + "\"");
-			assertEquals(new Add(new Task(newTaskName, false)), c);
+			Command valid = CommandParser.getCommandFromInput("add \"" + newTaskName + "\"");
+			assertEquals(new Add(new Task(newTaskName, false)), valid);
 		} catch (Exception e) {
 			fail();
 		}
@@ -89,7 +94,7 @@ public class CommandParserTest {
 	public void testAddDeadlineTaskCommandParsing() {
 		String newTaskName = "read Harry Potter by J K Rowling";
 		// boundary case heuristic: the word to being present in the title should not cause parsing problems
-		String validDeadlineString = "21-02-2015 14:40";
+		String validDeadlineString = "21-12-2015 14:40";
 		LocalDateTime validDeadline = parseDateTime(validDeadlineString);
 		String invalidDeadlineString = "21-13-2015 14:40";
 		LocalDateTime invalidDeadline = parseDateTime(invalidDeadlineString);
@@ -108,7 +113,15 @@ try {
 } catch (Exception e) {
 
 }
-		
+
+try {
+	// boundary case: the "by" keyword is present without any date
+	Add invalidCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by ");
+	fail();
+} catch (Exception e) {
+
+}
+
 	}
 	
 	private LocalDateTime parseDateTime(String dateTimeString) {
@@ -158,15 +171,7 @@ try {
 		} catch (Exception e) {
 			assertEquals("Please indicate only one task to remove.", e.getMessage());
 		}
-		String taskNameToRemove = "read The Hobbit";
-		// Input like remove read The Hobbit shouis invalid; task names with more than 1 word must be quoted
-		try {
-			// this should throw an exception
-			Command invalid2 = CommandParser.getCommandFromInput("remove " + taskNameToRemove);
-			fail();
-		} catch (Exception e) {
-			assertEquals("Please indicate only one task to remove.", e.getMessage());
-		}
+		
 		/*
 		try {
 			Command c = CommandParser.getCommandFromInput("remove 1");
@@ -177,4 +182,14 @@ try {
 		
 	}
 
+	@Test
+	public void testUpdateCommandParsing() {
+		try {
+		Command invalid = CommandParser.getCommandFromInput("update");
+		fail();
+	} catch (Exception e) {
+		
+	}
+		
+	}
 }
