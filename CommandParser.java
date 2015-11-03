@@ -27,8 +27,9 @@ public class CommandParser {
   public static final String ERROR_NUMBER_FORMAT = "Please specify a valid task number.";
 	public static final String ERROR_INVALID_DATE_AND_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
 	public static final String ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD = "The type of task to be added could not be determined.";
-	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD = "Please specify the name for the new task, and its start and end date and time if appropriate";
-	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE = "Please specify the task number to be removed";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD = "Please specify the name for the new task, and its start and end date and time if appropriate.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE = "Please specify the task number to be removed.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE = "Please specify the task number to be marked completed.";
 	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the task to be updated, and fields to be modified or removed.";
 	public static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
 	public static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
@@ -359,7 +360,11 @@ public class CommandParser {
   }
 
   private static Command initDoneCommand(ArrayList<String> args) throws Exception {
-  	if (args.size() == 0 || args.size() > MAX_ARG_DONE) {
+  	if (args.size() == 0) {
+  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE);
+  	}
+  			
+  			if (args.size() > MAX_ARG_DONE) {
     	throw new Exception(String.format(ERROR_EXPECTED_ONE_TASK_NUM, "mark as completed"));    		
   	}
   	

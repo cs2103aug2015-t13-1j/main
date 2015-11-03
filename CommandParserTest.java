@@ -7,17 +7,20 @@ import java.time.format.DateTimeParseException;
 
 import org.junit.Test;
 
+//@@author A0126270N
 public class CommandParserTest {
 	
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-/*	
-@Test
-	public void testInvalidCommandParsing() {
-		Command c = CommandParser.getCommandFromInput("abc");
-		assertEquals(Command.Type.INVALID, c.getCommandType());
-	}
-*/
 	
+@Test
+	public void testUnsupportedCommandParsing() {
+	try {
+		Command invalid = CommandParser.getCommandFromInput("abc");
+	} catch(Exception e) {
+		assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_COMMAND, "abc"));
+	}
+	}
+
 	@Test
 	public void testListCommandParsing() {
 		Command c;
@@ -63,7 +66,6 @@ public class CommandParserTest {
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD);
 		}
-		
 		
 		String newTaskName = "read To Kill a Mockingbird";
 		// Multi-word task names should invalid; task names with more than 1 word must be quoted
@@ -327,5 +329,29 @@ assertEquals(e.getMessage(), String.format(CommandParser.ERROR_UNRECOGNIZED_UPDA
 		}
 		
 	}
-	
+
+	@Test
+	public void testDoneParsing() {
+		try {
+			Command invalid = CommandParser.getCommandFromInput("done 1 2");
+			fail("exception not thrown");
+		} catch(Exception e) {
+				assertEquals(e.getMessage(), String.format(CommandParser.ERROR_EXPECTED_ONE_TASK_NUM, "mark as completed"));
+			}
+		
+		try {
+			Command invalid = CommandParser.getCommandFromInput("done");
+			fail("exception not thrown");
+		} catch(Exception e) {
+				assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE);
+			}
+		
+		try {
+			Done valid = (Done)CommandParser.getCommandFromInput("done 1");
+			assertEquals(valid, new Done(1));
+		} catch(Exception e) {
+			fail("exception thrown");
+			}
+		
+	}
 }
