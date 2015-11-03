@@ -119,6 +119,9 @@ public class CommandParser {
     	case "undo" :
     		return initUndoCommand();
     		
+    	case "help" :
+    		return initHelpCommand();
+    		
     	case "exit" :
     		// fallthrough
     		
@@ -291,6 +294,10 @@ public class CommandParser {
   private static Command initUndoCommand() {
   	// TODO check command length
   	return new Undo();
+  }
+  
+  private static Command initHelpCommand() {
+  	return new Help();
   }
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
