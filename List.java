@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 /**
@@ -95,9 +96,12 @@ public class List extends Command {
 			return false; 
 		}
 		
-		List other = (List)obj;		
-		// TODO comparison 
-		return true;
+		List other = (List)obj;	
+		boolean isExecutedEqual = (this.wasExecuted == other.wasExecuted);
+		boolean areKeywordsEqual = Arrays.equals(this.keywords, other.keywords);
+		boolean areTaskListsEqual = this.taskList.equals(other.taskList);
+		boolean areFlagsEqual = this.flags.equals(other.flags);
+		return (isExecutedEqual && areKeywordsEqual && areTaskListsEqual && areFlagsEqual);
 	}
 	
 	/**
