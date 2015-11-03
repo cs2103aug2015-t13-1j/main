@@ -88,18 +88,26 @@ public class CommandParser {
   	
   	switch(commandType) {
     	case "add" :
+    		// fall-through
+    	case "a":
     		return initAddCommand(args);
     		
     	case "done" :
     		return initDoneCommand(args);
     		
     	case "list" :
+    		// fall-through
+    	case "l":
     		return initListCommand(args);
     		
     	case "remove" :
+    		// fall-through
+    	case "r":
     		return initRemoveCommand(args);
     		
     	case "update" :
+    		// fall-through
+    	case "u":
     		return initUpdateCommand(args);
     		
     	case "undo" :
