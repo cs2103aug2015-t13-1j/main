@@ -122,6 +122,9 @@ public class CommandParser {
     	case "help" :
     		return initHelpCommand();
     		
+    	case "reformat":
+    		return initReformatCommand();
+    		
     	case "exit" :
     		// fallthrough
     		
@@ -298,6 +301,10 @@ public class CommandParser {
   
   private static Command initHelpCommand() {
   	return new Help();
+  }
+  
+  private static Command initReformatCommand() {
+  	return new Reformat();
   }
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
