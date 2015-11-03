@@ -26,7 +26,7 @@ public class CommandParser {
   private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
   private static final String ERROR_NUMBER_FORMAT = "Please specify a valid number for the task you want to %s.";
 	private static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
-	private static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the fields to be modified or removed.";
+	private static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the task to be updated, and fields to be modified or removed.";
 	private static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
 	private static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
 	private static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
@@ -35,7 +35,8 @@ public class CommandParser {
 	private static final int POSITION_COMMAND_TYPE = 0;
   private static final int POSITION_FIRST_PARAM = 1;
     
-  // the regex pattern to split input by spaces, except if there is a quoted string
+  // the regex pattern to split input by spaces, except if there is a quoted string. 
+//   E.g read LOTR in the string '"read LOTR" by 21-02-2015 12:00' is 1 token 
   // because of the way tokenizing is done, an argument like date and time which has a space between them is counted as 2 arguments
 	private static final Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
 	
@@ -46,6 +47,11 @@ public class CommandParser {
 	// the max arguments for add command varies depending on the form used, so it is not listed here
 	private static final int MAX_ARG_REMOVE = 1;
 	private static final int MAX_ARG_DONE = 1;
+	
+	// the size of the list of arguments for adding various types of tasks
+	private static final int ADD_ARG_SIZE_FOR_FLOATING = 1; // only name argument for floating
+	private static final int ADD_ARG_SIZE_FOR_DEADLINE = 4; // name, by keyword, date and time = 4
+	private static final int ADD_ARG_SIZE_FOR_EVENT = 7; // name, to, from, and 2 date and times
 	
 	// positions in the parameter list for the add command
 	private static final int POSITION_ADD_NAME = 0;
@@ -289,29 +295,27 @@ public class CommandParser {
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
   	switch(args.size()) {
-    	case 1 : // floating tasks have only 1 argument, the name
+    	case ADD_ARG_SIZE_FOR_FLOATING:
     		return TASK_TYPE.FLOATING;
     		
-    	case 4 : // name, by keyword, date and time = 4 args
-    		if (args.get(POSITION_ADD_BY_KEYWORD).toLowerCase().equals("by")) {
-    			return TASK_TYPE.DEADLINE;
-    		} else {
-    			return TASK_TYPE.INVALID;
-    		}
-    	case 7 : // name, from, to, and 2 dates + 2 times
+    	case ADD_ARG_SIZE_FOR_DEADLINE:
+    		boolean isByPresent = args.get(POSITION_ADD_BY_KEYWORD).toLowerCase().equals("by");
+    			return isByPresent ? TASK_TYPE.DEADLINE : TASK_TYPE.INVALID;
+    		
+    	case ADD_ARG_SIZE_FOR_EVENT:
     		boolean isFromPresent = args.get(POSITION_ADD_FROM_KEYWORD).toLowerCase().equals("from");
     		boolean isToPresent= args.get(POSITION_ADD_TO_KEYWORD).toLowerCase().equals("to");
-    		if (isFromPresent && isToPresent) {
-    			return TASK_TYPE.EVENT;
-    		} else {
-    			return TASK_TYPE.INVALID;
-    		}
-    			
+    		return (isFromPresent && isToPresent) ? TASK_TYPE.EVENT : TASK_TYPE.INVALID;
+    					
 		default :
 			return TASK_TYPE.INVALID;
   	}
   }
     
+  /*
+   *Parses the given string into a LocalDateTime based on the dateAndTimeFormatter string
+   *Null is returned on failure
+   */
   private static LocalDateTime parseDateTime(String dateTimeString) {
   	try {
     	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
@@ -349,16 +353,17 @@ public class CommandParser {
   }
     
   private static Command initUpdateCommand(ArrayList<String> args) throws Exception {
+	  boolean isSufficientArguments = args.size() >= 2;
+	  if (isSufficientArguments == false) {
+	  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
+	  	}
+	  	
   	int taskNumToBeUpdated;
   	
   	try {
   		taskNumToBeUpdated = Integer.parseInt(args.get(POSITION_UPDATE_INDEX));
   	} catch (NumberFormatException e) {
   		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "update"));
-  	}
-  	
-  	if (args.size() <= 1) {
-  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
   	}
   	
   	DeltaTask changes = getRequestedChanges(args);
