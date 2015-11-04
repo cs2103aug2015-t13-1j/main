@@ -1,3 +1,4 @@
+//@@author A0145732H
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -27,6 +28,7 @@ public class Update extends Command implements Undoable {
 		this.wasExecuted = false;
 	}
 
+	//@@author A0145732H
 	@Override
 	/**
 	 * Update the task.
@@ -43,6 +45,7 @@ public class Update extends Command implements Undoable {
 		wasExecuted = true;
 	}
 
+	//@@author A0126270N
 	private void createUpdatedTask() throws Exception {
 		String newName = null;
 		
@@ -106,6 +109,7 @@ public class Update extends Command implements Undoable {
 		return !(start != null && end == null);
 	}
 	
+	//@@author A0145732H
 	@Override
 	/**
 	 * Restore the task to the old state prior to executing the update command.
@@ -120,6 +124,7 @@ public class Update extends Command implements Undoable {
 		return String.format(SUCCESS_UPDATE, oldTask.getName(), Ui.getPrintableTaskString(newTask));
 	}
 	
+	//@@author A0126270N
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {

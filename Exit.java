@@ -1,3 +1,4 @@
+//@@author A0145732H
 /**
  * Exit command to handle closing TaskBuddy cleanly. 
  * @author Katherine Coronado

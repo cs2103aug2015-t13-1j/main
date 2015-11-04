@@ -1,3 +1,4 @@
+//@@author A0145732H
 import java.util.EmptyStackException;
 
 /**
@@ -40,6 +41,7 @@ public class Undo extends Command {
 		return wasExecuted;
 	}
 	
+	//@@author A0126270N
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -50,9 +52,10 @@ public class Undo extends Command {
 		}
 		
 		Undo other = (Undo)obj;
-boolean isCommandEqual = false;
+		boolean isCommandEqual = false;
 		
-		if ((lastExecuted == null && other.getLastExecutedCommand() == null) || lastExecuted.equals(other.getLastExecutedCommand())) {
+		if ((lastExecuted == null && other.getLastExecutedCommand() == null) || 
+				lastExecuted.equals(other.getLastExecutedCommand())) {
 			isCommandEqual = true;
 		}
 		

@@ -10,6 +10,10 @@ import java.util.Stack;
  */
 
 public class Logic {
+	private static final int DEFAULT_VIEW_NUM_FLOATING = 3;
+	private static final int DEFAULT_VIEW_NUM_DEADLINES = 6;
+	private static final int DEFAULT_VIEW_NUM_EVENTS = 6;
+	private static final int DEFAULT_VIEW_MAX_TASKS = 15;
 	private static Stack<Undoable> undoableHistory = new Stack<Undoable>();
 	private static Command lastExecutedCommand = null;
 	
@@ -39,7 +43,8 @@ public class Logic {
 		}
 		return command;
 	}
-	
+
+	//@@author A0145732H
 	public static void init() {
 		StorageManager.openStorage();
 	}
@@ -227,10 +232,10 @@ public class Logic {
 		int numTasks = 0;
 		int tasksForView;
 		// display up to 15 tasks
-		if (uncompleted.size() < 15) {
+		if (uncompleted.size() < DEFAULT_VIEW_MAX_TASKS) {
 			tasksForView = uncompleted.size();
 		} else {
-			tasksForView = 15;
+			tasksForView = DEFAULT_VIEW_MAX_TASKS;
 		}
 		// display an even amount of each task type.
 		// if there are not enough tasks of a task type, then distribute between the remaining types.
@@ -240,7 +245,7 @@ public class Logic {
 		int extraTasks = 0;
 		while (numTasks < tasksForView) {
 			if (eventIndex < uncompletedEvents.size()) {
-				if (eventIndex < 6) {
+				if (eventIndex < DEFAULT_VIEW_NUM_EVENTS) {
 					defaultTasks.add(uncompletedEvents.get(eventIndex++));
 					numTasks++;				
 				} else if (extraTasks > 0) {
@@ -251,12 +256,12 @@ public class Logic {
 				if (numTasks == tasksForView) {
 					break;
 				}
-			} else if (eventIndex < 6) {
+			} else if (eventIndex < DEFAULT_VIEW_NUM_EVENTS) {
 				extraTasks++;
 				eventIndex++;
 			}
 			if (deadlineIndex < uncompletedDeadlines.size()) {
-				if (deadlineIndex < 6) {
+				if (deadlineIndex < DEFAULT_VIEW_NUM_DEADLINES) {
 					defaultTasks.add(uncompletedDeadlines.get(deadlineIndex++));
 					numTasks++;				
 				} else if (extraTasks > 0) {
@@ -267,12 +272,12 @@ public class Logic {
 				if (numTasks == tasksForView) {
 					break;
 				}
-			}else if (deadlineIndex < 6) {
+			} else if (deadlineIndex < DEFAULT_VIEW_NUM_DEADLINES) {
 				extraTasks++;
 				deadlineIndex++;
 			}
 			if (floatingIndex < uncompletedFloating.size()) {
-				if (floatingIndex < 3) {
+				if (floatingIndex < DEFAULT_VIEW_NUM_FLOATING) {
 					defaultTasks.add(uncompletedFloating.get(floatingIndex++));
 					numTasks++;				
 				} else if (extraTasks > 0) {
@@ -283,7 +288,7 @@ public class Logic {
 				if (numTasks == tasksForView) {
 					break;
 				}
-			}else if (floatingIndex < 6) {
+			}else if (floatingIndex < DEFAULT_VIEW_NUM_FLOATING) {
 				extraTasks++;
 				floatingIndex++;
 			}

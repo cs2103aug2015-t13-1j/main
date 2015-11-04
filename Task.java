@@ -75,6 +75,7 @@ boolean isDone; // used to mark tasks as complete
 		return isNameEqual && isEndEqual && isStartEqual;
 	}
 	
+	//@@author A0145732H
 	@Override
 	/**
 	 * Tasks are ordered by events, deadlines, then floating tasks (ascending).

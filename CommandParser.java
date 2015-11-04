@@ -160,6 +160,7 @@ public class CommandParser {
     return new ArrayList<String>(params.subList(POSITION_FIRST_PARAM, params.size()));
   }
     
+  //@@author A0145732H
   private static Command initListCommand(ArrayList<String> args) throws Exception {
 		if (args.size() == 0) {
 			return new List();
@@ -234,6 +235,7 @@ public class CommandParser {
   	}
   }
     
+  //@@author A0126270N
   private static Command initExitCommand() {
   	return new Exit();
   }

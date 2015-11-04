@@ -1,3 +1,4 @@
+//@@author
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -103,6 +104,7 @@ public class StorageManager {
 		return taskListToReturn;
 	}
 	
+	//@@author A0145732H
 	public static ArrayList<Task> readAllTasks() {
 		ArrayList<Task> taskArrayList = new ArrayList<Task>();
 		taskArrayList.addAll(Arrays.asList(TASK_LIST));
@@ -110,6 +112,7 @@ public class StorageManager {
 		return taskArrayList;
 	}
 
+	//@@author
 	public static void writeTask(Task task) {
 		try {
 			Gson gson = new Gson();
@@ -138,6 +141,7 @@ public class StorageManager {
 		}
 	}
 	
+	//@@author A0145732H
 	/**
 	 * This method removes a given task from the file
 	 * 
@@ -168,7 +172,6 @@ public class StorageManager {
 			bufferedWriter.flush();
 			
 		} catch (Exception e) {
-			// e.printStackTrace();
 			// TODO is this what would throw the exception?
 			// if so we should re-add the removed task to the local copy to reflect the file
 			isRemoved = false;
@@ -180,6 +183,7 @@ public class StorageManager {
 		}
 	}
 	
+	//@@author
 	public static void clearTask() throws Exception {
 		Gson gson = new Gson();
 
@@ -191,6 +195,7 @@ public class StorageManager {
 		gson.toJson("", bufferedWriter);
 	}
 
+	//@@author A0145732H
 	/**
 	 * This method updates a task in the task list with the new task.
 	 * 
