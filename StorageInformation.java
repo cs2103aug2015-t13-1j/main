@@ -22,4 +22,8 @@ public class StorageInformation {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
+	
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
 }
