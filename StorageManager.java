@@ -84,26 +84,6 @@ public class StorageManager {
 		}
 	}
 	
-	/**
-	 * This method searches the current task list for all tasks that match the name
-	 * @param name	the name of the task to search for
-	 * @return		an array of tasks containing the Tasks that match the name
-	 */
-	public static Task[] readTask(String name) {
-		Task[] taskListToReturn = new Task[TASK_LIST.length];
-		
-		int j = 0;
-		
-		for (int i = 0; i < TASK_LIST.length; i++) {
-			if (TASK_LIST[i].getName().equals(name)) {
-				taskListToReturn[j] = TASK_LIST[i];
-				j++;
-			}
-		}
-		
-		return taskListToReturn;
-	}
-	
 	//@@author A0145732H
 	public static ArrayList<Task> readAllTasks() {
 		ArrayList<Task> taskArrayList = new ArrayList<Task>();
