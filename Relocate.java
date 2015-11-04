@@ -7,6 +7,11 @@ public class Relocate extends Command {
 	public void execute() throws Exception {
 		// TODO Auto-generated method stub
 		fileLocation = "./Dropbox/";
+		
+		if (fileLocation.charAt(fileLocation.length() - 1) != '/') {
+			throw new Exception("File directory must contain \"/\" at the end");
+		}
+		
 		if (!StorageManager.changeStorageLocation("./Dropbox/")) {
 			throw new Exception("File directory specified does not exist");
 		}
