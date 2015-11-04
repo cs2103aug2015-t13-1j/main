@@ -4,7 +4,7 @@
  *
  */
 public class Add extends Command implements Undoable {
-	private static final String SUCCESS_ADD = "\"%s\" was added.";
+	private static final String SUCCESS_ADD = "Added %s.";
 	private static final String SUCCESS_ADD_UNDO = "\"%s\" was removed.";
 	
 	private Task task;
@@ -35,9 +35,9 @@ public class Add extends Command implements Undoable {
 	@Override
 	public String getSuccessMessage() {
 		assert(wasExecuted);
-		return String.format(SUCCESS_ADD, task.getName());
+		return String.format(SUCCESS_ADD, Ui.getPrintableTaskString(task));
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {

@@ -179,6 +179,17 @@ public class StorageManager {
 			throw new Exception("\"" + task.getName() + "\" was not found.");
 		}
 	}
+	
+	public static void clearTask() throws Exception {
+		Gson gson = new Gson();
+
+		TASK_LIST = EMPTY_TASK;
+		
+		// hacky
+		fileWriter = new FileWriter(file.getAbsoluteFile());
+		bufferedWriter = new BufferedWriter(fileWriter);
+		gson.toJson("", bufferedWriter);
+	}
 
 	/**
 	 * This method updates a task in the task list with the new task.

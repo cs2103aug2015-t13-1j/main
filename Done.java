@@ -1,3 +1,4 @@
+//@@author A0126270N
 import java.util.ArrayList;
 
 /**
@@ -10,12 +11,12 @@ public class Done extends Command implements Undoable {
 	private static final String SUCCESS_DONE = "\"%s\" is now marked completed.";
 	private static final String SUCCESS_DONE_UNDO = "\"%s\" is now marked as uncompleted.";
 	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
-	private boolean wasExecuted;
+	private boolean isExecuted;
 	private Task completedTask;
 	private int taskIndex; // 0-based indexing
 	
 	public Done(int taskNum) {
-		this.wasExecuted = false;
+		this.isExecuted = false;
 		completedTask = null;
 		taskIndex = taskNum - 1;
 	}
@@ -29,7 +30,7 @@ public class Done extends Command implements Undoable {
 		StorageManager.removeTask(completedTask);
 		completedTask.setDone(true);
 		StorageManager.writeTask(completedTask);
-		wasExecuted = true;
+		isExecuted = true;
 	}
 
 	private Task getTaskFromList() throws Exception {
@@ -51,7 +52,7 @@ public class Done extends Command implements Undoable {
 
 	@Override
 	public String getSuccessMessage() {
-		assert(wasExecuted);
+		assert(isExecuted);
 		return String.format(SUCCESS_DONE, completedTask.getName());
 	}
 	
@@ -59,21 +60,37 @@ public class Done extends Command implements Undoable {
 		return completedTask;
 	}
 	
+	public boolean isExecuted() {
+		return isExecuted;
+	}
+	
+	public int getTaskIndex() {
+		return taskIndex;
+	}
+	
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
 		}
+		
 		if (obj == null || obj.getClass() != this.getClass()) { 
 			return false; 
 		}
 		
 		Done other = (Done)obj;		
-		return this.getTask().equals(other.getTask());
+
+		boolean isTaskEqual = false;
+		
+		if ((completedTask == null && other.getTask() == null) || completedTask.equals(other.getTask())) {
+			isTaskEqual = true;
+		}
+		
+		return isTaskEqual && isExecuted == other.isExecuted() && taskIndex == other.getTaskIndex();
 				}
 
 	@Override
 	public String getUndoMessage() {
-		assert(wasExecuted);
+		assert(isExecuted);
 		return String.format(SUCCESS_DONE_UNDO, completedTask.getName());
 	}
 }

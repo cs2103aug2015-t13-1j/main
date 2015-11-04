@@ -17,7 +17,8 @@ public class Update extends Command implements Undoable {
 	private DeltaTask changes;
 	private int index;
 	private boolean wasExecuted;
-	
+
+	//@@author A0126270N
 	public Update(int taskNumber, DeltaTask changes) {
 		this.oldTask = null;
 		this.newTask = null;
@@ -146,6 +147,11 @@ public class Update extends Command implements Undoable {
 		return this.newTask;
 	}
 
+	// this is to facilitate unit testing
+	public DeltaTask getChanges() {
+		return changes;
+	}
+	
 	@Override
 	public String getUndoMessage() {
 		return String.format(SUCCESS_UPDATE_UNDO, newTask.getName(), Ui.getPrintableTaskString(oldTask));

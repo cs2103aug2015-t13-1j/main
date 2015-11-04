@@ -1,3 +1,4 @@
+//@@author A0126270N
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -5,8 +6,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-
 
 /**
  * CommandParser parses user's input to create Command objects that have the
@@ -18,24 +17,29 @@ import java.util.regex.Pattern;
  */
 
 public class CommandParser {
-	private static final String ERROR_NAME_NOT_IN_QUOTES = "The task name must be enclosed in quotations marks.";
-	// error messages for thrown exceptions
-	private static final String ERROR_NOTHING_ENTERED = "Please enter a command.";
-	private static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
-	private static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
-  private static final String ERROR_INCORRECT_ARG_SINGLE = "Please indicate only one task to %s.";
-  private static final String ERROR_NUMBER_FORMAT = "Please specify a valid number for the task you want to %s.";
-	private static final String ERROR_INCORRECT_ARG_DATE_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
-	private static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the fields to be modified or removed.";
-	private static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
-	private static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
-	private static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
+	// error messages for thrown exceptions, public to facilitate testing
+	public static final String ERROR_NAME_NOT_IN_QUOTES = "The task name must be enclosed in quotations marks.";
+	public static final String ERROR_NOTHING_ENTERED = "Please enter a command.";
+	public static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
+	public static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
+  public static final String ERROR_EXPECTED_ONE_TASK_NUM = "Please indicate only one task to %s.";
+  public static final String ERROR_NUMBER_FORMAT = "Please specify a valid task number.";
+	public static final String ERROR_INVALID_DATE_AND_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
+	public static final String ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD = "The type of task to be added could not be determined.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD = "Please specify the name for the new task, and its start and end date and time if appropriate.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE = "Please specify the task number to be removed.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE = "Please specify the task number to be marked completed.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the task to be updated, and fields to be modified or removed.";
+	public static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
+	public static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
+	public static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
 	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
   private static final int POSITION_FIRST_PARAM = 1;
     
-  // the regex pattern to split input by spaces, except if there is a quoted string
+  // the regex pattern to split input by spaces, except if there is a quoted string. 
+//   E.g read LOTR in the string '"read LOTR" by 21-02-2015 12:00' is 1 token 
   // because of the way tokenizing is done, an argument like date and time which has a space between them is counted as 2 arguments
 	private static final Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
 	
@@ -46,6 +50,11 @@ public class CommandParser {
 	// the max arguments for add command varies depending on the form used, so it is not listed here
 	private static final int MAX_ARG_REMOVE = 1;
 	private static final int MAX_ARG_DONE = 1;
+	
+	// the size of the list of arguments for adding various types of tasks
+	private static final int ADD_ARG_SIZE_FOR_FLOATING = 1; // only name argument for floating
+	private static final int ADD_ARG_SIZE_FOR_DEADLINE = 4; // name, by keyword, date and time = 4
+	private static final int ADD_ARG_SIZE_FOR_EVENT = 7; // name, to, from, and 2 date and times
 	
 	// positions in the parameter list for the add command
 	private static final int POSITION_ADD_NAME = 0;
@@ -88,22 +97,36 @@ public class CommandParser {
   	
   	switch(commandType) {
     	case "add" :
+    		// fall-through
+    	case "a":
     		return initAddCommand(args);
     		
     	case "done" :
     		return initDoneCommand(args);
     		
     	case "list" :
+    		// fall-through
+    	case "l":
     		return initListCommand(args);
     		
     	case "remove" :
+    		// fall-through
+    	case "r":
     		return initRemoveCommand(args);
     		
     	case "update" :
+    		// fall-through
+    	case "u":
     		return initUpdateCommand(args);
     		
     	case "undo" :
     		return initUndoCommand();
+    		
+    	case "help" :
+    		return initHelpCommand();
+    		
+    	case "reformat":
+    		return initReformatCommand();
     		
     	case "exit" :
     		// fallthrough
@@ -216,17 +239,19 @@ public class CommandParser {
   }
   
   private static Command initAddCommand(ArrayList<String> args) throws Exception {
+	  if (args.size() == 0) {
+		  throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD);
+	  }
+	  
 		Task newTask;
 		String name = "";
-		
-		if (args.size() >= 1) {
+	
 			name = args.get(POSITION_ADD_NAME); // name is always present in the same position for all tasks
 			if (!name.startsWith("\"")) {
 				throw new Exception(ERROR_NAME_NOT_IN_QUOTES);
 			}
 	  		name = name.replace("\"", "");
-		}
-			
+		
 		LocalDateTime endTime, startTime;
 		
 		switch(determineTaskTypeToBeAdded(args)) {
@@ -240,11 +265,7 @@ public class CommandParser {
 				deadline = deadline.concat(args.get(POSITION_ADD_BY_KEYWORD+2));
 				endTime = parseDateTime(deadline);
 				
-				if (endTime != null) {
 					newTask = new Task(name, endTime, false);
-				} else {
-					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, deadline));
-				}
 				break;
 				
 			case EVENT :
@@ -256,104 +277,107 @@ public class CommandParser {
 				startTime = parseDateTime(start);
 				endTime = parseDateTime(end);
 				
-				if (startTime == null) {
-					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, start));
-				}
-		
-				if (endTime == null) {
-					throw new Exception(String.format(ERROR_INCORRECT_ARG_DATE_TIME, end));
-				}
-				// if we get here, all the parameters are correct
 				newTask = new Task(name, startTime, endTime, false);
 				break;
 				
 			default :
-				throw new Exception("The type of task to be added could not be determined.");
+				throw new Exception(ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD);
 		}
 		
 		return new Add(newTask);
   }
     
   private static Command initUndoCommand() {
-  	// TODO check command length
   	return new Undo();
+  }
+  
+  private static Command initHelpCommand() {
+  	return new Help();
+  }
+  
+  private static Command initReformatCommand() {
+  	return new Reformat();
   }
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
   	switch(args.size()) {
-    	case 1 : // floating tasks have only 1 argument, the name
+    	case ADD_ARG_SIZE_FOR_FLOATING:
     		return TASK_TYPE.FLOATING;
     		
-    	case 4 : // name, by keyword, date and time = 4 args
-    		if (args.get(POSITION_ADD_BY_KEYWORD).toLowerCase().equals("by")) {
-    			return TASK_TYPE.DEADLINE;
-    		} else {
-    			return TASK_TYPE.INVALID;
-    		}
-    	case 7 : // name, from, to, and 2 dates + 2 times
+    	case ADD_ARG_SIZE_FOR_DEADLINE:
+    		boolean isByPresent = args.get(POSITION_ADD_BY_KEYWORD).toLowerCase().equals("by");
+    			return isByPresent ? TASK_TYPE.DEADLINE : TASK_TYPE.INVALID;
+    		
+    	case ADD_ARG_SIZE_FOR_EVENT:
     		boolean isFromPresent = args.get(POSITION_ADD_FROM_KEYWORD).toLowerCase().equals("from");
     		boolean isToPresent= args.get(POSITION_ADD_TO_KEYWORD).toLowerCase().equals("to");
-    		if (isFromPresent && isToPresent) {
-    			return TASK_TYPE.EVENT;
-    		} else {
-    			return TASK_TYPE.INVALID;
-    		}
-    			
+    		return (isFromPresent && isToPresent) ? TASK_TYPE.EVENT : TASK_TYPE.INVALID;
+    					
 		default :
 			return TASK_TYPE.INVALID;
   	}
   }
     
-  private static LocalDateTime parseDateTime(String dateTimeString) {
+  /*
+   *Parses the given string into a LocalDateTime based on the dateAndTimeFormatter string
+   *An exception is thrown if there was an error parsing the String 
+   */
+  public static LocalDateTime parseDateTime(String dateTimeString) throws Exception {
   	try {
     	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
     	return dateTime;
   	} 
     	catch(DateTimeParseException e) {
-    	return null;	
+    		throw new Exception(String.format(ERROR_INVALID_DATE_AND_TIME, dateTimeString));	
   	}
   	
   }
     
+  /*
+   * Converts the integer represented by this String into an int
+   *An exception is thrown if a parsing error error was encountered 
+   */
+  private static int parseInt(String integerString) throws Exception {
+	  try {
+	  return Integer.parseInt(integerString);
+	  } catch (NumberFormatException e) {
+	  		throw new Exception(ERROR_NUMBER_FORMAT);
+  }
+  }
+  
   private static Command initRemoveCommand(ArrayList<String> args) throws Exception {
-  	if (args.size() == 0 || args.size() > MAX_ARG_REMOVE) {
-    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "remove"));    		
+  	if (args.size() == 0) {
+  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE);
   	}
   	
-  	try {
-    	return new Remove(Integer.parseInt(args.get(0)));
-  	} catch (NumberFormatException e) {
-  		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "remove"));
+  		if (args.size() > MAX_ARG_REMOVE) {
+    	throw new Exception(String.format(ERROR_EXPECTED_ONE_TASK_NUM, "remove"));    		
   	}
+  
+    	return new Remove(parseInt(args.get(0)));
   }
 
   private static Command initDoneCommand(ArrayList<String> args) throws Exception {
-  	if (args.size() == 0 || args.size() > MAX_ARG_DONE) {
-    	throw new Exception(String.format(ERROR_INCORRECT_ARG_SINGLE, "mark as completed"));    		
+  	if (args.size() == 0) {
+  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE);
+  	}
+  			
+  			if (args.size() > MAX_ARG_DONE) {
+    	throw new Exception(String.format(ERROR_EXPECTED_ONE_TASK_NUM, "mark as completed"));    		
   	}
   	
-  	try {
-  		int taskNum = Integer.parseInt(args.get(0));
+  		int taskNum = parseInt(args.get(0));
     	return new Done(taskNum);
-  	} catch (NumberFormatException e) {
-  		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "mark as completed"));
-  	}
   }
     
   private static Command initUpdateCommand(ArrayList<String> args) throws Exception {
-  	int taskNumToBeUpdated;
-  	
-  	try {
-  		taskNumToBeUpdated = Integer.parseInt(args.get(POSITION_UPDATE_INDEX));
-  	} catch (NumberFormatException e) {
-  		throw new Exception(String.format(ERROR_NUMBER_FORMAT, "update"));
-  	}
-  	
-  	if (args.size() <= 1) {
-  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
-  	}
-  	
-  	DeltaTask changes = getRequestedChanges(args);
+	  boolean isSufficientArguments = args.size() >= 2;
+	  if (isSufficientArguments == false) {
+	  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
+	  	}
+	  	
+  	int taskNumToBeUpdated = parseInt(args.get(POSITION_UPDATE_INDEX));
+  		DeltaTask changes = getRequestedChanges(args);
   	return new Update(taskNumToBeUpdated, changes);
   }
     

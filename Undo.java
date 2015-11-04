@@ -32,4 +32,30 @@ public class Undo extends Command {
 		return lastExecuted.getUndoMessage();
 	}
 
+	public Undoable getLastExecutedCommand() {
+		return lastExecuted;
+	}
+	
+	public boolean isExecuted() {
+		return wasExecuted;
+	}
+	
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		
+		if (obj == null || obj.getClass() != this.getClass()) { 
+			return false; 
+		}
+		
+		Undo other = (Undo)obj;
+boolean isCommandEqual = false;
+		
+		if ((lastExecuted == null && other.getLastExecutedCommand() == null) || lastExecuted.equals(other.getLastExecutedCommand())) {
+			isCommandEqual = true;
+		}
+		
+		return isCommandEqual && wasExecuted == other.isExecuted();
+	}
 }
