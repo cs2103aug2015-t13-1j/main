@@ -113,7 +113,7 @@ public class StorageManager {
 		}
 	}
 	
-	public static void changeStorageLocation(String directory) throws Exception {
+	public static boolean changeStorageLocation(String directory) throws Exception {
 		STORAGE_DIRECTORY = directory;
 		
 		// Create reader for Storage Information
@@ -132,19 +132,40 @@ public class StorageManager {
 		informationFileWriter = new FileWriter(informationFile.getAbsoluteFile());
 		informationBufferedWriter = new BufferedWriter(informationFileWriter);
 		
+		// Set directory
+		STORAGE_DIRECTORY = directory;
+		STORAGE_NAME = storageInformationFromJson.getFileName();
+		STORAGE_TYPE = storageInformationFromJson.getFileType();
+		
+		File check = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
+		// Check if file exists
+		if(!check.exists()) {
+			// Change Storage Information and Add back to StorageInformation.json
+			gson.toJson(storageInformationFromJson, informationBufferedWriter);
+			informationBufferedWriter.flush();
+			
+			try {
+				informationBufferedWriter.close();
+				informationBufferedReader.close();
+				informationFileWriter.close();
+				informationFileReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return false;
+		}
+		
 		// Change Storage Information and Add back to StorageInformation.json
 		storageInformationFromJson.setFileDirectory(directory);
 		gson.toJson(storageInformationFromJson, informationBufferedWriter);
 		informationBufferedWriter.flush();
-	
+			
 		if(!file.delete()) {
 			throw new Exception("File has not been deleted");
 		}
 		
 		// Set directory
-		STORAGE_DIRECTORY = directory;
-		STORAGE_NAME = storageInformationFromJson.getFileName();
-		STORAGE_TYPE = storageInformationFromJson.getFileType();
 		file = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
 		
 		// Close reader for Storage Information
@@ -175,6 +196,8 @@ public class StorageManager {
 		// Write to TaskStorage.json as soon as setting fileWrite's append to false
 		gson.toJson(TASK_LIST, bufferedWriter);
 		bufferedWriter.flush();
+		
+		return true;
 	}
 	
 //	public static void changeStorageName(String name) { SKSK UNDONE
