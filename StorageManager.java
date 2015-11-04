@@ -57,7 +57,6 @@ public class StorageManager {
 	public static void openStorage() {
 		try {
 			initializeStorage();
-			
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -114,7 +113,7 @@ public class StorageManager {
 		}
 	}
 	
-	public static void changeStorageLocation(String directory) throws IOException {
+	public static void changeStorageLocation(String directory) throws Exception {
 		STORAGE_DIRECTORY = directory;
 		
 		// Create reader for Storage Information
@@ -137,6 +136,10 @@ public class StorageManager {
 		storageInformationFromJson.setFileDirectory(directory);
 		gson.toJson(storageInformationFromJson, informationBufferedWriter);
 		informationBufferedWriter.flush();
+	
+		if(!file.delete()) {
+			throw new Exception("File has not been deleted");
+		}
 		
 		// Set directory
 		STORAGE_DIRECTORY = directory;
