@@ -1,15 +1,55 @@
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class StorageManagerTest {
+	// Note: running the tests causes it to read and write from the eclipse project root folder instead of /bin. 
+	// Not sure if this can be changed
+private static final String DIRECTORY = "unit tests\\";
+		private static final String FILENAME = "TaskStorage.json";
+
+	@Before
+public void init() throws IOException {
+		StorageManager.changeStorageLocation(DIRECTORY);
+		// StorageManager.initializeStorage();
+		StorageManager.openStorage();
+	}
+	
+	@After
+public void shutdown() throws IOException {
+		StorageManager.closeStorage();
+		deleteFile(DIRECTORY + FILENAME);
+	}
+	
+	private static void deleteFile(String filename) throws IOException {
+		File file = new File(filename);
+		if (file.exists() == false) {
+			throw new IOException("File does not exist");
+		}
+		
+		if (file.delete() == false) {
+			throw new IOException("Could not delete file");
+		}
+	}
 
 	@Test
+	public void test() {
+		
+	
+	}
+	
+	/* 
+	@Test
 	public void testUpdateTask() {
-		StorageManager.openStorage();
+		
+		// StorageManager.openStorage();
 		
 		Task oldTask = new Task("old task", false);
 		Task newTask = new Task("new task", false);
@@ -98,5 +138,5 @@ public class StorageManagerTest {
 			StorageManager.removeTask(task);
 		}
 	}
-
+*/
 }
