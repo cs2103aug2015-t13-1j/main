@@ -57,7 +57,6 @@ public class StorageManager {
 	public static void openStorage() {
 		try {
 			initializeStorage();
-			
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -70,6 +69,8 @@ public class StorageManager {
 			TASK_LIST = initiateTaskList();	
 			
 			// Set append to false because, we want to be overwriting
+			bufferedWriter.close();
+			fileWriter.close();
 			fileWriter = new FileWriter(file.getAbsoluteFile());
 			bufferedWriter = new BufferedWriter(fileWriter);
 			
@@ -103,16 +104,16 @@ public class StorageManager {
 
 	public static void closeStorage() {
 		try {
-			bufferedReader.close();
 			bufferedWriter.close();
-			fileReader.close();
+			bufferedReader.close();
 			fileWriter.close();
+			fileReader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static void changeStorageLocation(String directory) throws IOException {
+	public static boolean changeStorageLocation(String directory) throws Exception {
 		STORAGE_DIRECTORY = directory;
 		
 		// Create reader for Storage Information
@@ -131,23 +132,48 @@ public class StorageManager {
 		informationFileWriter = new FileWriter(informationFile.getAbsoluteFile());
 		informationBufferedWriter = new BufferedWriter(informationFileWriter);
 		
-		// Change Storage Information and Add back to StorageInformation.json
-		storageInformationFromJson.setFileDirectory(directory);
-		gson.toJson(storageInformationFromJson, informationBufferedWriter);
-		informationBufferedWriter.flush();
-		
 		// Set directory
 		STORAGE_DIRECTORY = directory;
 		STORAGE_NAME = storageInformationFromJson.getFileName();
 		STORAGE_TYPE = storageInformationFromJson.getFileType();
+		
+		File check = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
+		// Check if file exists
+		if(!check.exists()) {
+			// Change Storage Information and Add back to StorageInformation.json
+			gson.toJson(storageInformationFromJson, informationBufferedWriter);
+			informationBufferedWriter.flush();
+			
+			try {
+				informationBufferedWriter.close();
+				informationBufferedReader.close();
+				informationFileWriter.close();
+				informationFileReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return false;
+		}
+		
+		// Change Storage Information and Add back to StorageInformation.json
+		storageInformationFromJson.setFileDirectory(directory);
+		gson.toJson(storageInformationFromJson, informationBufferedWriter);
+		informationBufferedWriter.flush();
+			
+		if(!file.delete()) {
+			throw new Exception("File has not been deleted");
+		}
+		
+		// Set directory
 		file = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
 		
 		// Close reader for Storage Information
 		try {
-			informationFileReader.close();
-			informationFileWriter.close();
-			informationBufferedReader.close();
 			informationBufferedWriter.close();
+			informationBufferedReader.close();
+			informationFileWriter.close();
+			informationFileReader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -158,18 +184,20 @@ public class StorageManager {
 		}
 
 		// Reset settings
+		bufferedWriter.close();
+		bufferedReader.close();
+		fileWriter.close();
+		fileReader.close();
 		fileReader = new FileReader(file.getAbsoluteFile());
-		fileWriter = new FileWriter(file.getAbsoluteFile(), true);
-		bufferedReader = new BufferedReader(fileReader);
-		bufferedWriter = new BufferedWriter(fileWriter);
-	
-		// Set append to false because, we want to be overwriting
 		fileWriter = new FileWriter(file.getAbsoluteFile());
+		bufferedReader = new BufferedReader(fileReader);
 		bufferedWriter = new BufferedWriter(fileWriter);
 		
 		// Write to TaskStorage.json as soon as setting fileWrite's append to false
 		gson.toJson(TASK_LIST, bufferedWriter);
 		bufferedWriter.flush();
+		
+		return true;
 	}
 	
 //	public static void changeStorageName(String name) { SKSK UNDONE
@@ -202,6 +230,8 @@ public class StorageManager {
 			TASK_LIST = taskListToReturn;
 			
 			// hacky
+			bufferedWriter.close();
+			fileWriter.close();
 			fileWriter = new FileWriter(file.getAbsoluteFile());
 			bufferedWriter = new BufferedWriter(fileWriter);
 			
@@ -238,6 +268,8 @@ public class StorageManager {
 			TASK_LIST = taskListToUpdate;
 			
 			// hacky
+			bufferedWriter.close();
+			fileWriter.close();
 			fileWriter = new FileWriter(file.getAbsoluteFile());
 			bufferedWriter = new BufferedWriter(fileWriter);
 			
@@ -263,6 +295,8 @@ public class StorageManager {
 		TASK_LIST = EMPTY_TASK;
 		
 		// hacky
+		bufferedWriter.close();
+		fileWriter.close();
 		fileWriter = new FileWriter(file.getAbsoluteFile());
 		bufferedWriter = new BufferedWriter(fileWriter);
 		gson.toJson("", bufferedWriter);
