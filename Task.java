@@ -58,19 +58,9 @@ boolean isDone; // used to mark tasks as complete
 		Task other = (Task)obj;
 		LocalDateTime otherStart = other.getStartDateTime();
 		LocalDateTime otherEnd = other.getEndDateTime();
-		boolean isNameEqual = false, isStartEqual = false, isEndEqual = false;
-		
-		if (this.getName().equals(other.getName())) {
-			isNameEqual = true;
-		}
-		
-		if ((end == null && end == otherEnd) || (end != null && end.equals(otherEnd))) {
-			isEndEqual = true;
-		}
-		
-		if ((start == null && start == otherStart) || (start != null && start.equals(otherStart))) {
-			isStartEqual = true;
-		}
+		boolean isNameEqual = this.getName().equals(other.getName());
+				boolean isStartEqual = (start == null && start == otherStart) || (start != null && start.equals(otherStart));
+				boolean isEndEqual = (end == null && end == otherEnd) || (end != null && end.equals(otherEnd));
 		
 		return isNameEqual && isEndEqual && isStartEqual;
 	}

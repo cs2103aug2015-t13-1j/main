@@ -48,18 +48,21 @@ public class Add extends Command implements Undoable {
 			return false; 
 		}
 		
-		Add other = (Add)obj;		
-		if (!this.getTask().equals(other.getTask())) {
-			return false;
-		} else {
-			return true;
-		}
+		Add other = (Add)obj;
+		boolean isTaskEqual = (task == null && other.getTask() == null) || task.equals(other.getTask());
+
+		return isTaskEqual && wasExecuted == other.isExecuted();
+		
 	}
 		
 	public Task getTask() {
 		return this.task;
 	}
 
+	public boolean isExecuted() {
+		return wasExecuted;
+	}
+	
 	@Override
 	public String getUndoMessage() {
 		assert(wasExecuted);

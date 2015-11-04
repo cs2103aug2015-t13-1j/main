@@ -79,11 +79,7 @@ public class Done extends Command implements Undoable {
 		
 		Done other = (Done)obj;		
 
-		boolean isTaskEqual = false;
-		
-		if ((completedTask == null && other.getTask() == null) || completedTask.equals(other.getTask())) {
-			isTaskEqual = true;
-		}
+		boolean isTaskEqual = (completedTask == null && other.getTask() == null) || completedTask.equals(other.getTask());
 		
 		return isTaskEqual && isExecuted == other.isExecuted() && taskIndex == other.getTaskIndex();
 				}
