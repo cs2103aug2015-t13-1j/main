@@ -135,7 +135,7 @@ public class CommandParser {
     		return initReformatCommand();
     		
     	case "relocate":
-    		return initRelocateCommand();
+    		return initRelocateCommand(args);
     		
     	case "exit" :
     		// fallthrough
@@ -323,8 +323,12 @@ public class CommandParser {
   	return new Reformat();
   }
   
-  private static Command initRelocateCommand() {
-  	return new Relocate();
+  private static Command initRelocateCommand(ArrayList<String> args) {
+  	String fileLocation = args.get(0);
+  	
+  	fileLocation = fileLocation.substring(1, fileLocation.length() - 1);
+  	
+  	return new Relocate(fileLocation);
   }
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
