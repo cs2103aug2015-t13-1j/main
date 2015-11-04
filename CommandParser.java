@@ -70,6 +70,12 @@ public class CommandParser {
 		FLOATING, DEADLINE, EVENT, INVALID
 	}
 	
+	//used for the add command to determine what type of task is to be added
+	private static final String HELP_ADD = "add";
+	private static final String HELP_REMOVE = "remove";
+	private static final String HELP_LIST = "list";
+	private static final String HELP_INVALID = "invalid";
+	
 	/**
 	 * Parse the input into the appropriate command
 	 * 
@@ -123,7 +129,7 @@ public class CommandParser {
     		return initUndoCommand();
     		
     	case "help" :
-    		return initHelpCommand();
+    		return initHelpCommand(args);
     		
     	case "reformat":
     		return initReformatCommand();
@@ -293,8 +299,21 @@ public class CommandParser {
   	return new Undo();
   }
   
-  private static Command initHelpCommand() {
-  	return new Help();
+  private static Command initHelpCommand(ArrayList<String> args) throws Exception {
+  	String helpType;
+  	
+  	if (args.size() == 0) {
+			return new Help();
+		} else {
+			
+			helpType = determineHelpTypeToBeList(args);
+					
+			if (helpType != HELP_INVALID) {
+				return new Help(determineHelpTypeToBeList(args));
+			} else {
+				throw new Exception("The type of help to be shown could not be determined.");
+			}
+		}
   }
   
   private static Command initReformatCommand() {
@@ -315,8 +334,21 @@ public class CommandParser {
     		boolean isToPresent= args.get(POSITION_ADD_TO_KEYWORD).toLowerCase().equals("to");
     		return (isFromPresent && isToPresent) ? TASK_TYPE.EVENT : TASK_TYPE.INVALID;
     					
-		default :
-			return TASK_TYPE.INVALID;
+    	default :
+    		return TASK_TYPE.INVALID;
+  	}
+  }
+  
+  private static String determineHelpTypeToBeList(ArrayList<String> args) {	
+  	switch (args.get(0).toLowerCase()) {
+  		case HELP_ADD:
+  				return HELP_ADD;
+  		case HELP_LIST:
+				return HELP_LIST;
+  		case HELP_REMOVE:
+				return HELP_REMOVE;
+  		default :
+  			return HELP_INVALID;
   	}
   }
     
