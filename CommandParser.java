@@ -134,6 +134,9 @@ public class CommandParser {
     	case "reformat":
     		return initReformatCommand();
     		
+    	case "relocate":
+    		return initRelocateCommand();
+    		
     	case "exit" :
     		// fallthrough
     		
@@ -318,6 +321,10 @@ public class CommandParser {
   
   private static Command initReformatCommand() {
   	return new Reformat();
+  }
+  
+  private static Command initRelocateCommand() {
+  	return new Relocate();
   }
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {

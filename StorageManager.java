@@ -2,6 +2,7 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,10 +15,13 @@ import com.google.gson.Gson;
  * StorageManager is a class that read/write/delete appropriate task information to the Storage.
  */
 public class StorageManager {
-	private static final String DIRECTORY = "./";
-	private static final String FILE_NAME = "TaskStorage";
-	private static final String FILE_TYPE = ".json";
-	private static File file = new File(DIRECTORY + FILE_NAME + FILE_TYPE);
+	private static String STORAGE_DIRECTORY;
+	private static String STORAGE_NAME;
+	private static String STORAGE_TYPE;
+	private static final String INFORMATION_DIRECTORY = "./";
+	private static final String INFORMATION_NAME = "TaskInformation";
+	private static final String INFORMATION_TYPE = ".json";
+	private static File file;
 	private static FileReader fileReader;
 	private static FileWriter fileWriter;
 	private static BufferedReader bufferedReader;
@@ -27,9 +31,33 @@ public class StorageManager {
 
 	public StorageManager() {
 	}
+	
+	public static void initializeStorage() throws FileNotFoundException {
+		File informationFile = new File(INFORMATION_DIRECTORY + INFORMATION_NAME + INFORMATION_TYPE);	
+		FileReader informationFileReader = new FileReader(informationFile.getAbsoluteFile());
+		BufferedReader informationBufferedReader = new BufferedReader(informationFileReader);
+		
+		Gson gson = new Gson();
+		StorageInformation storageInformationFromJson;		
+		storageInformationFromJson = gson.fromJson(informationBufferedReader, StorageInformation.class);
+		
+		STORAGE_DIRECTORY = storageInformationFromJson.getFileDirectory();
+		STORAGE_NAME = storageInformationFromJson.getFileName();
+		STORAGE_TYPE = storageInformationFromJson.getFileType();
+		file = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
+		
+		try {
+			informationFileReader.close();
+			informationBufferedReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void openStorage() {
 		try {
+			initializeStorage();
+			
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -83,6 +111,71 @@ public class StorageManager {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void changeStorageLocation(String directory) throws IOException {
+		STORAGE_DIRECTORY = directory;
+		
+		// Create reader for Storage Information
+		File informationFile = new File(INFORMATION_DIRECTORY + INFORMATION_NAME + INFORMATION_TYPE);	
+		FileReader informationFileReader = new FileReader(informationFile.getAbsoluteFile());
+		FileWriter informationFileWriter = new FileWriter(informationFile.getAbsoluteFile(), true);
+		BufferedReader informationBufferedReader = new BufferedReader(informationFileReader);
+		BufferedWriter informationBufferedWriter = new BufferedWriter(informationFileWriter);
+		
+		// Read Storage Information
+		Gson gson = new Gson();
+		StorageInformation storageInformationFromJson;		
+		storageInformationFromJson = gson.fromJson(informationBufferedReader, StorageInformation.class);
+		
+		// Clear Storage Information
+		informationFileWriter = new FileWriter(informationFile.getAbsoluteFile());
+		informationBufferedWriter = new BufferedWriter(informationFileWriter);
+		
+		// Change Storage Information and Add back to StorageInformation.json
+		storageInformationFromJson.setFileDirectory(directory);
+		gson.toJson(storageInformationFromJson, informationBufferedWriter);
+		informationBufferedWriter.flush();
+		
+		// Set directory
+		STORAGE_DIRECTORY = directory;
+		STORAGE_NAME = storageInformationFromJson.getFileName();
+		STORAGE_TYPE = storageInformationFromJson.getFileType();
+		file = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
+		
+		// Close reader for Storage Information
+		try {
+			informationFileReader.close();
+			informationFileWriter.close();
+			informationBufferedReader.close();
+			informationBufferedWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// Create new file
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+
+		// Reset settings
+		fileReader = new FileReader(file.getAbsoluteFile());
+		fileWriter = new FileWriter(file.getAbsoluteFile(), true);
+		bufferedReader = new BufferedReader(fileReader);
+		bufferedWriter = new BufferedWriter(fileWriter);
+	
+		// Set append to false because, we want to be overwriting
+		fileWriter = new FileWriter(file.getAbsoluteFile());
+		bufferedWriter = new BufferedWriter(fileWriter);
+		
+		// Write to TaskStorage.json as soon as setting fileWrite's append to false
+		gson.toJson(TASK_LIST, bufferedWriter);
+		bufferedWriter.flush();
+	}
+	
+//	public static void changeStorageName(String name) { SKSK UNDONE
+//		STORAGE_NAME = name;
+//		file = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
+//	}
 	
 	//@@author A0145732H
 	public static ArrayList<Task> readAllTasks() {
