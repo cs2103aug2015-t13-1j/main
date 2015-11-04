@@ -14,7 +14,13 @@ public class Logic {
 	private static Command lastExecutedCommand = null;
 	
 	public static Command processUserInput(String userInput) throws Exception {
-		Command command = CommandParser.getCommandFromInput(userInput);
+		Command command;
+		try {
+			command = CommandParser.getCommandFromInput(userInput);
+		} catch (Exception e) {
+			lastExecutedCommand = null;
+			throw new Exception(e.getMessage());			
+		}
 		
 		// this may throw an Exception depending on the command
 		try {
@@ -218,7 +224,6 @@ public class Logic {
 		ArrayList<Task> uncompletedDeadlines = getDeadlineTasks(uncompleted);
 		ArrayList<Task> uncompletedEvents = getEvents(uncompleted);
 		
-		int index = 0;
 		int numTasks = 0;
 		int tasksForView;
 		// display up to 15 tasks
@@ -229,21 +234,61 @@ public class Logic {
 		}
 		// display an even amount of each task type.
 		// if there are not enough tasks of a task type, then distribute between the remaining types.
+		int eventIndex = 0;
+		int deadlineIndex = 0;
+		int floatingIndex = 0;
+		int extraTasks = 0;
 		while (numTasks < tasksForView) {
-			if (index < uncompletedEvents.size()) {
-				defaultTasks.add(uncompletedEvents.get(index));
-				numTasks++;
+			if (eventIndex < uncompletedEvents.size()) {
+				if (eventIndex < 6) {
+					defaultTasks.add(uncompletedEvents.get(eventIndex++));
+					numTasks++;				
+				} else if (extraTasks > 0) {
+					defaultTasks.add(uncompletedEvents.get(eventIndex++));
+					numTasks++;				
+					extraTasks--;
+				}
+				if (numTasks == tasksForView) {
+					break;
+				}
+			} else if (eventIndex < 6) {
+				extraTasks++;
+				eventIndex++;
 			}
-			if (index < uncompletedDeadlines.size()) {
-				defaultTasks.add(uncompletedDeadlines.get(index));
-				numTasks++;
+			if (deadlineIndex < uncompletedDeadlines.size()) {
+				if (deadlineIndex < 6) {
+					defaultTasks.add(uncompletedDeadlines.get(deadlineIndex++));
+					numTasks++;				
+				} else if (extraTasks > 0) {
+					defaultTasks.add(uncompletedDeadlines.get(deadlineIndex++));
+					numTasks++;				
+					extraTasks--;
+				}
+				if (numTasks == tasksForView) {
+					break;
+				}
+			}else if (deadlineIndex < 6) {
+				extraTasks++;
+				deadlineIndex++;
 			}
-			if (index < uncompletedFloating.size()) {
-				defaultTasks.add(uncompletedFloating.get(index));
-				numTasks++;
+			if (floatingIndex < uncompletedFloating.size()) {
+				if (floatingIndex < 3) {
+					defaultTasks.add(uncompletedFloating.get(floatingIndex++));
+					numTasks++;				
+				} else if (extraTasks > 0) {
+					defaultTasks.add(uncompletedFloating.get(floatingIndex++));
+					numTasks++;				
+					extraTasks--;
+				}
+				if (numTasks == tasksForView) {
+					break;
+				}
+			}else if (floatingIndex < 6) {
+				extraTasks++;
+				floatingIndex++;
 			}
-			index++;
 		}
+		
 		defaultTasks.sort(null);
 		return defaultTasks;
 	}
