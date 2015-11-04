@@ -70,6 +70,8 @@ public class StorageManager {
 			TASK_LIST = initiateTaskList();	
 			
 			// Set append to false because, we want to be overwriting
+			bufferedWriter.close();
+			fileWriter.close();
 			fileWriter = new FileWriter(file.getAbsoluteFile());
 			bufferedWriter = new BufferedWriter(fileWriter);
 			
@@ -103,10 +105,10 @@ public class StorageManager {
 
 	public static void closeStorage() {
 		try {
-			bufferedReader.close();
 			bufferedWriter.close();
-			fileReader.close();
+			bufferedReader.close();
 			fileWriter.close();
+			fileReader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -144,10 +146,10 @@ public class StorageManager {
 		
 		// Close reader for Storage Information
 		try {
-			informationFileReader.close();
-			informationFileWriter.close();
-			informationBufferedReader.close();
 			informationBufferedWriter.close();
+			informationBufferedReader.close();
+			informationFileWriter.close();
+			informationFileReader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -158,13 +160,13 @@ public class StorageManager {
 		}
 
 		// Reset settings
+		bufferedWriter.close();
+		bufferedReader.close();
+		fileWriter.close();
+		fileReader.close();
 		fileReader = new FileReader(file.getAbsoluteFile());
-		fileWriter = new FileWriter(file.getAbsoluteFile(), true);
-		bufferedReader = new BufferedReader(fileReader);
-		bufferedWriter = new BufferedWriter(fileWriter);
-	
-		// Set append to false because, we want to be overwriting
 		fileWriter = new FileWriter(file.getAbsoluteFile());
+		bufferedReader = new BufferedReader(fileReader);
 		bufferedWriter = new BufferedWriter(fileWriter);
 		
 		// Write to TaskStorage.json as soon as setting fileWrite's append to false
@@ -202,6 +204,8 @@ public class StorageManager {
 			TASK_LIST = taskListToReturn;
 			
 			// hacky
+			bufferedWriter.close();
+			fileWriter.close();
 			fileWriter = new FileWriter(file.getAbsoluteFile());
 			bufferedWriter = new BufferedWriter(fileWriter);
 			
@@ -238,6 +242,8 @@ public class StorageManager {
 			TASK_LIST = taskListToUpdate;
 			
 			// hacky
+			bufferedWriter.close();
+			fileWriter.close();
 			fileWriter = new FileWriter(file.getAbsoluteFile());
 			bufferedWriter = new BufferedWriter(fileWriter);
 			
@@ -263,6 +269,8 @@ public class StorageManager {
 		TASK_LIST = EMPTY_TASK;
 		
 		// hacky
+		bufferedWriter.close();
+		fileWriter.close();
 		fileWriter = new FileWriter(file.getAbsoluteFile());
 		bufferedWriter = new BufferedWriter(fileWriter);
 		gson.toJson("", bufferedWriter);
