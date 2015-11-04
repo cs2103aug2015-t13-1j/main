@@ -20,6 +20,7 @@ boolean isDone; // used to mark tasks as complete
 	}
 	
 	public Task(String name, LocalDateTime start, LocalDateTime end, boolean isDone) {
+		assert(name != null); // all tasks must have at least a name
 		this.name = name;
 		this.start = start;
 		this.end = end;

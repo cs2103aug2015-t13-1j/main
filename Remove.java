@@ -61,7 +61,7 @@ public class Remove extends Command implements Undoable {
 		}
 		
 		Remove other = (Remove)obj;
-		boolean isTaskEqual = (task == null && other.getTask() == null) || task.equals(other.getTask());
+		boolean isTaskEqual = (task == null && other.getTask() == null) || (task != null && task.equals(other.getTask()));
 		
 		return isTaskEqual && isExecuted == other.isExecuted() && index == other.getTaskIndex();
 		}

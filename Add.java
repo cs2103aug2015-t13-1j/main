@@ -49,7 +49,7 @@ public class Add extends Command implements Undoable {
 		}
 		
 		Add other = (Add)obj;
-		boolean isTaskEqual = (task == null && other.getTask() == null) || task.equals(other.getTask());
+		boolean isTaskEqual = (task == null && other.getTask() == null) || (task != null && task.equals(other.getTask()));
 
 		return isTaskEqual && wasExecuted == other.isExecuted();
 		

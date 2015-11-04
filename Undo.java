@@ -55,7 +55,7 @@ public class Undo extends Command {
 		boolean isCommandEqual = false;
 		
 		if ((lastExecuted == null && other.getLastExecutedCommand() == null) || 
-				lastExecuted.equals(other.getLastExecutedCommand())) {
+				(lastExecuted != null && lastExecuted.equals(other.getLastExecutedCommand()))) {
 			isCommandEqual = true;
 		}
 		

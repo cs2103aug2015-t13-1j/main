@@ -16,7 +16,7 @@ public class Update extends Command implements Undoable {
 	private Task oldTask;
 	private Task newTask;
 	private DeltaTask changes;
-	private int index;
+	private int taskIndex;
 	private boolean wasExecuted;
 
 	//@@author A0126270N
@@ -24,7 +24,7 @@ public class Update extends Command implements Undoable {
 		this.oldTask = null;
 		this.newTask = null;
 		this.changes = changes;
-		this.index = taskNumber - 1;
+		this.taskIndex = taskNumber - 1;
 		this.wasExecuted = false;
 	}
 
@@ -35,8 +35,8 @@ public class Update extends Command implements Undoable {
 	 */
 	public void execute() throws Exception {
 		ArrayList<Task> taskList = Ui.getCurrentTaskList();
-		if (index >= 0 && index < taskList.size()) {
-			oldTask = taskList.get(index);
+		if (taskIndex >= 0 && taskIndex < taskList.size()) {
+			oldTask = taskList.get(taskIndex);
 			createUpdatedTask();
 			StorageManager.updateTask(oldTask, newTask);
 		} else {
@@ -134,14 +134,12 @@ public class Update extends Command implements Undoable {
 			return false; 
 		}
 		
-		Update other = (Update)obj;		
-		if (!this.getOldTask().equals(other.getOldTask())) {
-			return false;
-		} else if (!this.getNewTask().equals(other.getNewTask())) {
-			return false;
-		} else {
-			return true;
-		}
+		Update other = (Update)obj;
+		boolean isOldTaskEqual = (oldTask == null && other.getOldTask() == null) || (oldTask != null && oldTask.equals(other.getOldTask()));
+		boolean isNewTaskEqual = (newTask == null && other.getNewTask() == null) || (newTask != null && newTask.equals(other.getNewTask()));
+		boolean isChangesEqual = (changes == null && other.getChanges() == null) || (changes != null && oldTask.equals(other.getChanges()));
+		
+		return isOldTaskEqual && isNewTaskEqual && isChangesEqual && wasExecuted == other.isExecuted() && taskIndex == other.getTaskIndex();
 	}
 	
 	public Task getOldTask() {
@@ -157,6 +155,13 @@ public class Update extends Command implements Undoable {
 		return changes;
 	}
 	
+	public boolean isExecuted() {
+		return wasExecuted;
+	}
+
+	public int getTaskIndex() {
+		return taskIndex;
+	}
 	@Override
 	public String getUndoMessage() {
 		return String.format(SUCCESS_UPDATE_UNDO, newTask.getName(), Ui.getPrintableTaskString(oldTask));

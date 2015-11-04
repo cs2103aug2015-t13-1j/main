@@ -52,4 +52,20 @@ public class DeltaTask {
 		return end;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		
+		if (obj == null || obj.getClass() != this.getClass()) { 
+			return false; 
+		}
+		
+		DeltaTask other = (DeltaTask)obj;
+boolean isNameEqual = (name == null && other.getNewName() == null) || (name != null && name.equals(other.getNewName()));
+boolean isStartEqual = (start == null && other.getNewStart() == null) || (start != null && start.equals(other.getNewStart()));
+boolean isEndEqual = (end == null && other.getNewEnd() == null) || (end != null && end.equals(other.getNewEnd()));
+
+return nameAction == other.getNameAction() && endAction == other.getEndAction() && startAction == other.getStartAction() && isNameEqual && isEndEqual && isStartEqual;
+	}
 }
