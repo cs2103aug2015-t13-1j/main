@@ -16,7 +16,7 @@ private static final String DIRECTORY = "unit tests\\";
 		private static final String FILENAME = "TaskStorage.json";
 
 	@Before
-public void init() throws IOException {
+public void init() throws Exception {
 		StorageManager.changeStorageLocation(DIRECTORY);
 		// StorageManager.initializeStorage();
 		StorageManager.openStorage();

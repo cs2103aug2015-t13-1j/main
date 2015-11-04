@@ -18,6 +18,9 @@ public class StorageManager {
 	private static String STORAGE_DIRECTORY;
 	private static String STORAGE_NAME;
 	private static String STORAGE_TYPE;
+	private static final String DEFAULT_STORAGE_DIRECTORY = "./";
+	private static final String DEFAULT_STORAGE_NAME = "TaskStorage";
+	private static final String DEFAULT_STORAGE_TYPE = ".json";
 	private static final String INFORMATION_DIRECTORY = "./";
 	private static final String INFORMATION_NAME = "TaskInformation";
 	private static final String INFORMATION_TYPE = ".json";
@@ -32,10 +35,34 @@ public class StorageManager {
 	public StorageManager() {
 	}
 	
-	public static void initializeStorage() throws FileNotFoundException {
+	public static void initializeStorage() throws IOException {
 		File informationFile = new File(INFORMATION_DIRECTORY + INFORMATION_NAME + INFORMATION_TYPE);	
-		FileReader informationFileReader = new FileReader(informationFile.getAbsoluteFile());
-		BufferedReader informationBufferedReader = new BufferedReader(informationFileReader);
+		FileReader informationFileReader;
+		BufferedReader informationBufferedReader;
+		
+		if (!informationFile.exists()) {
+			informationFile.createNewFile();
+			informationFileReader = new FileReader(informationFile.getAbsoluteFile());
+			informationBufferedReader = new BufferedReader(informationFileReader);
+			FileWriter informationFileWriter = new FileWriter(informationFile.getAbsoluteFile());
+			BufferedWriter informationBufferedWriter = new BufferedWriter(informationFileWriter);
+			
+			// Write to TaskStorage.json as soon as setting fileWrite's append to false
+			Gson gson = new Gson();
+			StorageInformation initialStorageInformation = new StorageInformation();
+			initialStorageInformation.setFileDirectory(DEFAULT_STORAGE_DIRECTORY);
+			initialStorageInformation.setFileName(DEFAULT_STORAGE_NAME);
+			initialStorageInformation.setFileType(DEFAULT_STORAGE_TYPE);
+			gson.toJson(initialStorageInformation, informationBufferedWriter);
+			informationBufferedWriter.flush();
+			
+			informationBufferedWriter.close();
+			informationFileWriter.close();
+			
+		} else {
+			informationFileReader = new FileReader(informationFile.getAbsoluteFile());
+			informationBufferedReader = new BufferedReader(informationFileReader);
+		}
 		
 		Gson gson = new Gson();
 		StorageInformation storageInformationFromJson;		
@@ -117,7 +144,7 @@ public class StorageManager {
 		STORAGE_DIRECTORY = directory;
 		
 		// Create reader for Storage Information
-		File informationFile = new File(INFORMATION_DIRECTORY + INFORMATION_NAME + INFORMATION_TYPE);	
+		File informationFile = new File(INFORMATION_DIRECTORY + INFORMATION_NAME + INFORMATION_TYPE);
 		FileReader informationFileReader = new FileReader(informationFile.getAbsoluteFile());
 		FileWriter informationFileWriter = new FileWriter(informationFile.getAbsoluteFile(), true);
 		BufferedReader informationBufferedReader = new BufferedReader(informationFileReader);
@@ -140,20 +167,22 @@ public class StorageManager {
 		File check = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
 		// Check if file exists
 		if(!check.exists()) {
-			// Change Storage Information and Add back to StorageInformation.json
-			gson.toJson(storageInformationFromJson, informationBufferedWriter);
-			informationBufferedWriter.flush();
-			
-			try {
-				informationBufferedWriter.close();
-				informationBufferedReader.close();
-				informationFileWriter.close();
-				informationFileReader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (!check.createNewFile()) {
+				// Change Storage Information and Add back to StorageInformation.json
+				gson.toJson(storageInformationFromJson, informationBufferedWriter);
+				informationBufferedWriter.flush();
+				
+				try {
+					informationBufferedWriter.close();
+					informationBufferedReader.close();
+					informationFileWriter.close();
+					informationFileReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				return false;
 			}
-			
-			return false;
 		}
 		
 		// Change Storage Information and Add back to StorageInformation.json
