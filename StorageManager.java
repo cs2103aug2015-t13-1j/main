@@ -192,6 +192,11 @@ public class StorageManager {
 		gson.toJson(storageInformationFromJson, informationBufferedWriter);
 		informationBufferedWriter.flush();
 			
+		// close all file streams before deleting the file
+		bufferedWriter.close();
+		bufferedReader.close();
+		fileWriter.close();
+		fileReader.close();
 		if(!file.delete()) {
 			throw new Exception("File has not been deleted");
 		}
@@ -215,10 +220,6 @@ public class StorageManager {
 		}
 
 		// Reset settings
-		bufferedWriter.close();
-		bufferedReader.close();
-		fileWriter.close();
-		fileReader.close();
 		fileReader = new FileReader(file.getAbsoluteFile());
 		fileWriter = new FileWriter(file.getAbsoluteFile());
 		bufferedReader = new BufferedReader(fileReader);
