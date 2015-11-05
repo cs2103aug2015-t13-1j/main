@@ -15,7 +15,7 @@ public class List extends Command {
 	private boolean wasExecuted;
 	
 	public enum LIST_FLAGS {
-		FLOATING, DEADLINE, EVENT, COMPLETED, UNCOMPLETED;
+		FLOATING, DEADLINE, EVENT, COMPLETED, UNCOMPLETED, TODAY, TOMORROW;
 	}
 	public static final EnumSet<LIST_FLAGS> LIST_FLAGS_ENUM_SET = EnumSet.allOf(LIST_FLAGS.class);
 	
@@ -75,6 +75,12 @@ public class List extends Command {
 		}
 		if (flags.contains(LIST_FLAGS.EVENT)) {
 			flaggedTasks = Logic.getEvents(flaggedTasks);
+		}
+		if (flags.contains(LIST_FLAGS.TODAY)) {
+			flaggedTasks = Logic.getTodaysTasks(flaggedTasks);
+		}
+		if (flags.contains(LIST_FLAGS.TOMORROW)) {
+			flaggedTasks = Logic.getTomorrowsTasks(flaggedTasks);
 		}
 		return flaggedTasks;
 	}
