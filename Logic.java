@@ -72,7 +72,8 @@ public class Logic {
 			
 			// check if currentTask contains all of the keywords before adding to foundTasks
 			while (keywordIndex < keywords.length) {
-				if (!currentTask.getName().contains(keywords[keywordIndex++])) {
+				String taskName = currentTask.getName().toLowerCase();
+				if (!taskName.contains(keywords[keywordIndex++].toLowerCase())) {
 					break;
 				}
 				if (keywordIndex == keywords.length) {
