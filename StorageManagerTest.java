@@ -17,9 +17,9 @@ private static final String DIRECTORY = "unit tests\\";
 
 	@Before
 public void init() throws Exception {
-		StorageManager.changeStorageLocation(DIRECTORY);
 		// StorageManager.initializeStorage();
 		StorageManager.openStorage();
+		StorageManager.changeStorageLocation(DIRECTORY);
 	}
 	
 	@After
