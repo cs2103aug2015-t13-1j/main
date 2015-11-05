@@ -1,4 +1,7 @@
 //@@author A0145732H
+import org.fusesource.jansi.AnsiConsole;
+import static org.fusesource.jansi.Ansi.*;
+import static org.fusesource.jansi.Ansi.Color.*;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -59,6 +62,7 @@ public class Ui {
 	 * This method initiates Task Buddy by initializing the class variables
 	 */
 	private static void taskBuddyInit() {
+		AnsiConsole.systemInstall();
 		keyboard = new Scanner(System.in);
 		isRunning = true;
 		Logic.init();
@@ -79,6 +83,7 @@ public class Ui {
 	private static void taskBuddyClose() {
 		Logic.close();
 		keyboard.close();
+		AnsiConsole.systemUninstall();
 		System.exit(0);
 	}
 	
@@ -212,7 +217,8 @@ public class Ui {
 	 * @param message	the message to display to the user
 	 */
 	public static void showToUser(String message) {
-		System.out.print(message);
+		System.out.print(ansi().eraseScreen().render(message));
+		System.out.flush();
 	}
 	
 	/**
