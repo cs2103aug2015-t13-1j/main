@@ -21,6 +21,8 @@ public class Add extends Command implements Undoable {
 	 * Add a task to the task list.
 	 */
 	public void execute() throws Exception {
+		// validateDates() will throw an exception if the dates are not valid
+		Logic.validateDates(task.getStartDateTime(), task.getEndDateTime());
 		StorageManager.writeTask(task);
 		wasExecuted = true;
 	}
