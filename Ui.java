@@ -25,7 +25,7 @@ public class Ui {
 	private static final String MESSAGE_FLOATING = "%2d. %s\n";
 	private static final String MESSAGE_DEADLINE = "%2d. %s\n\tdue %s at %s\n";
 	private static final String MESSAGE_EVENT = "%2d. %s\n\tfrom %s to %s\n";
-	private static final String MESSAGE_DATE = "%s %d %s";
+	private static final String MESSAGE_DATE = "%s, %d %s";
 	private static final String MESSAGE_DATE_YEAR = MESSAGE_DATE + " %d";
 	private static final String MESSAGE_TIME = "%d:%02d %s";
 	
@@ -140,6 +140,10 @@ public class Ui {
 		// only display the year if it is different from the current year
 		if (dateTime.getYear() != today.getYear()) {
 			return String.format(MESSAGE_DATE_YEAR, day, dateTime.getDayOfMonth(), month, dateTime.getYear());
+		} else if (Logic.areDatesEqual(dateTime, LocalDateTime.now())) {
+			return "today";
+		} else if (Logic.areDatesEqual(dateTime, LocalDateTime.now().plusDays(1))) {
+			return "tomorrow";
 		} else {
 			return String.format(MESSAGE_DATE, day, dateTime.getDayOfMonth(), month);
 		}
