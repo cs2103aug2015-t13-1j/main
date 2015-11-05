@@ -195,13 +195,13 @@ public class CommandParser {
   					}
   					break;
   					
-  				case "deadline" :
+  				case "deadlines" :
   					if (!isAllMarked) {
   						listFlags.add(List.LIST_FLAGS.DEADLINE);
   					}
   					break;
   					
-  				case "event" :
+  				case "events" :
   					if (!isAllMarked) {
   						listFlags.add(List.LIST_FLAGS.EVENT);
   					}
