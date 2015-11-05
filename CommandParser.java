@@ -195,13 +195,13 @@ public class CommandParser {
   					}
   					break;
   					
-  				case "deadline" :
+  				case "deadlines" :
   					if (!isAllMarked) {
   						listFlags.add(List.LIST_FLAGS.DEADLINE);
   					}
   					break;
   					
-  				case "event" :
+  				case "events" :
   					if (!isAllMarked) {
   						listFlags.add(List.LIST_FLAGS.EVENT);
   					}
@@ -224,6 +224,18 @@ public class CommandParser {
   						listFlags.add(List.LIST_FLAGS.UNCOMPLETED);
   					}
   					break;
+  					
+  				case "today" :
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.TODAY);
+  					}
+  					break;  					
+  					
+  				case "tomorrow" :
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.TOMORROW);
+  					}
+  					break;  					
   					
   				default :
   					// if there are quotation marks, it is a keywords string
