@@ -156,6 +156,8 @@ public class StorageManager {
 		storageInformationFromJson = gson.fromJson(informationBufferedReader, StorageInformation.class);
 		
 		// Clear Storage Information
+		informationBufferedWriter.close();
+		informationFileWriter.close(); 
 		informationFileWriter = new FileWriter(informationFile.getAbsoluteFile());
 		informationBufferedWriter = new BufferedWriter(informationFileWriter);
 		
