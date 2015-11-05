@@ -22,11 +22,12 @@ public class Ui {
 	
 	/** messages and message formats for tasks in the task list display **/
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_LIST_HEADER = " #  Start\t\t | End\t\t | Name\n";
-	private static final String MESSAGE_FLOATING = "%2d. \t\t\t | \t\t | %s\n";
-	private static final String MESSAGE_DEADLINE = "%2d. \t\t\t | %s\t | %s\n";
-	private static final String MESSAGE_EVENT = "%2d. %s \t | %s\t | %s\n";
-	private static final String MESSAGE_DATE_TIME_FORMAT = "%02d %s %d:%02d";
+	private static final String MESSAGE_FLOATING = "%2d. %s\n";
+	private static final String MESSAGE_DEADLINE = "%2d. %s\n\tdue %s at %s\n";
+	private static final String MESSAGE_EVENT = "%2d. %s\n\tfrom %s to %s\n";
+	private static final String MESSAGE_DATE = "%s %d %s";
+	private static final String MESSAGE_DATE_YEAR = MESSAGE_DATE + " %d";
+	private static final String MESSAGE_TIME = "%d:%02d %s";
 	
 	private static boolean isRunning;
 	private static Scanner keyboard;
@@ -104,7 +105,6 @@ public class Ui {
 	public static String createTaskListDisplay(ArrayList<Task> taskList) {
 		if (taskList.size() > 0) {
 			StringBuilder message = new StringBuilder();
-			message.append(MESSAGE_LIST_HEADER);
 			int taskNumber = 1;
 			for (Task task : taskList) {
 				LocalDateTime start = task.getStartDateTime();
@@ -118,17 +118,42 @@ public class Ui {
 				if (end == null && start == null) {
 					message.append(String.format(MESSAGE_FLOATING, taskNumber++, taskName));
 				} else if (start == null) {
-					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, 
-							getDateTimeFormat(end), taskName));
+					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, taskName,
+							getDateFormat(end), getTimeFormat(end)));
 				} else {
-					message.append(String.format(MESSAGE_EVENT, taskNumber++, getDateTimeFormat(start), 
-							getDateTimeFormat(end), taskName));
+					message.append(String.format(MESSAGE_EVENT, taskNumber++, taskName, 
+							getDateTimeFormat(start), getDateTimeFormat(end)));
 				}
 			}
 			message.append("\n* = completed tasks");
 			return message.toString();
 		} else {
 			return MESSAGE_NO_TASKS;
+		}
+	}
+	
+	private static String getDateFormat(LocalDateTime dateTime) {
+		String month = dateTime.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+		String day = dateTime.getDayOfWeek().toString();
+		day = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
+		LocalDateTime today = LocalDateTime.now();
+		// only display the year if it is different from the current year
+		if (dateTime.getYear() != today.getYear()) {
+			return String.format(MESSAGE_DATE_YEAR, day, dateTime.getDayOfMonth(), month, dateTime.getYear());
+		} else {
+			return String.format(MESSAGE_DATE, day, dateTime.getDayOfMonth(), month);
+		}
+	}
+	
+	private static String getTimeFormat(LocalDateTime dateTime) {
+		int hour = dateTime.getHour() % 12;
+		if (hour == 0) {
+			hour += 12;
+		}
+		if (dateTime.getHour() < 12) {
+			return String.format(MESSAGE_TIME, hour, dateTime.getMinute(), "AM");
+		} else {
+			return String.format(MESSAGE_TIME, hour, dateTime.getMinute(), "PM");
 		}
 	}
 	
@@ -139,9 +164,7 @@ public class Ui {
 	 * @return			a String in the format dd mmm hh:mm
 	 */
 	private static String getDateTimeFormat(LocalDateTime dateTime) {
-		String month = dateTime.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-		return String.format(MESSAGE_DATE_TIME_FORMAT, dateTime.getDayOfMonth(), 
-				month, dateTime.getHour(), dateTime.getMinute());
+		return getDateFormat(dateTime) + " " + getTimeFormat(dateTime);
 	}
 	
 	//@@author A0126270N
