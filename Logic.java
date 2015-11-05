@@ -239,8 +239,27 @@ public class Logic {
 	}
 	
 	public static ArrayList<Task> getTomorrowsTasks(ArrayList<Task> taskList) {
-		// TODO
-		return null;
+		LocalDateTime tomorrow = getTomorrowsDate();
+		ArrayList<Task> tomorrowsTasks = new ArrayList<Task>();
+		for (Task task : taskList) {
+			LocalDateTime start = task.getStartDateTime();
+			LocalDateTime end = task.getEndDateTime();
+			if (start != null && end != null) {
+				if (areDatesEqual(start, tomorrow) || areDatesEqual(end, tomorrow)) {
+					tomorrowsTasks.add(task);
+				}
+			} else if (end != null) {
+				if (areDatesEqual(end, tomorrow)) {
+					tomorrowsTasks.add(task);
+				}
+			}
+		}
+		return tomorrowsTasks;
+	}
+	
+	public static LocalDateTime getTomorrowsDate() {
+		LocalDateTime today = LocalDateTime.now();
+		return today.plusDays(1);
 	}
 	
 	public static boolean areDatesEqual(LocalDateTime date1, LocalDateTime date2) {
