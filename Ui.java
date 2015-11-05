@@ -24,7 +24,7 @@ public class Ui {
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
 	private static final String MESSAGE_FLOATING = "%2d. %s\n";
 	private static final String MESSAGE_DEADLINE = "%2d. %s\n\tdue %s at %s\n";
-	private static final String MESSAGE_EVENT = "%2d. %s\n\tfrom %s to %s\n";
+	private static final String MESSAGE_EVENT = "%2d. %s\n\t%s to %s\n";
 	private static final String MESSAGE_DATE = "%s, %d %s";
 	private static final String MESSAGE_DATE_YEAR = MESSAGE_DATE + " %d";
 	private static final String MESSAGE_TIME = "%d:%02d %s";
@@ -121,8 +121,13 @@ public class Ui {
 					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, taskName,
 							getDateFormat(end), getTimeFormat(end)));
 				} else {
-					message.append(String.format(MESSAGE_EVENT, taskNumber++, taskName, 
-							getDateTimeFormat(start), getDateTimeFormat(end)));
+					if (Logic.areDatesEqual(start, end)) {
+						message.append(String.format(MESSAGE_EVENT, taskNumber++, taskName, 
+								getDateTimeFormat(start), getTimeFormat(end)));
+					} else {
+						message.append(String.format(MESSAGE_EVENT, taskNumber++, taskName, 
+								getDateTimeFormat(start), getDateTimeFormat(end)));
+					}
 				}
 			}
 			message.append("\n* = completed tasks");
@@ -168,7 +173,7 @@ public class Ui {
 	 * @return			a String in the format dd mmm hh:mm
 	 */
 	private static String getDateTimeFormat(LocalDateTime dateTime) {
-		return getDateFormat(dateTime) + " " + getTimeFormat(dateTime);
+		return getDateFormat(dateTime) + " at " + getTimeFormat(dateTime);
 	}
 	
 	//@@author A0126270N
