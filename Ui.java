@@ -25,9 +25,9 @@ public class Ui {
 	
 	/** messages and message formats for tasks in the task list display **/
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_FLOATING = "%2d. %s\n";
-	private static final String MESSAGE_DEADLINE = "%2d. %s\n\tdue %s at %s\n";
-	private static final String MESSAGE_EVENT = "%2d. %s\n\t%s to %s\n";
+	private static final String MESSAGE_FLOATING = "%d. %s\n";
+	private static final String MESSAGE_DEADLINE = "%d. %s\n\tdue %s at %s\n";
+	private static final String MESSAGE_EVENT = "%d. %s\n\t%s to %s\n";
 	private static final String MESSAGE_DATE = "%s, %d %s";
 	private static final String MESSAGE_DATE_YEAR = MESSAGE_DATE + " %d";
 	private static final String MESSAGE_TIME = "%d:%02d %s";
@@ -114,11 +114,11 @@ public class Ui {
 			for (Task task : taskList) {
 				LocalDateTime start = task.getStartDateTime();
 				LocalDateTime end = task.getEndDateTime();
-				String taskName;
+				String taskName = task.getName();
 				if (task.isDone()) {
-					taskName = "*" + task.getName();
+					message.append("@|BLUE ");
 				} else {
-					taskName = task.getName();
+					taskName = addColorCoding(task.getName(), end);
 				}
 				if (end == null && start == null) {
 					message.append(String.format(MESSAGE_FLOATING, taskNumber++, taskName));
@@ -134,11 +134,28 @@ public class Ui {
 								getDateTimeFormat(start), getDateTimeFormat(end)));
 					}
 				}
+				if (task.isDone()) {
+					message.append("|@");
+				}
 			}
 			message.append("\n* = completed tasks");
 			return message.toString();
 		} else {
 			return MESSAGE_NO_TASKS;
+		}
+	}
+	
+	private static String addColorCoding(String message, LocalDateTime dateTime) {
+		if (dateTime == null) {
+			return "@|CYAN " + message + "|@";
+		} else if (dateTime.compareTo(LocalDateTime.now()) < 0) {
+			return "@|RED " + message + "|@";
+		} else if (Logic.areDatesEqual(dateTime, LocalDateTime.now())) {
+			return "@|YELLOW " + message + "|@";
+		} else if (Logic.areDatesEqual(dateTime, Logic.getTomorrowsDate())) {
+			return "@|GREEN " + message + "|@";
+		} else {
+			return "@|CYAN " + message + "|@";
 		}
 	}
 	
@@ -217,7 +234,7 @@ public class Ui {
 	 * @param message	the message to display to the user
 	 */
 	public static void showToUser(String message) {
-		System.out.print(ansi().eraseScreen().render(message));
+		System.out.print(ansi().render(message));
 		System.out.flush();
 	}
 	
