@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
@@ -206,6 +207,47 @@ public class Logic {
 			}
 		}
 		return events;	
+	}
+	
+	public static ArrayList<Task> getTodaysTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getTodaysTasks(taskList);
+	}
+	
+	public static ArrayList<Task> getTodaysTasks(ArrayList<Task> taskList) {
+		LocalDateTime today = LocalDateTime.now();
+		ArrayList<Task> todaysTasks = new ArrayList<Task>();
+		for (Task task : taskList) {
+			LocalDateTime start = task.getStartDateTime();
+			LocalDateTime end = task.getEndDateTime();
+			if (start != null && end != null) {
+				if (areDatesEqual(start, today) || areDatesEqual(end, today)) {
+					todaysTasks.add(task);
+				}
+			} else if (end != null) {
+				if (areDatesEqual(end, today)) {
+					todaysTasks.add(task);
+				}
+			}
+		}
+		return todaysTasks;
+	}
+	
+	public static ArrayList<Task> getTomorrowsTasks() {
+		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		return getTomorrowsTasks(taskList);
+	}
+	
+	public static ArrayList<Task> getTomorrowsTasks(ArrayList<Task> taskList) {
+		// TODO
+		return null;
+	}
+	
+	public static boolean areDatesEqual(LocalDateTime date1, LocalDateTime date2) {
+		boolean isDateEqual = date1.getDayOfMonth() == date2.getDayOfMonth();
+		boolean isMonthEqual = date1.getMonth() == date2.getMonth();
+		boolean isYearEqual = date1.getYear() == date2.getYear();
+		return isDateEqual && isMonthEqual && isYearEqual;
 	}
 	
 	/**

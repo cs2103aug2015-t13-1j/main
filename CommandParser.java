@@ -225,6 +225,18 @@ public class CommandParser {
   					}
   					break;
   					
+  				case "today" :
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.TODAY);
+  					}
+  					break;  					
+  					
+  				case "tomorrow" :
+  					if (!isAllMarked) {
+  						listFlags.add(List.LIST_FLAGS.TOMORROW);
+  					}
+  					break;  					
+  					
   				default :
   					// if there are quotation marks, it is a keywords string
   					if (flag.startsWith("\"")) {
