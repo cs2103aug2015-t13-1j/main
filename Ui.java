@@ -18,9 +18,12 @@ import java.util.Scanner;
  */
 
 public class Ui {
+	/** text marker to indicate whether a task is completed or not when displaying tasks **/
+	private static final String MARKER_UNCOMPLETED = "     ";
+	private static final String MARKER_DONE = "DONE ";
+	
 	/** Jansi tags for color coding strings based on the date **/
 	private static final String COLOR_CODE_END_TAG = "|@";
-	private static final String COLOR_CODE_COMPLETED = "@|BLUE ";
 	private static final String COLOR_CODE_FUTURE = "@|CYAN ";
 	private static final String COLOR_CODE_TOMORROW = "@|GREEN ";
 	private static final String COLOR_CODE_TODAY = "@|YELLOW ";
@@ -32,9 +35,9 @@ public class Ui {
 	
 	/** messages and message formats for tasks in the task list display **/
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_FLOATING = "%d. %s\n";
-	private static final String MESSAGE_DEADLINE = "%d. %s\n\tdue %s at %s\n";
-	private static final String MESSAGE_EVENT = "%d. %s\n\t%s to %s\n";
+	private static final String MESSAGE_FLOATING = "%s%d. %s\n";
+	private static final String MESSAGE_DEADLINE = "%s%d. %s\n\tdue %s at %s\n";
+	private static final String MESSAGE_EVENT = "%s%d. %s\n\t%s to %s\n";
 	private static final String MESSAGE_DATE = "%s, %d %s";
 	private static final String MESSAGE_DATE_YEAR = MESSAGE_DATE + " %d";
 	private static final String MESSAGE_TIME = "%d:%02d %s";
@@ -118,45 +121,48 @@ public class Ui {
 		if (taskList.size() > 0) {
 			StringBuilder message = new StringBuilder();
 			int taskNumber = 1;
+			boolean isFirstEvent = true;
+			boolean isFirstDeadline = true;
+			boolean isFirstFloating = true;
+			
 			for (Task task : taskList) {
 				LocalDateTime start = task.getStartDateTime();
 				LocalDateTime end = task.getEndDateTime();
 				String taskName = task.getName();
+				String doneMarker;
 				if (task.isDone()) {
-					message.append("DONE ");
+					doneMarker = MARKER_DONE;
 				} else {
-					message.append("     ");
+					doneMarker = MARKER_UNCOMPLETED;
 				}
-//				if (task.isDone()) {
-//					// color the whole task line as completed
-//					message.append(COLOR_CODE_COMPLETED);
-//				} else {
-//					// color just the task name based on the date
-//					if (start == null || start.compareTo(LocalDateTime.now()) < 0) {
-//						taskName = addColorCoding(task.getName(), end);
-//					} else {
-//						taskName = addColorCoding(task.getName(), start);
-//					}
-//				}
 				
 				if (end == null && start == null) {
-					message.append(String.format(MESSAGE_FLOATING, taskNumber++, taskName));
+					if (isFirstFloating) {
+						message.append("\nFloating tasks:\n");
+						isFirstFloating = false;
+					}
+					message.append(String.format(MESSAGE_FLOATING, doneMarker, taskNumber++, taskName));
 				} else if (start == null) {
-					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, taskName,
+					if (isFirstDeadline) {
+						message.append("\nDeadlines:\n");
+						isFirstDeadline = false;
+					}
+					message.append(String.format(MESSAGE_DEADLINE, doneMarker, taskNumber++, taskName,
 							getDateFormat(end), getTimeFormat(end)));
 				} else {
+					if (isFirstEvent) {
+						message.append("\nEvents:\n");
+						isFirstEvent = false;
+					}
 					if (Logic.compareDates(start, end) == 0) {
 						// same start and end date -> only show the end time
-						message.append(String.format(MESSAGE_EVENT, taskNumber++, taskName, 
+						message.append(String.format(MESSAGE_EVENT, doneMarker, taskNumber++, taskName, 
 								getDateTimeFormat(start), getTimeFormat(end)));
 					} else {
-						message.append(String.format(MESSAGE_EVENT, taskNumber++, taskName, 
+						message.append(String.format(MESSAGE_EVENT, doneMarker, taskNumber++, taskName, 
 								getDateTimeFormat(start), getDateTimeFormat(end)));
 					}
 				}
-//				if (task.isDone()) {
-//					message.append(COLOR_CODE_END_TAG);
-//				}
 			}
 			return message.toString();
 		} else {
