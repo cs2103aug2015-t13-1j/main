@@ -12,8 +12,7 @@ import java.util.Stack;
 
 public class Logic {
 	// error messages for when the date configuration of tasks is invalid
-	private static final String ERROR_DATE_INVALID_EVENT = "You cannot have an end time earlier than the start time or the current time.";
-	private static final String ERROR_DATE_INVALID_DEADLINE = "You cannot set a deadline for earlier than the current time.";
+	private static final String ERROR_DATE_INVALID_EVENT = "You cannot have an end time earlier than the start time.";
 	
 	// constants to define the size of the default task view and the number of each type of task
 	private static final int DEFAULT_VIEW_NUM_UNSCHEDULED = 3;
@@ -304,33 +303,13 @@ public class Logic {
 	}
 	
 	public static void validateDates(LocalDateTime start, LocalDateTime end) throws Exception {
-		boolean areDatesValid = areDatesValid(start, end);
-		if (!areDatesValid) {
-			if (start == null) {
-				throw new Exception(ERROR_DATE_INVALID_DEADLINE);
-			} else {
-				throw new Exception(ERROR_DATE_INVALID_EVENT);
-			}
+		if (start == null) {
+			// dates are always valid for unscheduled tasks and deadlines
+			return;
 		}
-	}
-	
-	private static boolean areDatesValid(LocalDateTime start, LocalDateTime end) {
-		// subtract a minute to account for the auto setting of our seconds to 0
-		LocalDateTime currentTime = LocalDateTime.now().minusMinutes(1);
-		
-		if (start == null && end == null) {
-			// always return true for unscheduled tasks
-			return true;
-		} else if (end != null) {
-			boolean isEndAfterCurrent = end.compareTo(currentTime) > 0;
-			if (start == null) {
-				return isEndAfterCurrent;
-			} else {
-				boolean isEndAfterStart = end.compareTo(start) > 0;
-				return (isEndAfterCurrent && isEndAfterStart);
-			}
-		} else {
-			return false;
+		boolean areDatesValid = end.compareTo(start) > 0;
+		if (!areDatesValid) {
+			throw new Exception(ERROR_DATE_INVALID_EVENT);
 		}
 	}
 	
