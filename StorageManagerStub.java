@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class StorageManagerStub extends StorageManager {
-	static ArrayList<Task> tasks = new ArrayList<Task>();
+	ArrayList<Task> tasks = new ArrayList<Task>();
 	
 	public StorageManagerStub() {
 	}
