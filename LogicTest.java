@@ -1,5 +1,6 @@
 import static org.junit.Assert.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -10,9 +11,7 @@ public class LogicTest {
 	public void testSearchTasks() {
 		StorageManagerStub sm = new StorageManagerStub();
 		Logic.setStorageManager(sm);
-		
-		sm.openStorage();
-		
+				
 		Task apple = new Task("apple", false);
 		Task banana = new Task("banana", false);
 		Task baby = new Task("baby", false);
@@ -32,32 +31,20 @@ public class LogicTest {
 		expected.add(banana);
 		expected.add(baby);
 		expected.add(appleBanana);
-		assertEquals(expected, actual);
+		assert(actual.equals(expected));
 		
 		// test searching "apple b"
 		// equivalence partition for searching with more than one keyword
 		actual = Logic.searchTasks(new String[] {"apple", "b"});
 		expected.clear();
 		expected.add(appleBanana);
-		assertEquals(expected, actual);
+		assert(actual.equals(expected));
 		
 		// test searching "c"
 		// equivalence partition for searching and not finding anything
 		actual = Logic.searchTasks(new String[] {"c"});
 		expected.clear();
-		assertEquals(expected, actual);
-		
-		// reset the storage file
-		try {
-			sm.removeTask(apple);
-			sm.removeTask(baby);
-			sm.removeTask(banana);
-			sm.removeTask(appleBanana);
-			sm.closeStorage();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		assert(actual.equals(expected));
 	}
 	
 	@Test
@@ -65,7 +52,26 @@ public class LogicTest {
 		StorageManagerStub sm = new StorageManagerStub();
 		Logic.setStorageManager(sm);
 		
-		ArrayList<Task> completed = Logic.getCompletedTasks();
-		assertEquals(new ArrayList<Task>(), completed);
+		Task t1 = new Task("1", true);
+		Task t2 = new Task("2", false);
+		Task t3 = new Task("3", LocalDateTime.now(), true);
+		Task t4 = new Task("4", LocalDateTime.now(), false);
+		Task t5 = new Task("5", LocalDateTime.now(), LocalDateTime.now(), true);
+		Task t6 = new Task("6", LocalDateTime.now(), LocalDateTime.now(), false);
+		
+		sm.writeTask(t1);
+		sm.writeTask(t2);
+		sm.writeTask(t3);
+		sm.writeTask(t4);
+		sm.writeTask(t5);
+		sm.writeTask(t6);
+		
+		ArrayList<Task> expected = new ArrayList<Task>();
+		expected.add(t1);
+		expected.add(t3);
+		expected.add(t5);
+		
+		ArrayList<Task> actual = Logic.getCompletedTasks();
+		assert(actual.equals(expected));
 	}
 }
