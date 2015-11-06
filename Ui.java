@@ -1,7 +1,6 @@
 //@@author A0145732H
 import org.fusesource.jansi.AnsiConsole;
 import static org.fusesource.jansi.Ansi.*;
-import static org.fusesource.jansi.Ansi.Color.*;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -19,6 +18,14 @@ import java.util.Scanner;
  */
 
 public class Ui {
+	/** Jansi tags for color coding strings based on the date **/
+	private static final String COLOR_CODE_END_TAG = "|@";
+	private static final String COLOR_CODE_COMPLETED = "@|BLUE ";
+	private static final String COLOR_CODE_FUTURE = "@|CYAN ";
+	private static final String COLOR_CODE_TOMORROW = "@|GREEN ";
+	private static final String COLOR_CODE_TODAY = "@|YELLOW ";
+	private static final String COLOR_CODE_OVERDUE = "@|RED ";
+	
 	/** messages to be displayed to the user **/
 	private static final String MESSAGE_WELCOME = "Welcome to TaskBuddy!\n\n";
 	private static final String MESSAGE_COMMAND_PROMPT = "> ";
@@ -116,14 +123,17 @@ public class Ui {
 				LocalDateTime end = task.getEndDateTime();
 				String taskName = task.getName();
 				if (task.isDone()) {
-					message.append("@|BLUE ");
+					// color the whole task line as completed
+					message.append(COLOR_CODE_COMPLETED);
 				} else {
+					// color just the task name based on the date
 					if (start == null || start.compareTo(LocalDateTime.now()) < 0) {
 						taskName = addColorCoding(task.getName(), end);
 					} else {
 						taskName = addColorCoding(task.getName(), start);
 					}
 				}
+				
 				if (end == null && start == null) {
 					message.append(String.format(MESSAGE_FLOATING, taskNumber++, taskName));
 				} else if (start == null) {
@@ -131,6 +141,7 @@ public class Ui {
 							getDateFormat(end), getTimeFormat(end)));
 				} else {
 					if (Logic.compareDates(start, end) == 0) {
+						// same start and end date -> only show the end time
 						message.append(String.format(MESSAGE_EVENT, taskNumber++, taskName, 
 								getDateTimeFormat(start), getTimeFormat(end)));
 					} else {
@@ -139,30 +150,42 @@ public class Ui {
 					}
 				}
 				if (task.isDone()) {
-					message.append("|@");
+					message.append(COLOR_CODE_END_TAG);
 				}
 			}
-			message.append("\n* = completed tasks");
 			return message.toString();
 		} else {
 			return MESSAGE_NO_TASKS;
 		}
 	}
 	
+	/**
+	 * Add color coding to a string based on the given time.
+	 * 
+	 * @param message	the string to add color coding to
+	 * @param dateTime	the date to determine the color coding
+	 * @return			the jansi formatted color coded string
+	 */
 	private static String addColorCoding(String message, LocalDateTime dateTime) {
 		if (dateTime == null) {
-			return "@|CYAN " + message + "|@";
+			return COLOR_CODE_FUTURE + message + COLOR_CODE_END_TAG;
 		} else if (dateTime.compareTo(LocalDateTime.now()) < 0) {
-			return "@|RED " + message + "|@";
+			return COLOR_CODE_OVERDUE + message + COLOR_CODE_END_TAG;
 		} else if (Logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
-			return "@|YELLOW " + message + "|@";
+			return COLOR_CODE_TODAY + message + COLOR_CODE_END_TAG;
 		} else if (Logic.compareDates(dateTime, Logic.getTomorrowsDate()) == 0) {
-			return "@|GREEN " + message + "|@";
+			return COLOR_CODE_TOMORROW + message + COLOR_CODE_END_TAG;
 		} else {
-			return "@|CYAN " + message + "|@";
+			return COLOR_CODE_FUTURE + message + COLOR_CODE_END_TAG;
 		}
 	}
 	
+	/**
+	 * Format the date into dd mmm or dd mmm yyyy depending on whether the year is the same as this year.
+	 * 
+	 * @param dateTime	the LocalDateTime to format
+	 * @return			the string in the proper date format
+	 */
 	private static String getDateFormat(LocalDateTime dateTime) {
 		String month = dateTime.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
 		String day = dateTime.getDayOfWeek().toString();
@@ -184,6 +207,12 @@ public class Ui {
 //		return addColorCoding(message, dateTime);
 	}
 	
+	/**
+	 * Format the time into h:mm AM/PM
+	 * 
+	 * @param dateTime	the LocalDateTime to format
+	 * @return			the string in the proper time format
+	 */
 	private static String getTimeFormat(LocalDateTime dateTime) {
 		int hour = dateTime.getHour() % 12;
 		if (hour == 0) {
