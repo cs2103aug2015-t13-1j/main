@@ -58,7 +58,7 @@ public class CommandParserTest {
 	}
 	
 	@Test
-	public void testAddFloatingTaskCommandParsing() {
+	public void testAddUnscheduledTaskCommandParsing() {
 		try {
 			// boundary case: the only thing entered is the command name with no trailing spaces and further arguments
 			Command invalid = CommandParser.getCommandFromInput("add ");

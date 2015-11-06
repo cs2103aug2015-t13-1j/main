@@ -69,10 +69,10 @@ boolean isDone; // used to mark tasks as complete
 	//@@author A0145732H
 	@Override
 	/**
-	 * Tasks are ordered by events, deadlines, then floating tasks (ascending).
+	 * Tasks are ordered by events, deadlines, then unscheduled tasks (ascending).
 	 * Events are compared to other events first by start date, then by end date, then by name.
 	 * Deadlines are compared to other deadlines first by end date, then by name.
-	 * Floating tasks are compared to other floating tasks by name.
+	 * Unscheduled tasks are compared to other unscheduled tasks by name.
 	 */
 	public int compareTo(Task otherTask) {
 		if (otherTask == null) {
@@ -109,7 +109,7 @@ boolean isDone; // used to mark tasks as complete
 				// this is a deadline, other is an event --> this > other
 				return 1;
 			} else if (otherEnd == null) {
-				// this is a deadline, other is floating --> this < other
+				// this is a deadline, other is unscheduled --> this < other
 				return -1;
 			} else {
 				// both this and other are deadlines: sort by end date then by name
@@ -120,13 +120,13 @@ boolean isDone; // used to mark tasks as complete
 				}
 			}
 		}
-		// 3. floating tasks - sorted by name
+		// 3. unscheduled tasks - sorted by name
 		if (this.end == null && this.start == null) {
 			if (otherStart != null || otherEnd != null) {
-				// this is a floating, other is not floating --> this > other
+				// this is a unscheduled, other is not unscheduled --> this > other
 				return 1;
 			} else {
-				// both are floating --> sort by name
+				// both are unscheduled --> sort by name
 				return (this.name.compareTo(otherName));
 			}
 		}

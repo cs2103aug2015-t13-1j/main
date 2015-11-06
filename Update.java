@@ -69,7 +69,7 @@ public class Update extends Command implements Undoable {
 		assert(newName != null);
 		
 		// for requests to remove non-existent fields, like removing the start date 
-		// off a floating task, forgive and ignore the error
+		// off a unscheduled task, forgive and ignore the error
 		LocalDateTime newStart = null;
 		switch(changes.getStartAction()) {
 			case UPDATE :

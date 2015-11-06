@@ -52,7 +52,7 @@ public class CommandParser {
 	private static final int MAX_ARG_DONE = 1;
 	
 	// the size of the list of arguments for adding various types of tasks
-	private static final int ADD_ARG_SIZE_FOR_FLOATING = 1; // only name argument for floating
+	private static final int ADD_ARG_SIZE_FOR_UNSCHEDULED = 1; // only name argument for unscheduled
 	private static final int ADD_ARG_SIZE_FOR_DEADLINE = 4; // name, by keyword, date and time = 4
 	private static final int ADD_ARG_SIZE_FOR_EVENT = 7; // name, to, from, and 2 date and times
 	
@@ -67,7 +67,7 @@ public class CommandParser {
 	
 	// used for the add command to determine what type of task is to be added
 	private enum TASK_TYPE {
-		FLOATING, DEADLINE, EVENT, INVALID
+		UNSCHEDULED, DEADLINE, EVENT, INVALID
 	}
 	
 	//used for the add command to determine what type of task is to be added
@@ -189,9 +189,9 @@ public class CommandParser {
   			}
   			
   			switch (flag) {
-  				case "floating" :
+  				case "unscheduled" :
   					if (!isAllMarked) {
-  						listFlags.add(List.LIST_FLAGS.FLOATING);
+  						listFlags.add(List.LIST_FLAGS.UNSCHEDULED);
   					}
   					break;
   					
@@ -278,7 +278,7 @@ public class CommandParser {
 		LocalDateTime endTime, startTime;
 		
 		switch(determineTaskTypeToBeAdded(args)) {
-			case FLOATING :
+			case UNSCHEDULED :
 				newTask = new Task(name, false);
 				break;
 				
@@ -345,8 +345,8 @@ public class CommandParser {
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
   	switch(args.size()) {
-    	case ADD_ARG_SIZE_FOR_FLOATING:
-    		return TASK_TYPE.FLOATING;
+    	case ADD_ARG_SIZE_FOR_UNSCHEDULED:
+    		return TASK_TYPE.UNSCHEDULED;
     		
     	case ADD_ARG_SIZE_FOR_DEADLINE:
     		boolean isByPresent = args.get(POSITION_ADD_BY_KEYWORD).toLowerCase().equals("by");

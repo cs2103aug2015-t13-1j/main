@@ -35,7 +35,7 @@ public class Ui {
 	
 	/** messages and message formats for tasks in the task list display **/
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_FLOATING = "%s%d. %s\n";
+	private static final String MESSAGE_UNSCHEDULED = "%s%d. %s\n";
 	private static final String MESSAGE_DEADLINE = "%s%d. %s\n\tdue %s at %s\n";
 	private static final String MESSAGE_EVENT = "%s%d. %s\n\t%s to %s\n";
 	private static final String MESSAGE_DATE = "%s, %d %s";
@@ -123,7 +123,7 @@ public class Ui {
 			int taskNumber = 1;
 			boolean isFirstEvent = true;
 			boolean isFirstDeadline = true;
-			boolean isFirstFloating = true;
+			boolean isFirstUnscheduled = true;
 			
 			for (Task task : taskList) {
 				LocalDateTime start = task.getStartDateTime();
@@ -137,11 +137,11 @@ public class Ui {
 				}
 				
 				if (end == null && start == null) {
-					if (isFirstFloating) {
-						message.append("\nFloating tasks:\n");
-						isFirstFloating = false;
+					if (isFirstUnscheduled) {
+						message.append("\nUnscheduled tasks:\n");
+						isFirstUnscheduled = false;
 					}
-					message.append(String.format(MESSAGE_FLOATING, doneMarker, taskNumber++, taskName));
+					message.append(String.format(MESSAGE_UNSCHEDULED, doneMarker, taskNumber++, taskName));
 				} else if (start == null) {
 					if (isFirstDeadline) {
 						message.append("\nDeadlines:\n");

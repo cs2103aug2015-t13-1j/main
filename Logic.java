@@ -16,7 +16,7 @@ public class Logic {
 	private static final String ERROR_DATE_INVALID_DEADLINE = "You cannot set a deadline for earlier than the current time.";
 	
 	// constants to define the size of the default task view and the number of each type of task
-	private static final int DEFAULT_VIEW_NUM_FLOATING = 3;
+	private static final int DEFAULT_VIEW_NUM_UNSCHEDULED = 3;
 	private static final int DEFAULT_VIEW_NUM_DEADLINES = 6;
 	private static final int DEFAULT_VIEW_NUM_EVENTS = 6;
 	private static final int DEFAULT_VIEW_MAX_TASKS = 15;
@@ -143,28 +143,28 @@ public class Logic {
 	}
 	
 	/**
-	 * This method searches for all of the floating tasks in the entire task list
-	 * @return	an ArrayList of the floating tasks
+	 * This method searches for all of the unscheduled tasks in the entire task list
+	 * @return	an ArrayList of the unscheduled tasks
 	 */
-	public static ArrayList<Task> getFloatingTasks() {
+	public static ArrayList<Task> getUnscheduledTasks() {
 		ArrayList<Task> taskList = StorageManager.readAllTasks();
-		return getFloatingTasks(taskList);
+		return getUnscheduledTasks(taskList);
 	}
 	
 	/**
-	 * This method searches for all of the floating tasks in a specified task list
+	 * This method searches for all of the unscheduled tasks in a specified task list
 	 * 
-	 * @param taskList	the specified task list to filter for floating tasks
-	 * @return			an ArrayList of the found floating tasks
+	 * @param taskList	the specified task list to filter for unscheduled tasks
+	 * @return			an ArrayList of the found unscheduled tasks
 	 */
-	public static ArrayList<Task> getFloatingTasks(ArrayList<Task> taskList) {
-		ArrayList<Task> floating = new ArrayList<Task>();
+	public static ArrayList<Task> getUnscheduledTasks(ArrayList<Task> taskList) {
+		ArrayList<Task> unscheduled = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (task.getStartDateTime() == null && task.getEndDateTime() == null) {
-				floating.add(task);
+				unscheduled.add(task);
 			}
 		}
-		return floating;	
+		return unscheduled;	
 	}
 	
 	/**
@@ -177,10 +177,10 @@ public class Logic {
 	}
 	
 	/**
-	 * This method searches for all of the floating tasks in a specified task list
+	 * This method searches for all of the deadlines in a specified task list
 	 * 
-	 * @param taskList	the specified task list to filter for floating tasks
-	 * @return			an ArrayList of the found floating tasks
+	 * @param taskList	the specified task list to filter for deadlines
+	 * @return			an ArrayList of the found deadlines
 	 */
 	public static ArrayList<Task> getDeadlineTasks(ArrayList<Task> taskList) {
 		ArrayList<Task> deadlines = new ArrayList<Task>();
@@ -193,8 +193,8 @@ public class Logic {
 	}
 	
 	/**
-	 * This method searches for all of the floating tasks in the entire task list
-	 * @return	an ArrayList of the floating tasks
+	 * This method searches for all of the events in the entire task list
+	 * @return	an ArrayList of the events
 	 */
 	public static ArrayList<Task> getEvents() {
 		ArrayList<Task> taskList = StorageManager.readAllTasks();
@@ -202,10 +202,10 @@ public class Logic {
 	}
 	
 	/**
-	 * This method searches for all of the floating tasks in a specified task list
+	 * This method searches for all of the events in a specified task list
 	 * 
-	 * @param taskList	the specified task list to filter for floating tasks
-	 * @return			an ArrayList of the found floating tasks
+	 * @param taskList	the specified task list to filter for events
+	 * @return			an ArrayList of the found events
 	 */
 	public static ArrayList<Task> getEvents(ArrayList<Task> taskList) {
 		ArrayList<Task> events = new ArrayList<Task>();
@@ -302,7 +302,7 @@ public class Logic {
 		LocalDateTime currentTime = LocalDateTime.now().minusMinutes(1);
 		
 		if (start == null && end == null) {
-			// always return true for floating tasks
+			// always return true for unscheduled tasks
 			return true;
 		} else if (end != null) {
 			boolean isEndAfterCurrent = end.compareTo(currentTime) > 0;
@@ -334,7 +334,7 @@ public class Logic {
 	private static ArrayList<Task> getDefaultTaskList() {
 		ArrayList<Task> defaultTasks = new ArrayList<Task>();
 		ArrayList<Task> uncompleted = getUncompletedTasks();
-		ArrayList<Task> uncompletedFloating = getFloatingTasks(uncompleted);
+		ArrayList<Task> uncompletedUnscheduled = getUnscheduledTasks(uncompleted);
 		ArrayList<Task> uncompletedDeadlines = getDeadlineTasks(uncompleted);
 		ArrayList<Task> uncompletedEvents = getEvents(uncompleted);
 		
@@ -350,7 +350,7 @@ public class Logic {
 		// if there are not enough tasks of a task type, then distribute between the remaining types.
 		int eventIndex = 0;
 		int deadlineIndex = 0;
-		int floatingIndex = 0;
+		int unscheduledIndex = 0;
 		int extraTasks = 0;
 		while (numTasks < tasksForView) {
 			if (eventIndex < uncompletedEvents.size()) {
@@ -385,21 +385,21 @@ public class Logic {
 				extraTasks++;
 				deadlineIndex++;
 			}
-			if (floatingIndex < uncompletedFloating.size()) {
-				if (floatingIndex < DEFAULT_VIEW_NUM_FLOATING) {
-					defaultTasks.add(uncompletedFloating.get(floatingIndex++));
+			if (unscheduledIndex < uncompletedUnscheduled.size()) {
+				if (unscheduledIndex < DEFAULT_VIEW_NUM_UNSCHEDULED) {
+					defaultTasks.add(uncompletedUnscheduled.get(unscheduledIndex++));
 					numTasks++;				
 				} else if (extraTasks > 0) {
-					defaultTasks.add(uncompletedFloating.get(floatingIndex++));
+					defaultTasks.add(uncompletedUnscheduled.get(unscheduledIndex++));
 					numTasks++;				
 					extraTasks--;
 				}
 				if (numTasks == tasksForView) {
 					break;
 				}
-			}else if (floatingIndex < DEFAULT_VIEW_NUM_FLOATING) {
+			}else if (unscheduledIndex < DEFAULT_VIEW_NUM_UNSCHEDULED) {
 				extraTasks++;
-				floatingIndex++;
+				unscheduledIndex++;
 			}
 		}
 		
