@@ -284,7 +284,7 @@ public class Ui {
 	 * 
 	 * @param message	the message to display to the user
 	 */
-	public static void showToUser(String message) {
+	private static void showToUser(String message) {
 		System.out.print(ansi().render(message));
 		System.out.flush();
 	}
