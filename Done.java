@@ -27,9 +27,9 @@ public class Done extends Command implements Undoable {
 	 */
 	public void execute() throws Exception {
 		completedTask = getTaskFromList();
-		StorageManager.removeTask(completedTask);
+		storageManager.removeTask(completedTask);
 		completedTask.setDone(true);
-		StorageManager.writeTask(completedTask);
+		storageManager.writeTask(completedTask);
 		isExecuted = true;
 	}
 
@@ -45,9 +45,9 @@ public class Done extends Command implements Undoable {
 	
 	@Override
 	public void undo() throws Exception {
-		StorageManager.removeTask(completedTask);
+		storageManager.removeTask(completedTask);
 		completedTask.setDone(false);
-		StorageManager.writeTask(completedTask);
+		storageManager.writeTask(completedTask);
 	}
 
 	@Override

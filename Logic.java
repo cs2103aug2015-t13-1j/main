@@ -25,6 +25,17 @@ public class Logic {
 	private static Stack<Undoable> undoableHistory = new Stack<Undoable>();
 	private static Command lastExecutedCommand = null;
 	
+	// single instances
+	private static StorageManager storageManager = new StorageManager();
+	
+	/**
+	 * set the class variable storageManager, for dependency injection
+	 * @param sm
+	 */
+	public static void setStorageManager(StorageManager sm) {
+		storageManager = sm;
+	}
+	
 	public static Command processUserInput(String userInput) throws Exception {
 		Command command;
 		try {
@@ -54,11 +65,11 @@ public class Logic {
 
 	//@@author A0145732H
 	public static void init() {
-		StorageManager.openStorage();
+		storageManager.openStorage();
 	}
 	
 	public static void close() {
-		StorageManager.closeStorage();
+		storageManager.closeStorage();
 	}
 	
 	/**
@@ -71,7 +82,7 @@ public class Logic {
 	public static ArrayList<Task> searchTasks(String[] keywords) {
 		assert(keywords != null);
 		
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> taskList = storageManager.readAllTasks();
 		ArrayList<Task> foundTasks = new ArrayList<Task>();		
 		for (int i = 0; i < taskList.size(); i++) {
 			int keywordIndex = 0;
@@ -97,7 +108,7 @@ public class Logic {
 	 * @return	an ArrayList of tasks marked as done
 	 */
 	public static ArrayList<Task> getCompletedTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getCompletedTasks(taskList);
 	}
 	
@@ -123,7 +134,7 @@ public class Logic {
 	 * @return	an ArrayList of tasks marked as not done
 	 */
 	public static ArrayList<Task> getUncompletedTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getUncompletedTasks(taskList);
 	}
 
@@ -133,6 +144,7 @@ public class Logic {
 	 * @return			an ArrayList of the uncompleted tasks
 	 */
 	public static ArrayList<Task> getUncompletedTasks(ArrayList<Task> taskList) {
+		assert(taskList != null);
 		ArrayList<Task> uncompleted = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (!task.isDone()) {
@@ -147,7 +159,7 @@ public class Logic {
 	 * @return	an ArrayList of the unscheduled tasks
 	 */
 	public static ArrayList<Task> getUnscheduledTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getUnscheduledTasks(taskList);
 	}
 	
@@ -158,6 +170,7 @@ public class Logic {
 	 * @return			an ArrayList of the found unscheduled tasks
 	 */
 	public static ArrayList<Task> getUnscheduledTasks(ArrayList<Task> taskList) {
+		assert(taskList != null);
 		ArrayList<Task> unscheduled = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (task.getStartDateTime() == null && task.getEndDateTime() == null) {
@@ -172,7 +185,7 @@ public class Logic {
 	 * @return	an ArrayList of the deadline tasks
 	 */
 	public static ArrayList<Task> getDeadlineTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getDeadlineTasks(taskList);
 	}
 	
@@ -183,6 +196,7 @@ public class Logic {
 	 * @return			an ArrayList of the found deadlines
 	 */
 	public static ArrayList<Task> getDeadlineTasks(ArrayList<Task> taskList) {
+		assert(taskList != null);
 		ArrayList<Task> deadlines = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (task.getStartDateTime() == null && task.getEndDateTime() != null) {
@@ -197,7 +211,7 @@ public class Logic {
 	 * @return	an ArrayList of the events
 	 */
 	public static ArrayList<Task> getEvents() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getEvents(taskList);
 	}
 	
@@ -208,6 +222,7 @@ public class Logic {
 	 * @return			an ArrayList of the found events
 	 */
 	public static ArrayList<Task> getEvents(ArrayList<Task> taskList) {
+		assert(taskList != null);
 		ArrayList<Task> events = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (task.getStartDateTime() != null && task.getEndDateTime() != null) {
@@ -218,11 +233,12 @@ public class Logic {
 	}
 	
 	public static ArrayList<Task> getTodaysTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getTodaysTasks(taskList);
 	}
 	
 	public static ArrayList<Task> getTodaysTasks(ArrayList<Task> taskList) {
+		assert(taskList != null);
 		LocalDateTime today = LocalDateTime.now();
 		ArrayList<Task> todaysTasks = new ArrayList<Task>();
 		for (Task task : taskList) {
@@ -242,11 +258,12 @@ public class Logic {
 	}
 	
 	public static ArrayList<Task> getTomorrowsTasks() {
-		ArrayList<Task> taskList = StorageManager.readAllTasks();
+		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getTomorrowsTasks(taskList);
 	}
 	
 	public static ArrayList<Task> getTomorrowsTasks(ArrayList<Task> taskList) {
+		assert(taskList != null);
 		LocalDateTime tomorrow = getTomorrowsDate();
 		ArrayList<Task> tomorrowsTasks = new ArrayList<Task>();
 		for (Task task : taskList) {

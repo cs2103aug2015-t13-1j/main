@@ -40,7 +40,7 @@ public class Update extends Command implements Undoable {
 			createUpdatedTask();
 			// validateDates() will throw an exception if the dates are not valid
 			Logic.validateDates(newTask.getStartDateTime(), newTask.getEndDateTime());
-			StorageManager.updateTask(oldTask, newTask);
+			storageManager.updateTask(oldTask, newTask);
 		} else {
 			throw new Exception(ERROR_INDEX_INVALID);
 		}
@@ -117,7 +117,7 @@ public class Update extends Command implements Undoable {
 	 * Restore the task to the old state prior to executing the update command.
 	 */
 	public void undo() throws Exception {
-		StorageManager.updateTask(newTask, oldTask);
+		storageManager.updateTask(newTask, oldTask);
 	}
 
 	@Override

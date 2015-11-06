@@ -23,7 +23,7 @@ public class Add extends Command implements Undoable {
 	public void execute() throws Exception {
 		// validateDates() will throw an exception if the dates are not valid
 		Logic.validateDates(task.getStartDateTime(), task.getEndDateTime());
-		StorageManager.writeTask(task);
+		storageManager.writeTask(task);
 		wasExecuted = true;
 	}
 
@@ -32,7 +32,7 @@ public class Add extends Command implements Undoable {
 	 * Remove the task added by this instance of Add.
 	 */
 	public void undo() throws Exception {
-		StorageManager.removeTask(task);
+		storageManager.removeTask(task);
 	}
 
 	@Override

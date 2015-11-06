@@ -36,11 +36,12 @@ public class StorageManager {
 	private static BufferedReader bufferedReader;
 	private static BufferedWriter bufferedWriter;
 	private static Task[] TASK_LIST = {};
-
+	
 	public StorageManager() {
 	}
 	
-	public static void initializeStorage() throws IOException {
+	//@@author
+	public void initializeStorage() throws IOException {
 		File informationFile = new File(INFORMATION_DIRECTORY + INFORMATION_NAME + INFORMATION_TYPE);	
 		FileReader informationFileReader;
 		BufferedReader informationBufferedReader;
@@ -86,7 +87,7 @@ public class StorageManager {
 		}
 	}
 
-	public static void openStorage() {
+	public void openStorage() {
 		try {
 			initializeStorage();
 			if (!file.exists()) {
@@ -115,7 +116,7 @@ public class StorageManager {
 		}
 	}
 	
-	private static Task[] initiateTaskList() {
+	private Task[] initiateTaskList() {
 		try {
 			Gson gson = new Gson();
 			Task[] taskListFromJSON;
@@ -134,7 +135,7 @@ public class StorageManager {
 		}
 	}
 
-	public static void closeStorage() {
+	public void closeStorage() {
 		try {
 			bufferedWriter.close();
 			bufferedReader.close();
@@ -145,7 +146,7 @@ public class StorageManager {
 		}
 	}
 	
-	public static boolean changeStorageLocation(String directory) throws Exception {
+	public boolean changeStorageLocation(String directory) throws Exception {
 		STORAGE_DIRECTORY = directory;
 		
 		// Create reader for Storage Information
@@ -243,7 +244,7 @@ public class StorageManager {
 //	}
 	
 	//@@author A0145732H
-	public static ArrayList<Task> readAllTasks() {
+	public ArrayList<Task> readAllTasks() {
 		ArrayList<Task> taskArrayList = new ArrayList<Task>();
 		taskArrayList.addAll(Arrays.asList(TASK_LIST));
 		taskArrayList.sort(null);
@@ -251,7 +252,7 @@ public class StorageManager {
 	}
 
 	//@@author
-	public static void writeTask(Task task) {
+	public void writeTask(Task task) {
 		try {
 			Gson gson = new Gson();
 			ArrayList<Task> taskListTransition;
@@ -288,7 +289,7 @@ public class StorageManager {
 	 * @param task
 	 * @throws Exception	if the task was unable to be removed
 	 */
-	public static void removeTask(Task task) throws Exception {
+	public void removeTask(Task task) throws Exception {
 		boolean isRemoved = false;
 		try {
 			Gson gson = new Gson();
@@ -326,7 +327,7 @@ public class StorageManager {
 	}
 	
 	//@@author
-	public static void clearTask() throws Exception {
+	public void clearTask() throws Exception {
 		Gson gson = new Gson();
 
 		TASK_LIST = EMPTY_TASK;
@@ -347,7 +348,7 @@ public class StorageManager {
 	 * @param newTask		the updated version of the task to replace the old task
 	 * @throws Exception	if there are no tasks or if the old task was not found
 	 */
-	public static void updateTask(Task oldTask, Task newTask) throws Exception {
+	public void updateTask(Task oldTask, Task newTask) throws Exception {
 		if (TASK_LIST.length == 0) {
 			throw new Exception("You currently do not have any tasks saved.");
 		}

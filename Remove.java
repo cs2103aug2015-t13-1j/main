@@ -29,7 +29,7 @@ public class Remove extends Command implements Undoable {
 		ArrayList<Task> taskList = Ui.getCurrentTaskList();
 		if (index >= 0 && index < taskList.size()) {
 			task = taskList.get(index);
-			StorageManager.removeTask(task);
+			storageManager.removeTask(task);
 		} else {
 			throw new Exception(ERROR_INDEX_INVALID);
 		}
@@ -41,7 +41,7 @@ public class Remove extends Command implements Undoable {
 	 * Re-add the task that was removed by this instance of Remove.
 	 */
 	public void undo() throws Exception {
-		StorageManager.writeTask(task);
+		storageManager.writeTask(task);
 	}
 
 	@Override

@@ -13,7 +13,7 @@ public class Relocate extends Command {
 			throw new Exception("File directory must contain \"/\" at the end");
 		}
 		
-		if (!StorageManager.changeStorageLocation(fileLocation)) {
+		if (!storageManager.changeStorageLocation(fileLocation)) {
 			throw new Exception("File directory specified does not exist");
 		}
 	}

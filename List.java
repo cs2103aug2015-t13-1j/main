@@ -45,7 +45,7 @@ public class List extends Command {
 	 */
 	public void execute() throws Exception {
 		if (keywords != null || flags != null) {
-			ArrayList<Task> tasks = StorageManager.readAllTasks();
+			ArrayList<Task> tasks = storageManager.readAllTasks();
 			if (keywords != null) {
 				tasks = Logic.searchTasks(keywords);
 			}

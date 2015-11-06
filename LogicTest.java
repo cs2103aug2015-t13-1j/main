@@ -8,17 +8,20 @@ public class LogicTest {
 	//@@author A0145732H
 	@Test
 	public void testSearchTasks() {
-		StorageManager.openStorage();
+		StorageManagerStub sm = new StorageManagerStub();
+		Logic.setStorageManager(sm);
+		
+		sm.openStorage();
 		
 		Task apple = new Task("apple", false);
 		Task banana = new Task("banana", false);
 		Task baby = new Task("baby", false);
 		Task appleBanana = new Task("apple banana", false);
 		
-		StorageManager.writeTask(apple);
-		StorageManager.writeTask(banana);
-		StorageManager.writeTask(baby);
-		StorageManager.writeTask(appleBanana);
+		sm.writeTask(apple);
+		sm.writeTask(banana);
+		sm.writeTask(baby);
+		sm.writeTask(appleBanana);
 		
 		ArrayList<Task> expected = new ArrayList<Task>();
 		ArrayList<Task> actual;
@@ -46,14 +49,23 @@ public class LogicTest {
 		
 		// reset the storage file
 		try {
-			StorageManager.removeTask(apple);
-			StorageManager.removeTask(baby);
-			StorageManager.removeTask(banana);
-			StorageManager.removeTask(appleBanana);
-			StorageManager.closeStorage();
+			sm.removeTask(apple);
+			sm.removeTask(baby);
+			sm.removeTask(banana);
+			sm.removeTask(appleBanana);
+			sm.closeStorage();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	@Test
+	public void testGetCompletedTasks() {
+		StorageManagerStub sm = new StorageManagerStub();
+		Logic.setStorageManager(sm);
+		
+		ArrayList<Task> completed = Logic.getCompletedTasks();
+		assertEquals(new ArrayList<Task>(), completed);
 	}
 }

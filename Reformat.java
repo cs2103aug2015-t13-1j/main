@@ -5,7 +5,7 @@ public class Reformat extends Command {
 	@Override
 	public void execute() throws Exception {
 		// TODO Auto-generated method stub
-		StorageManager.clearTask();
+		storageManager.clearTask();
 	}
 
 	@Override

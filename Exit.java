@@ -17,7 +17,7 @@ public class Exit extends Command {
 	 */
 	public void execute() throws Exception {
 		// TODO which methods to change to public, etc.
-		StorageManager.closeStorage();
+		storageManager.closeStorage();
 		Ui.indicateExit();
 		wasExecuted = true;
 	}
