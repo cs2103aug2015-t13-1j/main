@@ -118,7 +118,11 @@ public class Ui {
 				if (task.isDone()) {
 					message.append("@|BLUE ");
 				} else {
-					taskName = addColorCoding(task.getName(), end);
+					if (start == null) {
+						taskName = addColorCoding(task.getName(), end);
+					} else {
+						taskName = addColorCoding(task.getName(), start);
+					}
 				}
 				if (end == null && start == null) {
 					message.append(String.format(MESSAGE_FLOATING, taskNumber++, taskName));
@@ -126,7 +130,7 @@ public class Ui {
 					message.append(String.format(MESSAGE_DEADLINE, taskNumber++, taskName,
 							getDateFormat(end), getTimeFormat(end)));
 				} else {
-					if (Logic.areDatesEqual(start, end)) {
+					if (Logic.compareDates(start, end) == 0) {
 						message.append(String.format(MESSAGE_EVENT, taskNumber++, taskName, 
 								getDateTimeFormat(start), getTimeFormat(end)));
 					} else {
@@ -150,9 +154,9 @@ public class Ui {
 			return "@|CYAN " + message + "|@";
 		} else if (dateTime.compareTo(LocalDateTime.now()) < 0) {
 			return "@|RED " + message + "|@";
-		} else if (Logic.areDatesEqual(dateTime, LocalDateTime.now())) {
+		} else if (Logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
 			return "@|YELLOW " + message + "|@";
-		} else if (Logic.areDatesEqual(dateTime, Logic.getTomorrowsDate())) {
+		} else if (Logic.compareDates(dateTime, Logic.getTomorrowsDate()) == 0) {
 			return "@|GREEN " + message + "|@";
 		} else {
 			return "@|CYAN " + message + "|@";
@@ -164,16 +168,20 @@ public class Ui {
 		String day = dateTime.getDayOfWeek().toString();
 		day = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
 		LocalDateTime today = LocalDateTime.now();
+		String message;
+		
 		// only display the year if it is different from the current year
 		if (dateTime.getYear() != today.getYear()) {
-			return String.format(MESSAGE_DATE_YEAR, day, dateTime.getDayOfMonth(), month, dateTime.getYear());
-		} else if (Logic.areDatesEqual(dateTime, LocalDateTime.now())) {
-			return "today";
-		} else if (Logic.areDatesEqual(dateTime, LocalDateTime.now().plusDays(1))) {
-			return "tomorrow";
+			message = String.format(MESSAGE_DATE_YEAR, day, dateTime.getDayOfMonth(), month, dateTime.getYear());
+		} else if (Logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
+			message = "today";
+		} else if (Logic.compareDates(dateTime, Logic.getTomorrowsDate()) == 0) {
+			message = "tomorrow";
 		} else {
-			return String.format(MESSAGE_DATE, day, dateTime.getDayOfMonth(), month);
+			message = String.format(MESSAGE_DATE, day, dateTime.getDayOfMonth(), month);
 		}
+		return message;
+//		return addColorCoding(message, dateTime);
 	}
 	
 	private static String getTimeFormat(LocalDateTime dateTime) {
@@ -181,11 +189,14 @@ public class Ui {
 		if (hour == 0) {
 			hour += 12;
 		}
+		String message;
 		if (dateTime.getHour() < 12) {
-			return String.format(MESSAGE_TIME, hour, dateTime.getMinute(), "AM");
+			message = String.format(MESSAGE_TIME, hour, dateTime.getMinute(), "AM");
 		} else {
-			return String.format(MESSAGE_TIME, hour, dateTime.getMinute(), "PM");
+			message = String.format(MESSAGE_TIME, hour, dateTime.getMinute(), "PM");
 		}
+		return message;
+//		return addColorCoding(message, dateTime);
 	}
 	
 	/**
