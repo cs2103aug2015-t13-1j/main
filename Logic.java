@@ -229,11 +229,11 @@ public class Logic {
 			LocalDateTime start = task.getStartDateTime();
 			LocalDateTime end = task.getEndDateTime();
 			if (start != null && end != null) {
-				if (areDatesEqual(start, today) || areDatesEqual(end, today)) {
+				if (compareDates(start, today) == 0 || compareDates(end, today) == 0) {
 					todaysTasks.add(task);
 				}
 			} else if (end != null) {
-				if (areDatesEqual(end, today)) {
+				if (compareDates(end, today) == 0) {
 					todaysTasks.add(task);
 				}
 			}
@@ -253,11 +253,11 @@ public class Logic {
 			LocalDateTime start = task.getStartDateTime();
 			LocalDateTime end = task.getEndDateTime();
 			if (start != null && end != null) {
-				if (areDatesEqual(start, tomorrow) || areDatesEqual(end, tomorrow)) {
+				if (compareDates(start, tomorrow) == 0 || compareDates(end, tomorrow) == 0) {
 					tomorrowsTasks.add(task);
 				}
 			} else if (end != null) {
-				if (areDatesEqual(end, tomorrow)) {
+				if (compareDates(end, tomorrow) == 0) {
 					tomorrowsTasks.add(task);
 				}
 			}
@@ -270,11 +270,20 @@ public class Logic {
 		return today.plusDays(1);
 	}
 	
-	public static boolean areDatesEqual(LocalDateTime date1, LocalDateTime date2) {
-		boolean isDateEqual = date1.getDayOfMonth() == date2.getDayOfMonth();
-		boolean isMonthEqual = date1.getMonth() == date2.getMonth();
-		boolean isYearEqual = date1.getYear() == date2.getYear();
-		return isDateEqual && isMonthEqual && isYearEqual;
+	public static int compareDates(LocalDateTime date1, LocalDateTime date2) {
+		if (date1.getYear() < date2.getYear()) {
+			return -1;
+		} else if (date1.getYear() > date2.getYear()) {
+			return 1;
+		} else {
+			if (date1.getDayOfYear() < date2.getDayOfYear()) {
+				return -1;
+			} else if (date1.getDayOfYear() > date2.getDayOfYear()) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 	}
 	
 	public static void validateDates(LocalDateTime start, LocalDateTime end) throws Exception {
