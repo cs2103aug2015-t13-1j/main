@@ -118,7 +118,7 @@ public class Ui {
 				if (task.isDone()) {
 					message.append("@|BLUE ");
 				} else {
-					if (start == null) {
+					if (start == null || start.compareTo(LocalDateTime.now()) < 0) {
 						taskName = addColorCoding(task.getName(), end);
 					} else {
 						taskName = addColorCoding(task.getName(), start);
