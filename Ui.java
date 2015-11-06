@@ -123,16 +123,21 @@ public class Ui {
 				LocalDateTime end = task.getEndDateTime();
 				String taskName = task.getName();
 				if (task.isDone()) {
-					// color the whole task line as completed
-					message.append(COLOR_CODE_COMPLETED);
+					message.append("DONE ");
 				} else {
-					// color just the task name based on the date
-					if (start == null || start.compareTo(LocalDateTime.now()) < 0) {
-						taskName = addColorCoding(task.getName(), end);
-					} else {
-						taskName = addColorCoding(task.getName(), start);
-					}
+					message.append("     ");
 				}
+//				if (task.isDone()) {
+//					// color the whole task line as completed
+//					message.append(COLOR_CODE_COMPLETED);
+//				} else {
+//					// color just the task name based on the date
+//					if (start == null || start.compareTo(LocalDateTime.now()) < 0) {
+//						taskName = addColorCoding(task.getName(), end);
+//					} else {
+//						taskName = addColorCoding(task.getName(), start);
+//					}
+//				}
 				
 				if (end == null && start == null) {
 					message.append(String.format(MESSAGE_FLOATING, taskNumber++, taskName));
@@ -149,9 +154,9 @@ public class Ui {
 								getDateTimeFormat(start), getDateTimeFormat(end)));
 					}
 				}
-				if (task.isDone()) {
-					message.append(COLOR_CODE_END_TAG);
-				}
+//				if (task.isDone()) {
+//					message.append(COLOR_CODE_END_TAG);
+//				}
 			}
 			return message.toString();
 		} else {
@@ -203,8 +208,8 @@ public class Ui {
 		} else {
 			message = String.format(MESSAGE_DATE, day, dateTime.getDayOfMonth(), month);
 		}
-		return message;
-//		return addColorCoding(message, dateTime);
+//		return message;
+		return addColorCoding(message, dateTime);
 	}
 	
 	/**
@@ -224,8 +229,8 @@ public class Ui {
 		} else {
 			message = String.format(MESSAGE_TIME, hour, dateTime.getMinute(), "PM");
 		}
-		return message;
-//		return addColorCoding(message, dateTime);
+//		return message;
+		return addColorCoding(message, dateTime);
 	}
 	
 	/**
