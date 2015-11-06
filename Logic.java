@@ -15,10 +15,10 @@ public class Logic {
 	private static final String ERROR_DATE_INVALID_EVENT = "You cannot have an end time earlier than the start time.";
 	
 	// constants to define the size of the default task view and the number of each type of task
-	private static final int DEFAULT_VIEW_NUM_UNSCHEDULED = 3;
-	private static final int DEFAULT_VIEW_NUM_DEADLINES = 6;
-	private static final int DEFAULT_VIEW_NUM_EVENTS = 6;
-	private static final int DEFAULT_VIEW_MAX_TASKS = 15;
+	public static final int DEFAULT_VIEW_NUM_UNSCHEDULED = 3;
+	public static final int DEFAULT_VIEW_NUM_DEADLINES = 6;
+	public static final int DEFAULT_VIEW_NUM_EVENTS = 6;
+	public static final int DEFAULT_VIEW_MAX_TASKS = 15;
 	
 	// class variables to keep track of command history for the undo command
 	private static Stack<Undoable> undoableHistory = new Stack<Undoable>();

@@ -12,4 +12,8 @@ public class StorageManagerStub extends StorageManager {
 	public ArrayList<Task> readAllTasks() {
 		return tasks;
 	}
+	
+	public void clearTasks() {
+		tasks.clear();
+	}
 }
