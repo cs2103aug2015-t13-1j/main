@@ -24,10 +24,10 @@ public class Ui {
 	
 	/** Jansi tags for color coding strings based on the date **/
 	private static final String COLOR_CODE_END_TAG = "|@";
-	private static final String COLOR_CODE_FUTURE = "@|CYAN ";
-	private static final String COLOR_CODE_TOMORROW = "@|GREEN ";
-	private static final String COLOR_CODE_TODAY = "@|YELLOW ";
-	private static final String COLOR_CODE_OVERDUE = "@|RED ";
+	public static final String COLOR_CODE_FUTURE = "@|CYAN ";
+	public static final String COLOR_CODE_TOMORROW = "@|GREEN ";
+	public static final String COLOR_CODE_TODAY = "@|YELLOW ";
+	public static final String COLOR_CODE_OVERDUE = "@|RED ";
 	
 	/** messages to be displayed to the user **/
 	private static final String MESSAGE_WELCOME = "Welcome to TaskBuddy!\n\n";
@@ -205,7 +205,7 @@ public class Ui {
 	 * @param dateTime	the LocalDateTime to format
 	 * @return			the string in the proper date format
 	 */
-	private static String getDateFormat(LocalDateTime dateTime) {
+	public static String getDateFormat(LocalDateTime dateTime) {
 		String month = dateTime.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
 		String day = dateTime.getDayOfWeek().toString();
 		day = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
@@ -232,7 +232,7 @@ public class Ui {
 	 * @param dateTime	the LocalDateTime to format
 	 * @return			the string in the proper time format
 	 */
-	private static String getTimeFormat(LocalDateTime dateTime) {
+	public static String getTimeFormat(LocalDateTime dateTime) {
 		int hour = dateTime.getHour() % 12;
 		if (hour == 0) {
 			hour += 12;
