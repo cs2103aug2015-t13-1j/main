@@ -7,7 +7,7 @@ import org.junit.Test;
 public class LogicTest {
 	//@@author A0145732H
 	@Test
-	public void testSearchTasks() {
+	public void testSearchTasks() throws Exception {
 		StorageManager.openStorage();
 		
 		Task apple = new Task("apple", false);

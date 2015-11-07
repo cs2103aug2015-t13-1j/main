@@ -23,7 +23,7 @@ public void init() throws Exception {
 	}
 	
 	@After
-public void shutdown() throws IOException {
+public void shutdown() throws Exception {
 		StorageManager.closeStorage();
 		deleteFile(DIRECTORY + FILENAME);
 	}

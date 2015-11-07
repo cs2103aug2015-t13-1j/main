@@ -53,11 +53,11 @@ public class Logic {
 	}
 
 	//@@author A0145732H
-	public static void init() {
+	public static void init() throws Exception {
 		StorageManager.openStorage();
 	}
 	
-	public static void close() {
+	public static void close() throws Exception {
 		StorageManager.closeStorage();
 	}
 	
