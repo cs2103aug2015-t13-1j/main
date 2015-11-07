@@ -12,7 +12,9 @@ public class Update extends Command implements Undoable {
 	private static final String SUCCESS_UPDATE = "\"%s\" updated to %s.";
 	private static final String SUCCESS_UPDATE_UNDO = "Update of \"%s\" undone to %s";
 	private static final String ERROR_INDEX_INVALID = "The task number specified is not valid.";
-	private static final String ERROR_UPDATED_TASK_IS_INVALID = "The update failed because performing these changes would have resulted in an invalid task.";	
+	private static final String ERROR_UPDATED_TASK_IS_INVALID = "The update failed because performing these changes would have resulted in an invalid task.";
+	private static final String ERROR_TASK_ALREADY_EXISTS = "Update failed because applying these changes would have caused duplicate tasks.";
+	private static final String ERROR_CHANGES_DO_NOT_RESULT_IN_DIFFERENT_TASK = "Performing these changes do not result with an updated task that is different from the original.";
 	private Task oldTask;
 	private Task newTask;
 	private DeltaTask changes;
@@ -35,15 +37,25 @@ public class Update extends Command implements Undoable {
 	 */
 	public void execute() throws Exception {
 		ArrayList<Task> taskList = Ui.getCurrentTaskList();
-		if (taskIndex >= 0 && taskIndex < taskList.size()) {
+		
+		if (taskIndex < 0 || taskIndex >= taskList.size()) {
+			throw new Exception(ERROR_INDEX_INVALID);
+		}
+	
 			oldTask = taskList.get(taskIndex);
 			createUpdatedTask();
 			// validateDates() will throw an exception if the dates are not valid
 			Logic.validateDates(newTask.getStartDateTime(), newTask.getEndDateTime());
+			
+			if (oldTask.equals(newTask)) {
+				throw new Exception(ERROR_CHANGES_DO_NOT_RESULT_IN_DIFFERENT_TASK);
+			}
+			
+			if (Logic.doesTaskExist(newTask)) {
+				throw new Exception(ERROR_TASK_ALREADY_EXISTS);
+			}
+			
 			storageManager.updateTask(oldTask, newTask);
-		} else {
-			throw new Exception(ERROR_INDEX_INVALID);
-		}
 		wasExecuted = true;
 	}
 

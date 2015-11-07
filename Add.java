@@ -7,6 +7,7 @@
 public class Add extends Command implements Undoable {
 	private static final String SUCCESS_ADD = "Added %s.";
 	private static final String SUCCESS_ADD_UNDO = "\"%s\" was removed.";
+	private static final String ERROR_TASK_ALREADY_EXISTS = "The task which you are trying to add already exists.";
 	
 	private Task task;
 	private boolean wasExecuted;
@@ -23,6 +24,11 @@ public class Add extends Command implements Undoable {
 	public void execute() throws Exception {
 		// validateDates() will throw an exception if the dates are not valid
 		Logic.validateDates(task.getStartDateTime(), task.getEndDateTime());
+		
+		if (Logic.doesTaskExist(task)) {
+			throw new Exception(ERROR_TASK_ALREADY_EXISTS);
+		}
+		
 		storageManager.writeTask(task);
 		wasExecuted = true;
 	}
@@ -42,6 +48,13 @@ public class Add extends Command implements Undoable {
 	}
 
 	@Override
+	public String getUndoMessage() {
+		assert(wasExecuted);
+		return String.format(SUCCESS_ADD_UNDO, task.getName());
+	}
+
+	//@@author A0126270N
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -54,20 +67,15 @@ public class Add extends Command implements Undoable {
 		boolean isTaskEqual = (task == null && other.getTask() == null) || (task != null && task.equals(other.getTask()));
 
 		return isTaskEqual && wasExecuted == other.isExecuted();
-		
 	}
 		
 	public Task getTask() {
-		return this.task;
+		return task;
 	}
 
 	public boolean isExecuted() {
 		return wasExecuted;
 	}
 	
-	@Override
-	public String getUndoMessage() {
-		assert(wasExecuted);
-		return String.format(SUCCESS_ADD_UNDO, task.getName());
-	}
+	
 }

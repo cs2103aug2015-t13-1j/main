@@ -2,15 +2,11 @@ import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
 
 import org.junit.Test;
 
 //@@author A0126270N
 public class CommandParserTest {
-	
-	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 	
 @Test
 	public void testUnsupportedCommandParsing() {

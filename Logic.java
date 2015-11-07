@@ -428,4 +428,21 @@ public class Logic {
 			return Ui.createTaskListDisplay(taskList) + "\n\n";
 		}
 	}
+
+	//@@author A0126270N
+	/*
+	 *Determines if the specified task already exists. This is used to prevent adding or updating which would cause duplicate tasks
+	 */
+	public static boolean doesTaskExist(Task task) {
+		assert(task != null);
+		ArrayList<Task> taskList = storageManager.readAllTasks();
+		
+		for (Task t : taskList) {
+			if (t.equals(task)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }
