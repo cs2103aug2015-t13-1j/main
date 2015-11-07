@@ -21,8 +21,8 @@ import java.util.Scanner;
 
 public class Ui {
 	/** text marker to indicate whether a task is completed or not when displaying tasks **/
-	private static final String MARKER_UNCOMPLETED = "     ";
-	private static final String MARKER_DONE = "DONE ";
+	public static final String MARKER_UNCOMPLETED = "     ";
+	public static final String MARKER_DONE = "DONE ";
 	
 	/** Jansi tags for color coding strings based on the date **/
 	private static final String COLOR_CODE_END_TAG = "|@";
@@ -37,13 +37,16 @@ public class Ui {
 	
 	/** messages and message formats for tasks in the task list display **/
 	private static final String MESSAGE_NO_TASKS = "No tasks to display.";
-	private static final String MESSAGE_UNSCHEDULED = "%s%d. %s\n";
-	private static final String MESSAGE_DEADLINE = "%s%d. %s\n\tdue %s at %s\n";
-	private static final String MESSAGE_EVENT = "%s%d. %s\n\t%s to %s\n";
-	private static final String MESSAGE_DATE = "%s, %d %s";
-	private static final String MESSAGE_DATE_YEAR = MESSAGE_DATE + " %d";
-	private static final String MESSAGE_TIME = "%d:%02d %s";
-	private static final String MESSAGE_DATE_TIME = "%s at %s";
+	public static final String MESSAGE_UNSCHEDULED = "%s%d. %s\n";
+	public static final String MESSAGE_DEADLINE = "%s%d. %s\n\tdue %s at %s\n";
+	public static final String MESSAGE_EVENT = "%s%d. %s\n\t%s to %s\n";
+	public static final String MESSAGE_UNSCHEDULED_HEADER = "\nUnscheduled tasks:\n";
+	public static final String MESSAGE_DEADLINE_HEADER = "\nDeadlines:\n";
+	public static final String MESSAGE_EVENTS_HEADER = "\nEvents:\n";
+	public static final String MESSAGE_DATE = "%s, %d %s";
+	public static final String MESSAGE_DATE_YEAR = MESSAGE_DATE + " %d";
+	public static final String MESSAGE_TIME = "%d:%02d %s";
+	public static final String MESSAGE_DATE_TIME = "%s at %s";
 	
 	/** message formats for user command feedback **/
 	private static final String MESSAGE_FEEDBACK_EVENT = "\"%s\", scheduled from %s to %s";
@@ -177,7 +180,7 @@ public class Ui {
 		}
 		
 		if (isFirst) {
-			message.append("\nEvents:\n");
+			message.append(MESSAGE_EVENTS_HEADER);
 			isFirst = false;
 		}
 		if (start.toLocalDate().compareTo(end.toLocalDate()) == 0) {
@@ -199,7 +202,7 @@ public class Ui {
 	 * @param isFirst		whether this is the first deadline in the display so far
 	 * @return				whether this is the first deadline in the display so far
 	 */
-	private static boolean writeDeadlineToList(StringBuilder message,
+	public static boolean writeDeadlineToList(StringBuilder message,
 			int taskNumber, Task task, boolean isFirst) {
 		String taskName = task.getName();
 		LocalDateTime end = task.getEndDateTime();
@@ -212,7 +215,7 @@ public class Ui {
 		}
 		
 		if (isFirst) {
-			message.append("\nDeadlines:\n");
+			message.append(MESSAGE_DEADLINE_HEADER);
 			isFirst = false;
 		}
 		message.append(String.format(MESSAGE_DEADLINE, doneMarker, taskNumber, taskName,
@@ -228,7 +231,7 @@ public class Ui {
 //	 * @param isFirst		whether this is the first unscheduled task in the display so far
 	 * @return				whether this is the first unscheduled task in the display so far
 	 */
-	private static boolean writeUnscheduledToList(StringBuilder message, 
+	public static boolean writeUnscheduledToList(StringBuilder message, 
 			int taskNumber, Task task, boolean isFirst) {
 		String taskName = task.getName();
 
@@ -240,7 +243,7 @@ public class Ui {
 		}
 		
 		if (isFirst) {
-			message.append("\nUnscheduled tasks:\n");
+			message.append(MESSAGE_UNSCHEDULED_HEADER);
 			isFirst = false;
 		}
 		message.append(String.format(MESSAGE_UNSCHEDULED, doneMarker, taskNumber, taskName));
@@ -323,7 +326,7 @@ public class Ui {
 	 * @param dateTime	The LocalDateTime with the date and time to format
 	 * @return			a String in the format dd mmm hh:mm
 	 */
-	private static String getDateTimeFormat(LocalDateTime dateTime) {
+	public static String getDateTimeFormat(LocalDateTime dateTime) {
 		return String.format(MESSAGE_DATE_TIME, getDateFormat(dateTime), getTimeFormat(dateTime));
 	}
 	
