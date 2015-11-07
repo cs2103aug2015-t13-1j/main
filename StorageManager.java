@@ -17,30 +17,45 @@ import com.google.gson.Gson;
  */
 public class StorageManager {
 	// Specificiation for TaskStorage.json
-	private static String STORAGE_DIRECTORY;
-	private static String STORAGE_NAME;
-	private static String STORAGE_TYPE;
+	public static String STORAGE_DIRECTORY = "";
+	public static String STORAGE_NAME = "";
+	public static String STORAGE_TYPE = "";
 	// Specificiation for Default TaskStorage.json
 	private static final String DEFAULT_STORAGE_DIRECTORY = "./";
 	private static final String DEFAULT_STORAGE_NAME = "TaskStorage";
 	private static final String DEFAULT_STORAGE_TYPE = ".json";
 	// Specificiation for StorageInformation.json
-	private static final String INFORMATION_DIRECTORY = "./";
-	private static final String INFORMATION_NAME = "StorageInformation";
-	private static final String INFORMATION_TYPE = ".json";
+	public static final String INFORMATION_DIRECTORY = "./";
+	public static final String INFORMATION_NAME = "StorageInformation";
+	public static final String INFORMATION_TYPE = ".json";
 	// Variables for File
-	private static File file;
-	private static FileReader fileReader;
-	private static FileWriter fileWriter;
-	private static BufferedReader bufferedReader;
-	private static BufferedWriter bufferedWriter;
+	public static File file;
+	public static FileReader fileReader;
+	public static FileWriter fileWriter;
+	public static BufferedReader bufferedReader;
+	public static BufferedWriter bufferedWriter;
 	// Variables for Task
 	private static Task[] TASK_LIST = {};
 	private static final Task[] EMPTY_TASK = {};
 	// Gson Variable
 	private static Gson gson = new Gson();
 	private static final Logger log = Logger.getLogger(StorageManager.class.getName());
-
+	
+	// Error Messages
+	public static final String ERROR_FILE_READER_UNINITIALIZED = "File reader could not be initialized.";
+	public static final String ERROR_FILE_WRITER_UNINITIALIZED = "File writer could not be initialized.";
+	public static final String ERROR_FILE_READER_NOT_CLOSED = "File reader could not be closed.";
+	public static final String ERROR_FILE_WRITER_NOT_CLOSED = "File writer could not be closed.";
+	public static final String ERROR_INFORMATION_READER_NOT_CLOSED = "Information reader could not be closed.";
+	public static final String ERROR_INFORMATION_WRITER_NOT_CLOSED = "Information writer could not be closed.";
+	public static final String ERROR_INFORMATION_READER_AND_WRITER_NOT_CLOSED = "Information reader and writer could not be closed.";
+	public static final String ERROR_TASK_LIST_UNINITIALIZED = "Task list could not be initialized.";
+	public static final String ERROR_CURRENT_STORAGE_NOT_DELETED = "The Original Storage File could not be deleted.";
+	public static final String ERROR_TASK_NOT_WRITTEN = "Task could not be written.";
+	public static final String ERROR_TASK_NOT_REMOVED = "Task could not be removed.";
+	public static final String ERROR_EMPTY_TASK_LIST = "You currently do not have any tasks saved.";
+	public static final String ERROR_TASK_NOT_FOUND = "\"%s\" was not found."; 
+	
 	/**
 	 * This method constructs the StorageManager
 	 */
@@ -100,6 +115,8 @@ public class StorageManager {
 			throw new Exception(e.getMessage());
 		}
 		
+		file = null;
+		
 		log.log(Level.INFO, "StorageManager::closeStorage(): Storage is successfully set to closed.");
 	}
 
@@ -114,7 +131,7 @@ public class StorageManager {
 			bufferedReader = new BufferedReader(fileReader);
 		} catch (FileNotFoundException e) {
 			log.log(Level.WARNING, "StorageManager::setReader(): Error in setting reader.");
-			throw new Exception("File reader could not be initialized.");
+			throw new Exception(ERROR_FILE_READER_UNINITIALIZED);
 		}
 		
 		log.log(Level.INFO, "StorageManager::setReader(): Reader is successfully set.");
@@ -126,7 +143,7 @@ public class StorageManager {
 			bufferedWriter = new BufferedWriter(fileWriter);
 		} catch (FileNotFoundException e) {
 			log.log(Level.WARNING, "StorageManager::setWriterWithAppend(): Error in setting writer.");
-			throw new Exception("File writer could not be initialized.");
+			throw new Exception(ERROR_FILE_WRITER_UNINITIALIZED);
 		}
 		
 		log.log(Level.INFO, "StorageManager::setWriterWithAppend(): Writer is successfully set with append.");
@@ -138,7 +155,7 @@ public class StorageManager {
 			bufferedWriter = new BufferedWriter(fileWriter);
 		} catch (FileNotFoundException e) {
 			log.log(Level.WARNING, "StorageManager::setWriterWithoutAppend(): Error in setting writer.");
-			throw new Exception("File writer could not be initialized.");
+			throw new Exception(ERROR_FILE_WRITER_UNINITIALIZED);
 		}
 		
 		log.log(Level.INFO, "StorageManager::setWriterWithoutAppend(): Writer is successfully set without append.");
@@ -150,8 +167,11 @@ public class StorageManager {
 			fileReader.close();
 		} catch (FileNotFoundException e) {
 			log.log(Level.WARNING, "StorageManager::closeReader(): Error in closing reader.");
-			throw new Exception("File reader could not be closed.");
+			throw new Exception(ERROR_FILE_READER_NOT_CLOSED);
 		}
+		
+		bufferedReader = null;
+		fileReader = null;
 		
 		log.log(Level.INFO, "StorageManager::closeReader(): Reader is successfully closed.");
 	}
@@ -162,8 +182,11 @@ public class StorageManager {
 			fileWriter.close();
 		} catch (FileNotFoundException e) {
 			log.log(Level.WARNING, "StorageManager::closeWriter(): Error in closing writer.");
-			throw new Exception("File writer could not be closed.");
+			throw new Exception(ERROR_FILE_WRITER_NOT_CLOSED);
 		}
+		
+		bufferedWriter = null;
+		fileWriter = null;
 		
 		log.log(Level.INFO, "StorageManager::closeWriter(): Writer is successfully closed.");
 	}
@@ -188,7 +211,7 @@ public class StorageManager {
 			FileWriter informationFileWriter = new FileWriter(informationFile.getAbsoluteFile());
 			BufferedWriter informationBufferedWriter = new BufferedWriter(informationFileWriter);
 			
-			// Create and set value fo Storage Information
+			// Create and set value of Storage Information
 			StorageInformation initialStorageInformation = new StorageInformation();
 			initialStorageInformation.setFileDirectory(DEFAULT_STORAGE_DIRECTORY);
 			initialStorageInformation.setFileName(DEFAULT_STORAGE_NAME);
@@ -204,7 +227,7 @@ public class StorageManager {
 				informationFileWriter.close();
 			} catch (IOException e) {
 				log.log(Level.WARNING, "StorageManager::initializeStorage(): Information writer could not be closed.");
-				throw new Exception("Information writer could not be closed.");
+				throw new Exception(ERROR_INFORMATION_WRITER_NOT_CLOSED);
 			}
 			
 		} else {
@@ -230,7 +253,7 @@ public class StorageManager {
 			informationBufferedReader.close();
 		} catch (IOException e) {
 			log.log(Level.WARNING, "StorageManager::initializeStorage(): Information reader could not be closed.");
-			throw new Exception("Information reader could not be closed.");
+			throw new Exception(ERROR_INFORMATION_READER_NOT_CLOSED);
 		}
 		
 		log.log(Level.INFO, "StorageManager::initializeStorage(): Storage is successfully initialized.");
@@ -252,7 +275,7 @@ public class StorageManager {
 			}
 		} catch (Exception e) {
 			log.log(Level.WARNING, "StorageManager::initiateTaskList(): Task list could not be initialized.");
-			throw new Exception("Task list could not be initialized.");
+			throw new Exception(ERROR_TASK_LIST_UNINITIALIZED);
 		}
 		
 		log.log(Level.INFO, "StorageManager::initiateTaskList(): Task list succesfully initialized.");
@@ -306,7 +329,7 @@ public class StorageManager {
 					informationFileReader.close();
 				} catch (IOException e) {
 					log.log(Level.WARNING, "StorageManager::changeStorageLocation(): Information reader and writer could not be closed.");
-					throw new Exception("Information reader and writer could not be closed.");
+					throw new Exception(ERROR_INFORMATION_READER_AND_WRITER_NOT_CLOSED);
 				}
 				
 				log.log(Level.WARNING, "StorageManager::changeStorageLocation(): Not able to create file at specified location, written back to original StorageInformation.json");
@@ -325,7 +348,7 @@ public class StorageManager {
 
 
 		if(!file.delete()) {
-			throw new Exception("The Original Storage File could not be deleted.");
+			throw new Exception(ERROR_CURRENT_STORAGE_NOT_DELETED);
 		}
 		
 		// Set directory
@@ -338,7 +361,7 @@ public class StorageManager {
 			informationFileReader.close();
 		} catch (IOException e) {
 			log.log(Level.WARNING, "StorageManager::changeStorageLocation(): Information reader and writer could not be closed.");
-			throw new Exception("Information reader and writer could not be closed.");
+			throw new Exception(ERROR_INFORMATION_READER_AND_WRITER_NOT_CLOSED);
 		}
 		
 		if (!file.exists()) {
@@ -400,7 +423,7 @@ public class StorageManager {
 			bufferedWriter.flush();
 		} catch (Exception e) {
 			log.log(Level.WARNING, "StorageManager::writeTask(): Task could not be written.");
-			throw new Exception("Task could not be written");
+			throw new Exception(ERROR_TASK_NOT_WRITTEN);
 		}
 		
 		log.log(Level.INFO, "StorageManager::writeTask(): Successfully written to task list.");
@@ -437,11 +460,11 @@ public class StorageManager {
 		} catch (Exception e) {
 			isRemoved = false;
 			log.log(Level.WARNING, "StorageManager::removeTask(): Task could not be removed.");
-			throw new Exception("Error saving changes to file.");
+			throw new Exception(ERROR_TASK_NOT_REMOVED);
 		}
 		
 		if (!isRemoved) {
-			throw new Exception("\"" + task.getName() + "\" was not found.");
+			throw new Exception(String.format(ERROR_TASK_NOT_FOUND, task.getName()));
 		}
 		
 		log.log(Level.INFO, "StorageManager::removeTask(): Successfully removed task from task list.");
@@ -456,7 +479,7 @@ public class StorageManager {
 	 */
 	public void updateTask(Task oldTask, Task newTask) throws Exception {
 		if (TASK_LIST.length == 0) {
-			throw new Exception("You currently do not have any tasks saved.");
+			throw new Exception(ERROR_EMPTY_TASK_LIST);
 		}
 
 		removeTask(oldTask);

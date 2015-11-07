@@ -10,11 +10,11 @@ public class CommandParserTest {
 	
 @Test
 	public void testUnsupportedCommandParsing() {
-	try {
-		Command invalid = CommandParser.getCommandFromInput("abc");
-	} catch(Exception e) {
-		assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_COMMAND, "abc"));
-	}
+		try {
+			Command invalid = CommandParser.getCommandFromInput("abc");
+		} catch(Exception e) {
+			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_COMMAND, "abc"));
+		}
 	}
 
 	@Test
