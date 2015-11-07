@@ -138,46 +138,111 @@ public class Ui {
 			for (Task task : taskList) {
 				LocalDateTime start = task.getStartDateTime();
 				LocalDateTime end = task.getEndDateTime();
-				String taskName = task.getName();
-				String doneMarker;
-				if (task.isDone()) {
-					doneMarker = MARKER_DONE;
-				} else {
-					doneMarker = MARKER_UNCOMPLETED;
-				}
 				
 				if (end == null && start == null) {
-					if (isFirstUnscheduled) {
-						message.append("\nUnscheduled tasks:\n");
-						isFirstUnscheduled = false;
-					}
-					message.append(String.format(MESSAGE_UNSCHEDULED, doneMarker, taskNumber++, taskName));
+					isFirstUnscheduled = writeUnscheduledToList(message, taskNumber++, task, isFirstUnscheduled);
 				} else if (start == null) {
-					if (isFirstDeadline) {
-						message.append("\nDeadlines:\n");
-						isFirstDeadline = false;
-					}
-					message.append(String.format(MESSAGE_DEADLINE, doneMarker, taskNumber++, taskName,
-							getDateFormat(end), getTimeFormat(end)));
+					isFirstDeadline = writeDeadlineToList(message, taskNumber++, task, isFirstDeadline);
 				} else {
-					if (isFirstEvent) {
-						message.append("\nEvents:\n");
-						isFirstEvent = false;
-					}
-					if (logic.compareDates(start, end) == 0) {
-						// same start and end date -> only show the end time
-						message.append(String.format(MESSAGE_EVENT, doneMarker, taskNumber++, taskName, 
-								getDateTimeFormat(start), getTimeFormat(end)));
-					} else {
-						message.append(String.format(MESSAGE_EVENT, doneMarker, taskNumber++, taskName, 
-								getDateTimeFormat(start), getDateTimeFormat(end)));
-					}
+					isFirstEvent = writeEventToList(message, taskNumber++, task, isFirstEvent);
 				}
 			}
 			return message.toString();
 		} else {
 			return MESSAGE_NO_TASKS;
 		}
+	}
+
+	/**
+	 * Write an event task in the proper formatting to the task list display message
+	 * @param message		the StringBuilder holding the current task list display message
+	 * @param taskNumber	the number associated with the task
+	 * @param task			the task to format and display
+	 * @param isFirst		whether this is the first event in the display so far
+	 * @return				whether this is the first event in the display so far
+	 */
+	public static boolean writeEventToList(StringBuilder message, 
+			int taskNumber, Task task, boolean isFirst) {
+		String taskName = task.getName();
+		LocalDateTime start = task.getStartDateTime();
+		LocalDateTime end = task.getEndDateTime();
+		
+		String doneMarker;
+		if (task.isDone()) {
+			doneMarker = MARKER_DONE;
+		} else {
+			doneMarker = MARKER_UNCOMPLETED;
+		}
+		
+		if (isFirst) {
+			message.append("\nEvents:\n");
+			isFirst = false;
+		}
+		if (logic.compareDates(start, end) == 0) {
+			// same start and end date -> only show the end time
+			message.append(String.format(MESSAGE_EVENT, doneMarker, taskNumber, taskName, 
+					getDateTimeFormat(start), getTimeFormat(end)));
+		} else {
+			message.append(String.format(MESSAGE_EVENT, doneMarker, taskNumber, taskName, 
+					getDateTimeFormat(start), getDateTimeFormat(end)));
+		}
+		return isFirst;
+	}
+
+	/**
+	 * Write a deadline task in the proper formatting to the task list display message
+	 * @param message		the StringBuilder holding the current task list display message
+	 * @param taskNumber	the number associated with the task
+	 * @param task			the task to format and display
+	 * @param isFirst		whether this is the first deadline in the display so far
+	 * @return				whether this is the first deadline in the display so far
+	 */
+	private static boolean writeDeadlineToList(StringBuilder message,
+			int taskNumber, Task task, boolean isFirst) {
+		String taskName = task.getName();
+		LocalDateTime end = task.getEndDateTime();
+
+		String doneMarker;
+		if (task.isDone()) {
+			doneMarker = MARKER_DONE;
+		} else {
+			doneMarker = MARKER_UNCOMPLETED;
+		}
+		
+		if (isFirst) {
+			message.append("\nDeadlines:\n");
+			isFirst = false;
+		}
+		message.append(String.format(MESSAGE_DEADLINE, doneMarker, taskNumber, taskName,
+				getDateFormat(end), getTimeFormat(end)));
+		return isFirst;
+	}
+
+	/**
+	 * Write an unscheduled task in the proper formatting to the task list display message
+	 * @param message		the StringBuilder holding the current task list display message
+	 * @param taskNumber	the number associated with the task
+	 * @param task			the task to format and display
+//	 * @param isFirst		whether this is the first unscheduled task in the display so far
+	 * @return				whether this is the first unscheduled task in the display so far
+	 */
+	private static boolean writeUnscheduledToList(StringBuilder message, 
+			int taskNumber, Task task, boolean isFirst) {
+		String taskName = task.getName();
+
+		String doneMarker;
+		if (task.isDone()) {
+			doneMarker = MARKER_DONE;
+		} else {
+			doneMarker = MARKER_UNCOMPLETED;
+		}
+		
+		if (isFirst) {
+			message.append("\nUnscheduled tasks:\n");
+			isFirst = false;
+		}
+		message.append(String.format(MESSAGE_UNSCHEDULED, doneMarker, taskNumber, taskName));
+		return isFirst;
 	}
 	
 	/**
