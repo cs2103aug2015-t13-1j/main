@@ -139,19 +139,6 @@ public class LogicTest {
 	}
 	
 	@Test
-	public void testCompareDates() {
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime tomorrow = now.plusDays(1);
-		
-		int comparison = logic.compareDates(now, tomorrow);
-		assert(comparison < 0);
-		comparison = logic.compareDates(tomorrow, now);
-		assert(comparison > 0);
-		comparison = logic.compareDates(now, now);
-		assert(comparison == 0);
-	}
-	
-	@Test
 	public void testValidateDates() {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime later = now.plusSeconds(1);

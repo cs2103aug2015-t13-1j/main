@@ -1,4 +1,5 @@
 //@@author A0145732H
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -25,8 +26,8 @@ public class Logic {
 	private static Command lastExecutedCommand = null;
 	
 	// single instances
-	private static StorageManager storageManager = null;
-	private static Logic commandLogic = null;
+	protected static StorageManager storageManager = null;
+	protected static Logic commandLogic = null;
 	
 	public Logic() {
 	}
@@ -242,17 +243,17 @@ public class Logic {
 	
 	public ArrayList<Task> getTodaysTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
-		LocalDateTime today = LocalDateTime.now();
+		LocalDate today = LocalDate.now();
 		ArrayList<Task> todaysTasks = new ArrayList<Task>();
 		for (Task task : taskList) {
-			LocalDateTime start = task.getStartDateTime();
-			LocalDateTime end = task.getEndDateTime();
+			LocalDate start = task.getStartDateTime().toLocalDate();
+			LocalDate end = task.getEndDateTime().toLocalDate();
 			if (start != null && end != null) {
-				if (compareDates(start, today) == 0 || compareDates(end, today) == 0) {
+				if (start.compareTo(today) == 0 || end.compareTo(today) == 0) {
 					todaysTasks.add(task);
 				}
 			} else if (end != null) {
-				if (compareDates(end, today) == 0) {
+				if (end.compareTo(today) == 0) {
 					todaysTasks.add(task);
 				}
 			}
@@ -267,43 +268,22 @@ public class Logic {
 	
 	public ArrayList<Task> getTomorrowsTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
-		LocalDateTime tomorrow = getTomorrowsDate();
+		LocalDate tomorrow = LocalDate.now().plusDays(1);
 		ArrayList<Task> tomorrowsTasks = new ArrayList<Task>();
 		for (Task task : taskList) {
-			LocalDateTime start = task.getStartDateTime();
-			LocalDateTime end = task.getEndDateTime();
+			LocalDate start = task.getStartDateTime().toLocalDate();
+			LocalDate end = task.getEndDateTime().toLocalDate();
 			if (start != null && end != null) {
-				if (compareDates(start, tomorrow) == 0 || compareDates(end, tomorrow) == 0) {
+				if (start.compareTo(tomorrow) == 0 || end.compareTo(tomorrow) == 0) {
 					tomorrowsTasks.add(task);
 				}
 			} else if (end != null) {
-				if (compareDates(end, tomorrow) == 0) {
+				if (end.compareTo(tomorrow) == 0) {
 					tomorrowsTasks.add(task);
 				}
 			}
 		}
 		return tomorrowsTasks;
-	}
-	
-	public LocalDateTime getTomorrowsDate() {
-		LocalDateTime today = LocalDateTime.now();
-		return today.plusDays(1);
-	}
-	
-	public int compareDates(LocalDateTime date1, LocalDateTime date2) {
-		if (date1.getYear() < date2.getYear()) {
-			return -1;
-		} else if (date1.getYear() > date2.getYear()) {
-			return 1;
-		} else {
-			if (date1.getDayOfYear() < date2.getDayOfYear()) {
-				return -1;
-			} else if (date1.getDayOfYear() > date2.getDayOfYear()) {
-				return 1;
-			} else {
-				return 0;
-			}
-		}
 	}
 	
 	public void validateDates(LocalDateTime start, LocalDateTime end) throws Exception {

@@ -1,6 +1,8 @@
 //@@author A0145732H
 import org.fusesource.jansi.AnsiConsole;
 import static org.fusesource.jansi.Ansi.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -178,7 +180,7 @@ public class Ui {
 			message.append("\nEvents:\n");
 			isFirst = false;
 		}
-		if (logic.compareDates(start, end) == 0) {
+		if (start.toLocalDate().compareTo(end.toLocalDate()) == 0) {
 			// same start and end date -> only show the end time
 			message.append(String.format(MESSAGE_EVENT, doneMarker, taskNumber, taskName, 
 					getDateTimeFormat(start), getTimeFormat(end)));
@@ -249,7 +251,7 @@ public class Ui {
 	 * Add color coding to a string based on the given time.
 	 * 
 	 * @param message	the string to add color coding to
-	 * @param dateTime	the date to determine the color coding
+	 * @param dateTime		the date to determine the color coding
 	 * @return			the jansi formatted color coded string
 	 */
 	public static String addColorCoding(String message, LocalDateTime dateTime) {
@@ -257,9 +259,9 @@ public class Ui {
 			return COLOR_CODE_FUTURE + message + COLOR_CODE_END_TAG;
 		} else if (dateTime.compareTo(LocalDateTime.now()) < 0) {
 			return COLOR_CODE_OVERDUE + message + COLOR_CODE_END_TAG;
-		} else if (logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
+		} else if (dateTime.toLocalDate().compareTo(LocalDate.now()) == 0) {
 			return COLOR_CODE_TODAY + message + COLOR_CODE_END_TAG;
-		} else if (logic.compareDates(dateTime, logic.getTomorrowsDate()) == 0) {
+		} else if (dateTime.toLocalDate().compareTo(LocalDate.now().plusDays(1)) == 0) {
 			return COLOR_CODE_TOMORROW + message + COLOR_CODE_END_TAG;
 		} else {
 			return COLOR_CODE_FUTURE + message + COLOR_CODE_END_TAG;
@@ -273,18 +275,19 @@ public class Ui {
 	 * @return			the string in the proper date format
 	 */
 	public static String getDateFormat(LocalDateTime dateTime) {
-		String month = dateTime.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-		String day = dateTime.getDayOfWeek().toString();
+		LocalDate date = dateTime.toLocalDate();
+		String month = date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+		String day = date.getDayOfWeek().toString();
 		day = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
-		LocalDateTime today = LocalDateTime.now();
+		LocalDate today = LocalDate.now();
 		String message;
 		
 		// only display the year if it is different from the current year
 		if (dateTime.getYear() != today.getYear()) {
 			message = String.format(MESSAGE_DATE_YEAR, day, dateTime.getDayOfMonth(), month, dateTime.getYear());
-		} else if (logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
+		} else if (date.compareTo(today) == 0) {
 			message = "today";
-		} else if (logic.compareDates(dateTime, logic.getTomorrowsDate()) == 0) {
+		} else if (date.compareTo(today.plusDays(1)) == 0) {
 			message = "tomorrow";
 		} else {
 			message = String.format(MESSAGE_DATE, day, dateTime.getDayOfMonth(), month);
