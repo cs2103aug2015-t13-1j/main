@@ -52,7 +52,7 @@ public class Ui {
 	private static Scanner keyboard;
 	private static ArrayList<Task> currentTaskList;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		taskBuddyInit();
 		displayWelcomeMessage();
 		while (isRunning) {
@@ -76,8 +76,9 @@ public class Ui {
 
 	/**
 	 * This method initiates Task Buddy by initializing the class variables
+	 * @throws Exception 
 	 */
-	private static void taskBuddyInit() {
+	private static void taskBuddyInit() throws Exception {
 		AnsiConsole.systemInstall();
 		keyboard = new Scanner(System.in);
 		isRunning = true;
@@ -95,8 +96,9 @@ public class Ui {
 
 	/**
 	 * This method closes Task Buddy
+	 * @throws Exception 
 	 */
-	private static void taskBuddyClose() {
+	private static void taskBuddyClose() throws Exception {
 		Logic.close();
 		keyboard.close();
 		AnsiConsole.systemUninstall();
