@@ -8,7 +8,7 @@ import org.junit.Test;
 public class LogicTest {
 	//@@author A0145732H
 	@Test
-	public void testSearchTasks() {
+	public void testSearchTasks() throws Exception {
 		StorageManagerStub sm = new StorageManagerStub();
 		Logic.init(sm);
 				
@@ -48,7 +48,7 @@ public class LogicTest {
 	}
 	
 	@Test
-	public void testGetTasksMethods() {
+	public void testGetTasksMethods() throws Exception {
 		StorageManagerStub sm = new StorageManagerStub();
 		Logic.init(sm);
 		

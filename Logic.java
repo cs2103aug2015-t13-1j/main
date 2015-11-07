@@ -28,14 +28,14 @@ public class Logic {
 	private static StorageManager storageManager = null;
 	
 	//@@author A0126270N
-		public static void init(StorageManager sm) {
+		public static void init(StorageManager sm) throws Exception {
 			assert(sm != null);
 			storageManager = sm;
 			storageManager.openStorage();
 			Command.setStorageManager(sm);
 		}
 		
-		public static void close() {
+		public static void close() throws Exception {
 			storageManager.closeStorage();
 		}
 		
@@ -66,8 +66,6 @@ public class Logic {
 		}
 		return command;
 	}
-
-	
 	
 	/**
 	 * This method searches the task list for tasks containing all of the given keywords
