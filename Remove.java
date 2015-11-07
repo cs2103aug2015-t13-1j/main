@@ -49,7 +49,8 @@ public class Remove extends Command implements Undoable {
 		assert(isExecuted);
 		return String.format(SUCCESS_REMOVE, task.getName());
 	}
-	
+
+	//@@author A0126270N
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {

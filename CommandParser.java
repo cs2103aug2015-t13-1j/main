@@ -34,6 +34,7 @@ public class CommandParser {
 	public static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
 	public static final String ERROR_NAME_SHOULD_BE_IN_QUOTES = "The task name should be surrounded by quotes.";
 	public static final String ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS = "The task name should not be composed entirely of spaces.";
+	public static final String ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES = "The folder path should be surrounded by quotes.";
 	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
@@ -333,12 +334,16 @@ public class CommandParser {
   	return new Reformat();
   }
   
-  private static Command initRelocateCommand(ArrayList<String> args) {
+  private static Command initRelocateCommand(ArrayList<String> args) throws Exception {
   	String fileLocation = args.get(0);
+  	char first = fileLocation.charAt(0), last = fileLocation.charAt(fileLocation.length()-1);
+  	if (first != '"' || last != '"') {
+  		throw new Exception(ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
+  	}
   	
-  	fileLocation = fileLocation.substring(1, fileLocation.length() - 1);
+  	String fileLocationWithoutQuotes = fileLocation.substring(1, fileLocation.length() - 1);
   	
-  	return new Relocate(fileLocation);
+  	return new Relocate(fileLocationWithoutQuotes);
   }
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {

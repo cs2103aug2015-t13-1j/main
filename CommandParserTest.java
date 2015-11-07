@@ -369,5 +369,24 @@ assertEquals(e.getMessage(), String.format(CommandParser.ERROR_UNRECOGNIZED_UPDA
 				fail("exception thrown");
 			}
 		}
-	
+
+		@Test
+		public void testRelocateParsing() {
+			String folderPath = "d:\\my documents\\dropbox";
+
+			try {
+				Relocate valid = (Relocate)CommandParser.getCommandFromInput("relocate \"" + folderPath + "\"");
+				assertEquals(valid, new Relocate(folderPath));
+			} catch (Exception e) {
+				fail("exception thrown");
+			}
+
+			try {
+				Command invalid = (Relocate)CommandParser.getCommandFromInput("relocate " + folderPath);
+				fail("exception not thrown");
+			} catch (Exception e) {
+				assertEquals(e.getMessage(), CommandParser.ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
+			}
+
+		}
 }
