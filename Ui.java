@@ -41,6 +41,12 @@ public class Ui {
 	private static final String MESSAGE_DATE = "%s, %d %s";
 	private static final String MESSAGE_DATE_YEAR = MESSAGE_DATE + " %d";
 	private static final String MESSAGE_TIME = "%d:%02d %s";
+	private static final String MESSAGE_DATE_TIME = "%s at %s";
+	
+	/** message formats for user command feedback **/
+	private static final String MESSAGE_FEEDBACK_EVENT = "\"%s\", scheduled from %s to %s";
+	private static final String MESSAGE_FEEDBACK_DEADLINE = "\"%s\" due by %s";
+	private static final String MESSAGE_FEEDBACK_UNSCHEDULED = "\"%s\"";
 	
 	private static boolean isRunning;
 	private static Scanner keyboard;
@@ -177,7 +183,7 @@ public class Ui {
 	 * @param dateTime	the date to determine the color coding
 	 * @return			the jansi formatted color coded string
 	 */
-	private static String addColorCoding(String message, LocalDateTime dateTime) {
+	public static String addColorCoding(String message, LocalDateTime dateTime) {
 		if (dateTime == null) {
 			return COLOR_CODE_FUTURE + message + COLOR_CODE_END_TAG;
 		} else if (dateTime.compareTo(LocalDateTime.now()) < 0) {
@@ -246,7 +252,7 @@ public class Ui {
 	 * @return			a String in the format dd mmm hh:mm
 	 */
 	private static String getDateTimeFormat(LocalDateTime dateTime) {
-		return getDateFormat(dateTime) + " at " + getTimeFormat(dateTime);
+		return String.format(MESSAGE_DATE_TIME, getDateFormat(dateTime), getTimeFormat(dateTime));
 	}
 	
 	//@@author A0126270N
@@ -255,17 +261,19 @@ public class Ui {
 	 *This is not for UI's column task list display, but is for providing confirmation for commands like add and undo
 	 */
 	public static String getPrintableTaskString(Task task) {
-		String str = "\"" + task.getName() + "\"";
+		String taskName = task.getName();
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
+		String message = null;;
 		
 		if (start != null && end != null) {
-			str += ", scheduled from " + getDateTimeFormat(start) + " to " + getDateTimeFormat(end);
+			message = String.format(MESSAGE_FEEDBACK_EVENT, taskName, getDateTimeFormat(start), getDateTimeFormat(end));
 		} else if (start == null && end != null) {
-			str += ", due by " + getDateTimeFormat(end);
+			message = String.format(MESSAGE_FEEDBACK_DEADLINE, taskName, getDateTimeFormat(end));
+		} else {
+			message = String.format(MESSAGE_FEEDBACK_UNSCHEDULED, taskName);
 		}
-		
-		return str;
+		return message;
 	}
 
 	//@@author A0145732H
