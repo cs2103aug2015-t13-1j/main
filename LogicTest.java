@@ -10,7 +10,7 @@ public class LogicTest {
 	@Test
 	public void testSearchTasks() {
 		StorageManagerStub sm = new StorageManagerStub();
-		Logic.setStorageManager(sm);
+		Logic.init(sm);
 				
 		Task apple = new Task("apple", false);
 		Task banana = new Task("banana", false);
@@ -50,7 +50,7 @@ public class LogicTest {
 	@Test
 	public void testGetTasksMethods() {
 		StorageManagerStub sm = new StorageManagerStub();
-		Logic.setStorageManager(sm);
+		Logic.init(sm);
 		
 		Task t1 = new Task("1", true);
 		Task t2 = new Task("2", false);

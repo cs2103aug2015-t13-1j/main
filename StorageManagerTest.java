@@ -14,17 +14,19 @@ public class StorageManagerTest {
 	// Not sure if this can be changed
 private static final String DIRECTORY = "unit tests\\";
 		private static final String FILENAME = "TaskStorage.json";
+private static StorageManager storageManager = null;
 
 	@Before
 public void init() throws Exception {
-		// StorageManager.initializeStorage();
-		StorageManager.openStorage();
-		StorageManager.changeStorageLocation(DIRECTORY);
+		storageManager = new StorageManager();
+		storageManager.initializeStorage();
+		storageManager.openStorage();
+		storageManager.changeStorageLocation(DIRECTORY);
 	}
 	
 	@After
 public void shutdown() throws IOException {
-		StorageManager.closeStorage();
+		storageManager.closeStorage();
 		deleteFile(DIRECTORY + FILENAME);
 	}
 	

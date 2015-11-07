@@ -1,3 +1,4 @@
+//@@author A0145732H
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -7,7 +8,6 @@ import java.util.Stack;
  *The logic class will process user input from UI, and return the result of the processing to UI.
  *For example, UI gets info about successful execution   of a command. 
  *Errors encountered during input parsing or execution will be propagated by exceptions
- *@author Dickson
  */
 
 public class Logic {
@@ -25,16 +25,21 @@ public class Logic {
 	private static Command lastExecutedCommand = null;
 	
 	// single instances
-	private static StorageManager storageManager = new StorageManager();
+	private static StorageManager storageManager = null;
 	
-	/**
-	 * set the class variable storageManager, for dependency injection
-	 * @param sm
-	 */
-	public static void setStorageManager(StorageManager sm) {
-		storageManager = sm;
-	}
-	
+	//@@author A0126270N
+		public static void init(StorageManager sm) {
+			assert(sm != null);
+			storageManager = sm;
+			storageManager.openStorage();
+			Command.setStorageManager(sm);
+		}
+		
+		public static void close() {
+			storageManager.closeStorage();
+		}
+		
+		//@@author A0145732H
 	public static Command processUserInput(String userInput) throws Exception {
 		Command command;
 		try {
@@ -62,14 +67,7 @@ public class Logic {
 		return command;
 	}
 
-	//@@author A0145732H
-	public static void init() {
-		storageManager.openStorage();
-	}
 	
-	public static void close() {
-		storageManager.closeStorage();
-	}
 	
 	/**
 	 * This method searches the task list for tasks containing all of the given keywords

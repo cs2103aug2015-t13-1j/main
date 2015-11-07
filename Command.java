@@ -4,8 +4,13 @@
  * execute it. It is created by CommandParser's parse method.
  */
 public abstract class Command {
-	public static StorageManager storageManager = new StorageManager();
+	protected static StorageManager storageManager = null;
 	
 	public abstract void execute() throws Exception;
 	public abstract String getSuccessMessage();
+	//@@author A0126270N
+	public static void setStorageManager(StorageManager sm) {
+		assert(sm != null);
+		storageManager = sm;
+	}
 }

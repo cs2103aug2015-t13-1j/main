@@ -75,7 +75,7 @@ public class Ui {
 		AnsiConsole.systemInstall();
 		keyboard = new Scanner(System.in);
 		isRunning = true;
-		Logic.init();
+		Logic.init(new StorageManager());
 	}
 
 	/**
