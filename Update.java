@@ -45,13 +45,13 @@ public class Update extends Command implements Undoable {
 			oldTask = taskList.get(taskIndex);
 			createUpdatedTask();
 			// validateDates() will throw an exception if the dates are not valid
-			Logic.validateDates(newTask.getStartDateTime(), newTask.getEndDateTime());
+			logic.validateDates(newTask.getStartDateTime(), newTask.getEndDateTime());
 			
 			if (oldTask.equals(newTask)) {
 				throw new Exception(ERROR_CHANGES_DO_NOT_RESULT_IN_DIFFERENT_TASK);
 			}
 			
-			if (Logic.doesTaskExist(newTask)) {
+			if (logic.doesTaskExist(newTask)) {
 				throw new Exception(ERROR_TASK_ALREADY_EXISTS);
 			}
 			

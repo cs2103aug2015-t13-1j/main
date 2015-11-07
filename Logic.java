@@ -26,21 +26,29 @@ public class Logic {
 	
 	// single instances
 	private static StorageManager storageManager = null;
+	private static Logic commandLogic = null;
+	
+	public Logic() {
+	}
 	
 	//@@author A0126270N
-		public static void init(StorageManager sm) throws Exception {
+		public void init(StorageManager sm, Logic logic) throws Exception {
 			assert(sm != null);
 			storageManager = sm;
 			storageManager.openStorage();
 			Command.setStorageManager(sm);
+			
+			assert(logic != null);
+			commandLogic = logic;
+			Command.setLogic(commandLogic);
 		}
 		
-		public static void close() throws Exception {
+		public void close() throws Exception {
 			storageManager.closeStorage();
 		}
 		
-		//@@author A0145732H
-	public static Command processUserInput(String userInput) throws Exception {
+	//@@author A0145732H
+	public Command processUserInput(String userInput) throws Exception {
 		Command command;
 		try {
 			command = CommandParser.getCommandFromInput(userInput);
@@ -74,7 +82,7 @@ public class Logic {
 	 * @return			an ArrayList of the tasks containing all of the keywords
 	 * 					The ArrayList will be empty if no tasks were found.
 	 */
-	public static ArrayList<Task> searchTasks(String[] keywords) {
+	public ArrayList<Task> searchTasks(String[] keywords) {
 		assert(keywords != null);
 		
 		ArrayList<Task> taskList = storageManager.readAllTasks();
@@ -102,7 +110,7 @@ public class Logic {
 	 * 
 	 * @return	an ArrayList of tasks marked as done
 	 */
-	public static ArrayList<Task> getCompletedTasks() {
+	public ArrayList<Task> getCompletedTasks() {
 		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getCompletedTasks(taskList);
 	}
@@ -113,7 +121,7 @@ public class Logic {
 	 * @param taskList	the ArrayList to search through to get the completed tasks
 	 * @return			an ArrayList of the completed tasks
 	 */
-	public static ArrayList<Task> getCompletedTasks(ArrayList<Task> taskList) {
+	public ArrayList<Task> getCompletedTasks(ArrayList<Task> taskList) {
 		ArrayList<Task> completed = new ArrayList<Task>();
 		for (Task task : taskList) {
 			if (task.isDone()) {
@@ -128,7 +136,7 @@ public class Logic {
 	 * 
 	 * @return	an ArrayList of tasks marked as not done
 	 */
-	public static ArrayList<Task> getUncompletedTasks() {
+	public ArrayList<Task> getUncompletedTasks() {
 		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getUncompletedTasks(taskList);
 	}
@@ -138,7 +146,7 @@ public class Logic {
 	 * @param taskList	the ArrayList to search through to get the uncompleted tasks
 	 * @return			an ArrayList of the uncompleted tasks
 	 */
-	public static ArrayList<Task> getUncompletedTasks(ArrayList<Task> taskList) {
+	public ArrayList<Task> getUncompletedTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		ArrayList<Task> uncompleted = new ArrayList<Task>();
 		for (Task task : taskList) {
@@ -153,7 +161,7 @@ public class Logic {
 	 * This method searches for all of the unscheduled tasks in the entire task list
 	 * @return	an ArrayList of the unscheduled tasks
 	 */
-	public static ArrayList<Task> getUnscheduledTasks() {
+	public ArrayList<Task> getUnscheduledTasks() {
 		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getUnscheduledTasks(taskList);
 	}
@@ -164,7 +172,7 @@ public class Logic {
 	 * @param taskList	the specified task list to filter for unscheduled tasks
 	 * @return			an ArrayList of the found unscheduled tasks
 	 */
-	public static ArrayList<Task> getUnscheduledTasks(ArrayList<Task> taskList) {
+	public ArrayList<Task> getUnscheduledTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		ArrayList<Task> unscheduled = new ArrayList<Task>();
 		for (Task task : taskList) {
@@ -179,7 +187,7 @@ public class Logic {
 	 * This method searches for all of the deadline tasks in the entire task list
 	 * @return	an ArrayList of the deadline tasks
 	 */
-	public static ArrayList<Task> getDeadlineTasks() {
+	public ArrayList<Task> getDeadlineTasks() {
 		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getDeadlineTasks(taskList);
 	}
@@ -190,7 +198,7 @@ public class Logic {
 	 * @param taskList	the specified task list to filter for deadlines
 	 * @return			an ArrayList of the found deadlines
 	 */
-	public static ArrayList<Task> getDeadlineTasks(ArrayList<Task> taskList) {
+	public ArrayList<Task> getDeadlineTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		ArrayList<Task> deadlines = new ArrayList<Task>();
 		for (Task task : taskList) {
@@ -205,7 +213,7 @@ public class Logic {
 	 * This method searches for all of the events in the entire task list
 	 * @return	an ArrayList of the events
 	 */
-	public static ArrayList<Task> getEvents() {
+	public ArrayList<Task> getEvents() {
 		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getEvents(taskList);
 	}
@@ -216,7 +224,7 @@ public class Logic {
 	 * @param taskList	the specified task list to filter for events
 	 * @return			an ArrayList of the found events
 	 */
-	public static ArrayList<Task> getEvents(ArrayList<Task> taskList) {
+	public ArrayList<Task> getEvents(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		ArrayList<Task> events = new ArrayList<Task>();
 		for (Task task : taskList) {
@@ -227,12 +235,12 @@ public class Logic {
 		return events;	
 	}
 	
-	public static ArrayList<Task> getTodaysTasks() {
+	public ArrayList<Task> getTodaysTasks() {
 		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getTodaysTasks(taskList);
 	}
 	
-	public static ArrayList<Task> getTodaysTasks(ArrayList<Task> taskList) {
+	public ArrayList<Task> getTodaysTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		LocalDateTime today = LocalDateTime.now();
 		ArrayList<Task> todaysTasks = new ArrayList<Task>();
@@ -252,12 +260,12 @@ public class Logic {
 		return todaysTasks;
 	}
 	
-	public static ArrayList<Task> getTomorrowsTasks() {
+	public ArrayList<Task> getTomorrowsTasks() {
 		ArrayList<Task> taskList = storageManager.readAllTasks();
 		return getTomorrowsTasks(taskList);
 	}
 	
-	public static ArrayList<Task> getTomorrowsTasks(ArrayList<Task> taskList) {
+	public ArrayList<Task> getTomorrowsTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		LocalDateTime tomorrow = getTomorrowsDate();
 		ArrayList<Task> tomorrowsTasks = new ArrayList<Task>();
@@ -277,12 +285,12 @@ public class Logic {
 		return tomorrowsTasks;
 	}
 	
-	public static LocalDateTime getTomorrowsDate() {
+	public LocalDateTime getTomorrowsDate() {
 		LocalDateTime today = LocalDateTime.now();
 		return today.plusDays(1);
 	}
 	
-	public static int compareDates(LocalDateTime date1, LocalDateTime date2) {
+	public int compareDates(LocalDateTime date1, LocalDateTime date2) {
 		if (date1.getYear() < date2.getYear()) {
 			return -1;
 		} else if (date1.getYear() > date2.getYear()) {
@@ -298,7 +306,7 @@ public class Logic {
 		}
 	}
 	
-	public static void validateDates(LocalDateTime start, LocalDateTime end) throws Exception {
+	public void validateDates(LocalDateTime start, LocalDateTime end) throws Exception {
 		if (start == null) {
 			// dates are always valid for unscheduled tasks and deadlines
 			return;
@@ -315,7 +323,7 @@ public class Logic {
 	 * @return	the last Undoable command stored in the command history
 	 * @throws EmptyStackException	if there are no more commands in the stack
 	 */
-	public static Undoable getLastUndoable() throws EmptyStackException {
+	public Undoable getLastUndoable() throws EmptyStackException {
 		return undoableHistory.peek();
 	}
 
@@ -323,7 +331,7 @@ public class Logic {
 	 * Generate the default task list for the default view.
 	 * @return
 	 */
-	private static ArrayList<Task> getDefaultTaskList() {
+	private ArrayList<Task> getDefaultTaskList() {
 		ArrayList<Task> defaultTasks = new ArrayList<Task>();
 		ArrayList<Task> uncompleted = getUncompletedTasks();
 		ArrayList<Task> uncompletedUnscheduled = getUnscheduledTasks(uncompleted);
@@ -404,7 +412,7 @@ public class Logic {
 	 * 
 	 * @return	the list of tasks
 	 */
-	public static ArrayList<Task> updateCurrentTaskList() {
+	public ArrayList<Task> updateCurrentTaskList() {
 		if (lastExecutedCommand != null && lastExecutedCommand.getClass() == List.class) {
 			List command = (List)lastExecutedCommand;
 			return command.getTaskList();
@@ -418,7 +426,7 @@ public class Logic {
 	 * 
 	 * @return	a string representation of the default view to show
 	 */
-	public static String getDefaultView() {
+	public String getDefaultView() {
 		if (lastExecutedCommand != null && lastExecutedCommand.getClass() == List.class) {
 			return "";
 		} else {
@@ -431,7 +439,7 @@ public class Logic {
 	/*
 	 *Determines if the specified task already exists. This is used to prevent adding or updating which would cause duplicate tasks
 	 */
-	public static boolean doesTaskExist(Task task) {
+	public boolean doesTaskExist(Task task) {
 		assert(task != null);
 		ArrayList<Task> taskList = storageManager.readAllTasks();
 		

@@ -9,9 +9,9 @@ import java.util.Scanner;
 
 /**
  * The UI class handles all user input and output to the screen.
- * It sends the user input to the Logic component for processing,
+ * It sends the user input to the logic component for processing,
  * and it handles displaying the command feedback and errors to the user. 
- * Exceptions thrown by the Logic component to indicate errors are handled by UI. 
+ * Exceptions thrown by the logic component to indicate errors are handled by UI. 
  * 
  * @author Katherine Coronado
  *
@@ -51,13 +51,14 @@ public class Ui {
 	private static boolean isRunning;
 	private static Scanner keyboard;
 	private static ArrayList<Task> currentTaskList;
+	private static Logic logic;
 	
 	public static void main(String[] args) throws Exception {
 		taskBuddyInit();
 		displayWelcomeMessage();
 		while (isRunning) {
-			currentTaskList = Logic.updateCurrentTaskList();
-			showToUser(Logic.getDefaultView());
+			currentTaskList = logic.updateCurrentTaskList();
+			showToUser(logic.getDefaultView());
 			showToUser(MESSAGE_COMMAND_PROMPT);
 			String userInput = getUserInput();
 			executeUserInput(userInput);
@@ -82,7 +83,8 @@ public class Ui {
 		AnsiConsole.systemInstall();
 		keyboard = new Scanner(System.in);
 		isRunning = true;
-		Logic.init(new StorageManager());
+		logic = new Logic();
+		logic.init(new StorageManager(), new Logic());
 	}
 
 	/**
@@ -99,7 +101,7 @@ public class Ui {
 	 * @throws Exception 
 	 */
 	private static void taskBuddyClose() throws Exception {
-		Logic.close();
+		logic.close();
 		keyboard.close();
 		AnsiConsole.systemUninstall();
 		System.exit(0);
@@ -112,7 +114,7 @@ public class Ui {
 	 */
 	public static void executeUserInput(String userInput) {
 		try {
-			Command command = Logic.processUserInput(userInput);
+			Command command = logic.processUserInput(userInput);
 			showToUser(command.getSuccessMessage() + "\n\n");
 		} catch (Exception e) {
 			showToUser(e.getMessage() + "\n\n");
@@ -162,7 +164,7 @@ public class Ui {
 						message.append("\nEvents:\n");
 						isFirstEvent = false;
 					}
-					if (Logic.compareDates(start, end) == 0) {
+					if (logic.compareDates(start, end) == 0) {
 						// same start and end date -> only show the end time
 						message.append(String.format(MESSAGE_EVENT, doneMarker, taskNumber++, taskName, 
 								getDateTimeFormat(start), getTimeFormat(end)));
@@ -190,9 +192,9 @@ public class Ui {
 			return COLOR_CODE_FUTURE + message + COLOR_CODE_END_TAG;
 		} else if (dateTime.compareTo(LocalDateTime.now()) < 0) {
 			return COLOR_CODE_OVERDUE + message + COLOR_CODE_END_TAG;
-		} else if (Logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
+		} else if (logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
 			return COLOR_CODE_TODAY + message + COLOR_CODE_END_TAG;
-		} else if (Logic.compareDates(dateTime, Logic.getTomorrowsDate()) == 0) {
+		} else if (logic.compareDates(dateTime, logic.getTomorrowsDate()) == 0) {
 			return COLOR_CODE_TOMORROW + message + COLOR_CODE_END_TAG;
 		} else {
 			return COLOR_CODE_FUTURE + message + COLOR_CODE_END_TAG;
@@ -215,9 +217,9 @@ public class Ui {
 		// only display the year if it is different from the current year
 		if (dateTime.getYear() != today.getYear()) {
 			message = String.format(MESSAGE_DATE_YEAR, day, dateTime.getDayOfMonth(), month, dateTime.getYear());
-		} else if (Logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
+		} else if (logic.compareDates(dateTime, LocalDateTime.now()) == 0) {
 			message = "today";
-		} else if (Logic.compareDates(dateTime, Logic.getTomorrowsDate()) == 0) {
+		} else if (logic.compareDates(dateTime, logic.getTomorrowsDate()) == 0) {
 			message = "tomorrow";
 		} else {
 			message = String.format(MESSAGE_DATE, day, dateTime.getDayOfMonth(), month);

@@ -5,9 +5,14 @@
  */
 public abstract class Command {
 	protected static StorageManager storageManager = null;
+	protected static Logic logic = null;
 	
 	public abstract void execute() throws Exception;
 	public abstract String getSuccessMessage();
+	
+	public static void setLogic(Logic logicInstance) {
+		logic = logicInstance;
+	}
 	//@@author A0126270N
 	public static void setStorageManager(StorageManager sm) {
 		assert(sm != null);

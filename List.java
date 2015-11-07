@@ -47,14 +47,14 @@ public class List extends Command {
 		if (keywords != null || flags != null) {
 			ArrayList<Task> tasks = storageManager.readAllTasks();
 			if (keywords != null) {
-				tasks = Logic.searchTasks(keywords);
+				tasks = logic.searchTasks(keywords);
 			}
 			if (flags != null) {
 				tasks = getFlaggedTasks(tasks);
 			}
 			taskList = tasks;
 		} else {
-			taskList = Logic.getUncompletedTasks();
+			taskList = logic.getUncompletedTasks();
 		}
 		wasExecuted = true;
 	}
@@ -62,25 +62,25 @@ public class List extends Command {
 	private ArrayList<Task> getFlaggedTasks(ArrayList<Task> flaggedTasks) {
 		// keep refining the task list based on which flags are marked
 		if (flags.contains(LIST_FLAGS.COMPLETED)) {
-			flaggedTasks = Logic.getCompletedTasks(flaggedTasks);
+			flaggedTasks = logic.getCompletedTasks(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.UNCOMPLETED)) {
-			flaggedTasks = Logic.getUncompletedTasks(flaggedTasks);
+			flaggedTasks = logic.getUncompletedTasks(flaggedTasks);
 		}		
 		if (flags.contains(LIST_FLAGS.UNSCHEDULED)) {
-			flaggedTasks = Logic.getUnscheduledTasks(flaggedTasks);
+			flaggedTasks = logic.getUnscheduledTasks(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.DEADLINE)) {
-			flaggedTasks = Logic.getDeadlineTasks(flaggedTasks);
+			flaggedTasks = logic.getDeadlineTasks(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.EVENT)) {
-			flaggedTasks = Logic.getEvents(flaggedTasks);
+			flaggedTasks = logic.getEvents(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.TODAY)) {
-			flaggedTasks = Logic.getTodaysTasks(flaggedTasks);
+			flaggedTasks = logic.getTodaysTasks(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.TOMORROW)) {
-			flaggedTasks = Logic.getTomorrowsTasks(flaggedTasks);
+			flaggedTasks = logic.getTomorrowsTasks(flaggedTasks);
 		}
 		return flaggedTasks;
 	}

@@ -23,9 +23,9 @@ public class Add extends Command implements Undoable {
 	 */
 	public void execute() throws Exception {
 		// validateDates() will throw an exception if the dates are not valid
-		Logic.validateDates(task.getStartDateTime(), task.getEndDateTime());
+		logic.validateDates(task.getStartDateTime(), task.getEndDateTime());
 		
-		if (Logic.doesTaskExist(task)) {
+		if (logic.doesTaskExist(task)) {
 			throw new Exception(ERROR_TASK_ALREADY_EXISTS);
 		}
 		

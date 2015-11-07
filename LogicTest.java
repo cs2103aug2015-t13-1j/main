@@ -1,3 +1,4 @@
+//@@author A0145732H
 import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
@@ -6,11 +7,12 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 public class LogicTest {
-	//@@author A0145732H
+	private Logic logic = new Logic();
 	@Test
 	public void testSearchTasks() throws Exception {
 		StorageManagerStub sm = new StorageManagerStub();
-		Logic.init(sm);
+		Logic commandLogic = new Logic();
+		logic.init(sm, commandLogic);
 				
 		Task apple = new Task("apple", false);
 		Task banana = new Task("banana", false);
@@ -27,7 +29,7 @@ public class LogicTest {
 		
 		// test searching "b"
 		// equivalence partition for searching for one keyword
-		actual = Logic.searchTasks(new String[] {"b"});
+		actual = logic.searchTasks(new String[] {"b"});
 		expected.add(banana);
 		expected.add(baby);
 		expected.add(appleBanana);
@@ -35,14 +37,14 @@ public class LogicTest {
 		
 		// test searching "apple b"
 		// equivalence partition for searching with more than one keyword
-		actual = Logic.searchTasks(new String[] {"apple", "b"});
+		actual = logic.searchTasks(new String[] {"apple", "b"});
 		expected.clear();
 		expected.add(appleBanana);
 		assert(actual.equals(expected));
 		
 		// test searching "c"
 		// equivalence partition for searching and not finding anything
-		actual = Logic.searchTasks(new String[] {"c"});
+		actual = logic.searchTasks(new String[] {"c"});
 		expected.clear();
 		assert(actual.equals(expected));
 	}
@@ -50,7 +52,8 @@ public class LogicTest {
 	@Test
 	public void testGetTasksMethods() throws Exception {
 		StorageManagerStub sm = new StorageManagerStub();
-		Logic.init(sm);
+		Logic commandLogic = new Logic();
+		logic.init(sm, commandLogic);
 		
 		Task t1 = new Task("1", true);
 		Task t2 = new Task("2", false);
@@ -76,7 +79,7 @@ public class LogicTest {
 		expected.add(t3);
 		expected.add(t6);
 		
-		ArrayList<Task> actual = Logic.getCompletedTasks();
+		ArrayList<Task> actual = logic.getCompletedTasks();
 		assert(actual.equals(expected));
 		expected.clear();
 		
@@ -87,7 +90,7 @@ public class LogicTest {
 		expected.add(t7);
 		expected.add(t8);
 		
-		actual = Logic.getUncompletedTasks();
+		actual = logic.getUncompletedTasks();
 		assert(actual.equals(expected));
 		expected.clear();
 		
@@ -95,7 +98,7 @@ public class LogicTest {
 		expected.add(t1);
 		expected.add(t2);
 		
-		actual = Logic.getUnscheduledTasks();
+		actual = logic.getUnscheduledTasks();
 		assert(actual.equals(expected));
 		expected.clear();
 		
@@ -104,7 +107,7 @@ public class LogicTest {
 		expected.add(t4);
 		expected.add(t5);
 		
-		actual = Logic.getDeadlineTasks();
+		actual = logic.getDeadlineTasks();
 		assert(actual.equals(expected));
 		expected.clear();
 		
@@ -113,7 +116,7 @@ public class LogicTest {
 		expected.add(t7);
 		expected.add(t8);
 		
-		actual = Logic.getEvents();
+		actual = logic.getEvents();
 		assert(actual.equals(expected));
 		expected.clear();
 		
@@ -121,7 +124,7 @@ public class LogicTest {
 		expected.add(t3);
 		expected.add(t4);
 		
-		actual = Logic.getTodaysTasks();
+		actual = logic.getTodaysTasks();
 		assert(actual.equals(expected));
 		expected.clear();
 		
@@ -130,7 +133,7 @@ public class LogicTest {
 		expected.add(t6);
 		expected.add(t7);
 		
-		actual = Logic.getTomorrowsTasks();
+		actual = logic.getTomorrowsTasks();
 		assert(actual.equals(expected));
 		expected.clear();
 	}
@@ -140,11 +143,11 @@ public class LogicTest {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime tomorrow = now.plusDays(1);
 		
-		int comparison = Logic.compareDates(now, tomorrow);
+		int comparison = logic.compareDates(now, tomorrow);
 		assert(comparison < 0);
-		comparison = Logic.compareDates(tomorrow, now);
+		comparison = logic.compareDates(tomorrow, now);
 		assert(comparison > 0);
-		comparison = Logic.compareDates(now, now);
+		comparison = logic.compareDates(now, now);
 		assert(comparison == 0);
 	}
 	
@@ -155,7 +158,7 @@ public class LogicTest {
 		
 		// now is before later - should be valid
 		try {
-			Logic.validateDates(now, later);
+			logic.validateDates(now, later);
 		} catch (Exception e) {
 			fail();
 		}
@@ -163,7 +166,7 @@ public class LogicTest {
 		// both dates are equal - should throw exception
 		Exception exception = null;
 		try {
-			Logic.validateDates(now, now);
+			logic.validateDates(now, now);
 		} catch (Exception e) {
 			exception = e;
 		}
@@ -172,7 +175,7 @@ public class LogicTest {
 		// later is before now - should throw exception
 		exception = null;
 		try {
-			Logic.validateDates(later, now);
+			logic.validateDates(later, now);
 		} catch (Exception e) {
 			exception = e;
 		}
@@ -180,8 +183,10 @@ public class LogicTest {
 	}
 	
 	@Test
-	public void testUpdateCurrentTaskList() {
+	public void testUpdateCurrentTaskList() throws Exception {
 		StorageManagerStub sm = new StorageManagerStub();
+		Logic commandLogic = new Logic();
+		logic.init(sm, commandLogic);
 		ArrayList<Task> unscheduled = new ArrayList<Task>();
 		ArrayList<Task> deadlines = new ArrayList<Task>();
 		ArrayList<Task> events = new ArrayList<Task>();
@@ -200,11 +205,11 @@ public class LogicTest {
 			sm.writeTask(deadlines.get(i));
 			sm.writeTask(events.get(i));
 		}
-		actual = Logic.updateCurrentTaskList();
+		actual = logic.updateCurrentTaskList();
 		// these get methods are tested in the test suite - they are assumed to work here
-		assert(Logic.getUnscheduledTasks(actual).size() == Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
-		assert(Logic.getDeadlineTasks(actual).size() == Logic.DEFAULT_VIEW_NUM_DEADLINES);
-		assert(Logic.getEvents(actual).size() == Logic.DEFAULT_VIEW_NUM_EVENTS);
+		assert(logic.getUnscheduledTasks(actual).size() == Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
+		assert(logic.getDeadlineTasks(actual).size() == Logic.DEFAULT_VIEW_NUM_DEADLINES);
+		assert(logic.getEvents(actual).size() == Logic.DEFAULT_VIEW_NUM_EVENTS);
 		sm.clearTasks();
 		
 		/* test that the default number of tasks is displayed when 
@@ -212,7 +217,7 @@ public class LogicTest {
 		for (int i = 0; i < Logic.DEFAULT_VIEW_MAX_TASKS; i++) {
 			sm.writeTask(events.get(i));
 		}
-		actual = Logic.updateCurrentTaskList();
+		actual = logic.updateCurrentTaskList();
 		assert(actual.size() == Logic.DEFAULT_VIEW_MAX_TASKS);
 		sm.clearTasks();
 		
@@ -223,9 +228,9 @@ public class LogicTest {
 			sm.writeTask(unscheduled.get(i));
 			sm.writeTask(deadlines.get(i));
 		}
-		actual = Logic.updateCurrentTaskList();
-		assert(Logic.getUnscheduledTasks().size() > Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
-		assert(Logic.getDeadlineTasks().size() > Logic.DEFAULT_VIEW_NUM_DEADLINES);
+		actual = logic.updateCurrentTaskList();
+		assert(logic.getUnscheduledTasks().size() > Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
+		assert(logic.getDeadlineTasks().size() > Logic.DEFAULT_VIEW_NUM_DEADLINES);
 		assert(actual.size() == Logic.DEFAULT_VIEW_MAX_TASKS);
 		sm.clearTasks();
 		
@@ -238,10 +243,10 @@ public class LogicTest {
 			sm.writeTask(deadlines.get(i));
 		}
 		sm.writeTask(events.get(0));
-		actual = Logic.updateCurrentTaskList();
-		assert(Logic.getUnscheduledTasks().size() > Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
-		assert(Logic.getDeadlineTasks().size() > Logic.DEFAULT_VIEW_NUM_DEADLINES);
-		assert(Logic.getEvents().size() < Logic.DEFAULT_VIEW_NUM_EVENTS);
+		actual = logic.updateCurrentTaskList();
+		assert(logic.getUnscheduledTasks().size() > Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
+		assert(logic.getDeadlineTasks().size() > Logic.DEFAULT_VIEW_NUM_DEADLINES);
+		assert(logic.getEvents().size() < Logic.DEFAULT_VIEW_NUM_EVENTS);
 		assert(actual.size() == Logic.DEFAULT_VIEW_MAX_TASKS);
 		sm.clearTasks();
 		
@@ -251,10 +256,10 @@ public class LogicTest {
 		sm.writeTask(unscheduled.get(0));
 		sm.writeTask(deadlines.get(0));
 		sm.writeTask(events.get(0));
-		actual = Logic.updateCurrentTaskList();
-		assert(Logic.getUnscheduledTasks().size() < Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
-		assert(Logic.getDeadlineTasks().size() < Logic.DEFAULT_VIEW_NUM_DEADLINES);
-		assert(Logic.getEvents().size() < Logic.DEFAULT_VIEW_NUM_EVENTS);
+		actual = logic.updateCurrentTaskList();
+		assert(logic.getUnscheduledTasks().size() < Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
+		assert(logic.getDeadlineTasks().size() < Logic.DEFAULT_VIEW_NUM_DEADLINES);
+		assert(logic.getEvents().size() < Logic.DEFAULT_VIEW_NUM_EVENTS);
 		assert(actual.size() < Logic.DEFAULT_VIEW_MAX_TASKS);
 		sm.clearTasks();
 		

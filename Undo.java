@@ -19,7 +19,7 @@ public class Undo extends Command {
 	@Override
 	public void execute() throws Exception {
 		try {
-			lastExecuted = Logic.getLastUndoable();
+			lastExecuted = logic.getLastUndoable();
 		} catch (EmptyStackException e) {
 			throw new Exception("No commands to undo.");
 		}
