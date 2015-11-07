@@ -74,7 +74,7 @@ public class CommandParserTest {
 			Command invalid2 = CommandParser.getCommandFromInput("add " + newTaskName);
 			fail();
 		} catch (Exception e) {
-			
+			assertEquals(e.getMessage(), CommandParser.ERROR_NAME_SHOULD_BE_IN_QUOTES);
 		}
 		
 		try {
@@ -84,6 +84,12 @@ public class CommandParserTest {
 			fail("exception thrown");
 		}
 		
+		try {
+			Command invalid = CommandParser.getCommandFromInput("add \" \"");
+			fail("exception not thrown");
+		} catch (Exception e) {
+			assertEquals(e.getMessage(), CommandParser.ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS);
+		}
 			
 	}
 

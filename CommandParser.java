@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 public class CommandParser {
 	// error messages for thrown exceptions, public to facilitate testing
-	public static final String ERROR_NAME_NOT_IN_QUOTES = "The task name must be enclosed in quotations marks.";
 	public static final String ERROR_NOTHING_ENTERED = "Please enter a command.";
 	public static final String ERROR_INVALID_QUOTE_COUNT = "There is text inside a quote without a corresponding closing quote, or there are too many quotes.";
 	public static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
@@ -33,6 +32,8 @@ public class CommandParser {
 	public static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
 	public static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
 	public static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
+	public static final String ERROR_NAME_SHOULD_BE_IN_QUOTES = "The task name should be surrounded by quotes.";
+	public static final String ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS = "The task name should not be composed entirely of spaces.";
 	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
@@ -93,7 +94,8 @@ public class CommandParser {
   	}
   	
   	// also check that if quotes are present, there is a corresponding closing quote. There should be either 0 or 2 quotes, depending on command
-  	if (isNumberOfQuotesValid(input) == false){
+  	int nQuotes = countQuotesInString(input);
+  	if (!(nQuotes == 0 || nQuotes == 2)) {
   		throw new Exception(ERROR_INVALID_QUOTE_COUNT);
   	}
   	
@@ -267,13 +269,9 @@ public class CommandParser {
 	  }
 	  
 		Task newTask;
-		String name = "";
-	
-			name = args.get(POSITION_ADD_NAME); // name is always present in the same position for all tasks
-			if (!name.startsWith("\"")) {
-				throw new Exception(ERROR_NAME_NOT_IN_QUOTES);
-			}
-	  		name = name.replace("\"", "");
+		String name = args.get(POSITION_ADD_NAME); // name is always present in the same position for all tasks
+			verifyTaskNameValidity(name);
+			name = name.replace("\"", "").trim();
 		
 		LocalDateTime endTime, startTime;
 		
@@ -455,10 +453,8 @@ public class CommandParser {
     			if (isNameParsed == false && (i + 1) < params.size()) {
     				isNameParsed = true;
     				newName = params.get(i + 1);
-    				if (!newName.startsWith("\"")) {
-    					throw new Exception(ERROR_NAME_NOT_IN_QUOTES);
-    				}
-    		  		newName = newName.replace("\"", "");
+    				verifyTaskNameValidity(newName);
+    				newName = newName.replace("\"", "").trim();
     				nameAction = DeltaTask.FIELD_ACTION.UPDATE;
     				i += 2; // skip over the new name we just added
     			} else {
@@ -520,7 +516,7 @@ public class CommandParser {
   	return new DeltaTask(nameAction, newName, startAction, newStart, endAction, newEnd);
   }
     
-  private static boolean isNumberOfQuotesValid(String input) {
+  private static int countQuotesInString(String input) {
   	int quoteCount = 0;
   	for (int i = 0; i < input.length(); i++) {
   		if (input.charAt(i) == '"') {
@@ -528,7 +524,25 @@ public class CommandParser {
   		}
   	}
   	
-  	return quoteCount == 0 || quoteCount == 2;
+  	return quoteCount;
   }
+  
+  /*
+   *Verifies if a task name is valid
+   *A valid name must have at least 1 non-whitespace character, and must be surrounded by quotes
+   */
+  private static void verifyTaskNameValidity(String name) throws Exception {
+	  char first = name.charAt(0), last = name.charAt(name.length()-1);
+	  
+if (name.length() <= 2 || first != '"' || last != '"') {
+throw new Exception(ERROR_NAME_SHOULD_BE_IN_QUOTES );	
+}
+
+String nameWithQuotesRemoved = name.substring(1, name.length()-1);
+if (nameWithQuotesRemoved.trim().length() == 0) {
+	throw new Exception(ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS);
+}
+  }
+  
 }
 

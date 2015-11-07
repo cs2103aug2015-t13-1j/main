@@ -19,7 +19,7 @@ private static StorageManager storageManager = null;
 	@Before
 public void init() throws Exception {
 		storageManager = new StorageManager();
-		storageManager.initializeStorage();
+		// storageManager.initializeStorage();
 		storageManager.openStorage();
 		storageManager.changeStorageLocation(DIRECTORY);
 	}
