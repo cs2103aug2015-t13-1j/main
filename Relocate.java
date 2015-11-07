@@ -1,4 +1,4 @@
-
+//@@author A0100081E
 public class Relocate extends Command {
 	private final String SUCCESS_RELOCATE = "Storage was relocated to \"%s\"";
 	private String fileLocation = null;

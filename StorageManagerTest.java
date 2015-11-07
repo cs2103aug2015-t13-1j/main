@@ -12,20 +12,20 @@ import org.junit.Test;
 public class StorageManagerTest {
 	// Note: running the tests causes it to read and write from the eclipse project root folder instead of /bin. 
 	// Not sure if this can be changed
-private static final String DIRECTORY = "unit tests\\";
-		private static final String FILENAME = "TaskStorage.json";
-private static StorageManager storageManager = null;
+	private static final String DIRECTORY = "unit tests\\";
+	private static final String FILENAME = "TaskStorage.json";
+	private static StorageManager storageManager = null;
 
 	@Before
-public void init() throws Exception {
+	public void init() throws Exception {
 		storageManager = new StorageManager();
 		// storageManager.initializeStorage();
 		storageManager.openStorage();
 		storageManager.changeStorageLocation(DIRECTORY);
 	}
-	
+		
 	@After
-public void shutdown() throws Exception {
+	public void shutdown() throws Exception {
 		storageManager.closeStorage();
 		deleteFile(DIRECTORY + FILENAME);
 	}
@@ -46,6 +46,7 @@ public void shutdown() throws Exception {
 		
 	
 	}
+}
 	
 	/* 
 	@Test
@@ -141,4 +142,3 @@ public void shutdown() throws Exception {
 		}
 	}
 */
-}
