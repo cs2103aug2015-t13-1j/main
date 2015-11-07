@@ -1,3 +1,4 @@
+//@@author A0100081E
 public class StorageInformation {
 	private String fileDirectory;
 	private String fileName;
