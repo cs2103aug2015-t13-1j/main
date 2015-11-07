@@ -1,4 +1,4 @@
-
+//@@author A0100081E
 public class Help extends Command {
 	private String helpType;
 	private String helpMessage;
@@ -17,7 +17,6 @@ public class Help extends Command {
 
 	@Override
 	public void execute() throws Exception {
-		// TODO Auto-generated method stub
 		setHelpMessage();
 	}
 	
@@ -35,7 +34,6 @@ public class Help extends Command {
 
 	@Override
 	public String getSuccessMessage() {
-		// TODO Auto-generated method stub
 		return helpMessage;
 	}
 }

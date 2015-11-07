@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import com.google.gson.Gson;
 
 /**
@@ -37,11 +39,13 @@ public class StorageManager {
 	private static final Task[] EMPTY_TASK = {};
 	// Gson Variable
 	private static Gson gson = new Gson();
+	private static final Logger log = Logger.getLogger(StorageManager.class.getName());
 
 	/**
 	 * This method constructs the StorageManager
 	 */
 	public StorageManager() {
+		log.log(Level.INFO, "StorageManager::StorageManager(): StorageManager is successfully initialized.");
 	}
 
 	/**
@@ -54,7 +58,11 @@ public class StorageManager {
 			initializeStorage();
 
 			if (!file.exists()) {
-				file.createNewFile();
+				if (file.createNewFile()) {
+					log.log(Level.INFO, "StorageManager::openStorage(): File does not exist and is created.");
+				} else {
+					log.log(Level.WARNING, "StorageManager::openStorage(): File could not be created.");
+				}
 			}
 
 			// Set append to false because system should read the data inside TaskStorage.json
@@ -71,8 +79,11 @@ public class StorageManager {
 			gson.toJson(TASK_LIST, bufferedWriter);
 			bufferedWriter.flush();
 		} catch (IOException e) {
+			log.log(Level.WARNING, "StorageManager::openStorage(): Error in opening storage.");
 			throw new Exception(e.getMessage());
 		}
+		
+		log.log(Level.INFO, "StorageManager::openStorage(): Storage is successfully set to open.");
 	}
 
 	/**
@@ -85,8 +96,11 @@ public class StorageManager {
 			closeReader();
 			closeWriter();
 		} catch (FileNotFoundException e) {
+			log.log(Level.WARNING, "StorageManager::closeStorage(): Error in closing storage.");
 			throw new Exception(e.getMessage());
 		}
+		
+		log.log(Level.INFO, "StorageManager::closeStorage(): Storage is successfully set to closed.");
 	}
 
 	/**
@@ -99,8 +113,11 @@ public class StorageManager {
 			fileReader = new FileReader(file.getAbsoluteFile());
 			bufferedReader = new BufferedReader(fileReader);
 		} catch (FileNotFoundException e) {
+			log.log(Level.WARNING, "StorageManager::setReader(): Error in setting reader.");
 			throw new Exception("File reader could not be initialized.");
 		}
+		
+		log.log(Level.INFO, "StorageManager::setReader(): Reader is successfully set.");
 	}
 
 	private void setWriterWithAppend() throws Exception {
@@ -108,8 +125,11 @@ public class StorageManager {
 			fileWriter = new FileWriter(file.getAbsoluteFile(), true);
 			bufferedWriter = new BufferedWriter(fileWriter);
 		} catch (FileNotFoundException e) {
+			log.log(Level.WARNING, "StorageManager::setWriterWithAppend(): Error in setting writer.");
 			throw new Exception("File writer could not be initialized.");
 		}
+		
+		log.log(Level.INFO, "StorageManager::setWriterWithAppend(): Writer is successfully set with append.");
 	}
 
 	private void setWriterWithoutAppend() throws Exception {
@@ -117,8 +137,11 @@ public class StorageManager {
 			fileWriter = new FileWriter(file.getAbsoluteFile());
 			bufferedWriter = new BufferedWriter(fileWriter);
 		} catch (FileNotFoundException e) {
+			log.log(Level.WARNING, "StorageManager::setWriterWithoutAppend(): Error in setting writer.");
 			throw new Exception("File writer could not be initialized.");
 		}
+		
+		log.log(Level.INFO, "StorageManager::setWriterWithoutAppend(): Writer is successfully set without append.");
 	}
 
 	private void closeReader() throws Exception {
@@ -126,8 +149,11 @@ public class StorageManager {
 			bufferedReader.close();
 			fileReader.close();
 		} catch (FileNotFoundException e) {
+			log.log(Level.WARNING, "StorageManager::closeReader(): Error in closing reader.");
 			throw new Exception("File reader could not be closed.");
 		}
+		
+		log.log(Level.INFO, "StorageManager::closeReader(): Reader is successfully closed.");
 	}
 
 	private void closeWriter() throws Exception {
@@ -135,8 +161,11 @@ public class StorageManager {
 			bufferedWriter.close();
 			fileWriter.close();
 		} catch (FileNotFoundException e) {
+			log.log(Level.WARNING, "StorageManager::closeWriter(): Error in closing writer.");
 			throw new Exception("File writer could not be closed.");
 		}
+		
+		log.log(Level.INFO, "StorageManager::closeWriter(): Writer is successfully closed.");
 	}
 
 	/**
@@ -150,6 +179,7 @@ public class StorageManager {
 		BufferedReader informationBufferedReader;
 		
 		if (!informationFile.exists()) {
+			log.log(Level.INFO, "StorageManager::initializeStorage(): Storage Information does not exist.");
 			informationFile.createNewFile();
 
 			// Initiate Reader / Writer for StorageInformation.json
@@ -168,10 +198,17 @@ public class StorageManager {
 			gson.toJson(initialStorageInformation, informationBufferedWriter);
 			informationBufferedWriter.flush();
 			
-			// Close Writer
-			informationBufferedWriter.close();
-			informationFileWriter.close();
+			try {
+				// Close Writer
+				informationBufferedWriter.close();
+				informationFileWriter.close();
+			} catch (IOException e) {
+				log.log(Level.WARNING, "StorageManager::initializeStorage(): Information writer could not be closed.");
+				throw new Exception("Information writer could not be closed.");
+			}
+			
 		} else {
+			log.log(Level.INFO, "StorageManager::initializeStorage(): Storage Information already exists.");
 			// Initiate Reader
 			informationFileReader = new FileReader(informationFile.getAbsoluteFile());
 			informationBufferedReader = new BufferedReader(informationFileReader);
@@ -192,8 +229,11 @@ public class StorageManager {
 			informationFileReader.close();
 			informationBufferedReader.close();
 		} catch (IOException e) {
+			log.log(Level.WARNING, "StorageManager::initializeStorage(): Information reader could not be closed.");
 			throw new Exception("Information reader could not be closed.");
 		}
+		
+		log.log(Level.INFO, "StorageManager::initializeStorage(): Storage is successfully initialized.");
 	}
 
 	/**
@@ -202,18 +242,21 @@ public class StorageManager {
 	 * @throws Exception	if the task was unable to be written
 	 */
 	private Task[] initiateTaskList() throws Exception {
+		Task[] taskListFromJSON;
+		
 		try {
-			Task[] taskListFromJSON;
 			taskListFromJSON = gson.fromJson(bufferedReader, Task[].class);
 			
 			if (taskListFromJSON == null) {
 				taskListFromJSON = EMPTY_TASK;
 			}
-			
-			return taskListFromJSON;
 		} catch (Exception e) {
+			log.log(Level.WARNING, "StorageManager::initiateTaskList(): Task list could not be initialized.");
 			throw new Exception("Task list could not be initialized.");
 		}
+		
+		log.log(Level.INFO, "StorageManager::initiateTaskList(): Task list succesfully initialized.");
+		return taskListFromJSON;
 	}
 
 	/**
@@ -262,9 +305,11 @@ public class StorageManager {
 					informationFileWriter.close();
 					informationFileReader.close();
 				} catch (IOException e) {
+					log.log(Level.WARNING, "StorageManager::changeStorageLocation(): Information reader and writer could not be closed.");
 					throw new Exception("Information reader and writer could not be closed.");
 				}
 				
+				log.log(Level.WARNING, "StorageManager::changeStorageLocation(): Not able to create file at specified location, written back to original StorageInformation.json");
 				return false;
 			}
 		}
@@ -292,7 +337,8 @@ public class StorageManager {
 			informationFileWriter.close();
 			informationFileReader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.WARNING, "StorageManager::changeStorageLocation(): Information reader and writer could not be closed.");
+			throw new Exception("Information reader and writer could not be closed.");
 		}
 		
 		if (!file.exists()) {
@@ -306,6 +352,7 @@ public class StorageManager {
 		gson.toJson(TASK_LIST, bufferedWriter);
 		bufferedWriter.flush();
 		
+		log.log(Level.INFO, "StorageManager::changeStorageLocation(): Storage location successfully changed.");
 		return true;
 	}
 	
@@ -321,6 +368,7 @@ public class StorageManager {
 		taskArrayList.addAll(Arrays.asList(TASK_LIST));
 		taskArrayList.sort(null);
 
+		log.log(Level.INFO, "StorageManager::readAllTasks(): Returning all the tasks in a sorted order.");
 		return taskArrayList;
 	}
 
@@ -350,10 +398,12 @@ public class StorageManager {
 			
 			gson.toJson(taskListToReturn, bufferedWriter);
 			bufferedWriter.flush();
-			
 		} catch (Exception e) {
+			log.log(Level.WARNING, "StorageManager::writeTask(): Task could not be written.");
 			throw new Exception("Task could not be written");
 		}
+		
+		log.log(Level.INFO, "StorageManager::writeTask(): Successfully written to task list.");
 	}
 	
 	//@@author A0145732H
@@ -386,12 +436,15 @@ public class StorageManager {
 			
 		} catch (Exception e) {
 			isRemoved = false;
+			log.log(Level.WARNING, "StorageManager::removeTask(): Task could not be removed.");
 			throw new Exception("Error saving changes to file.");
 		}
 		
 		if (!isRemoved) {
 			throw new Exception("\"" + task.getName() + "\" was not found.");
 		}
+		
+		log.log(Level.INFO, "StorageManager::removeTask(): Successfully removed task from task list.");
 	}
 
 	/**
@@ -408,6 +461,8 @@ public class StorageManager {
 
 		removeTask(oldTask);
 		writeTask(newTask);
+		
+		log.log(Level.INFO, "StorageManager::updateTask(): Successfully updated task from task list.");
 	}
 
 	//@@author A0100081E
@@ -422,5 +477,7 @@ public class StorageManager {
 		closeWriter();
 		setWriterWithoutAppend();
 		gson.toJson("", bufferedWriter);
+		
+		log.log(Level.INFO, "StorageManager::clearTask(): Successfully cleared task from task list.");
 	}
 }

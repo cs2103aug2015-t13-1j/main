@@ -313,6 +313,7 @@ public class CommandParser {
   	return new Undo();
   }
   
+  //@@author A0100081E
   private static Command initHelpCommand(ArrayList<String> args) throws Exception {
   	String helpType;
   	
@@ -346,6 +347,7 @@ public class CommandParser {
   	return new Relocate(fileLocationWithoutQuotes);
   }
 
+  //@@author A0126270N
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
   	switch(args.size()) {
     	case ADD_ARG_SIZE_FOR_UNSCHEDULED:
@@ -365,6 +367,7 @@ public class CommandParser {
   	}
   }
   
+  //@@author A0100081E
   private static String determineHelpTypeToBeList(ArrayList<String> args) {	
   	switch (args.get(0).toLowerCase()) {
   		case HELP_ADD:
@@ -378,6 +381,7 @@ public class CommandParser {
   	}
   }
     
+  //@@author A0126270N
   /*
    *Parses the given string into a LocalDateTime based on the dateAndTimeFormatter string
    *An exception is thrown if there was an error parsing the String 
