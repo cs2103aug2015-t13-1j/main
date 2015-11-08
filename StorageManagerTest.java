@@ -22,10 +22,10 @@ public class StorageManagerTest {
 		// as long as it passes
 		storageManager.openStorage();
 		
-		assertNotEquals(StorageManager.STORAGE_DIRECTORY, "");
-		assertNotEquals(StorageManager.STORAGE_NAME, "");
-		assertNotEquals(StorageManager.STORAGE_TYPE, "");
-		assertEquals(StorageManager.file.exists(), true);
+		assertNotEquals(storageManager.getStorageDirectory(), "");
+		assertNotEquals(storageManager.getStorageName(), "");
+		assertNotEquals(storageManager.getStorageType(), "");
+		assertEquals(storageManager.getStorageFile().exists(), true);
 		
 		// if openStorage() passes, change the storage location
 		storageManager.changeStorageLocation(DIRECTORY);
@@ -37,7 +37,7 @@ public class StorageManagerTest {
 		deleteFile(DIRECTORY + FILENAME);
 		
 		try {
-			StorageManager.file.exists();
+			storageManager.getStorageFile().exists();
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), null);
@@ -59,7 +59,11 @@ public class StorageManagerTest {
 	public void testChangeStorageLocation() throws Exception {
 		storageManager.changeStorageLocation("./");
 		
-		assertEquals(StorageManager.INFORMATION_DIRECTORY, "./");
+		assertEquals(storageManager.getInformationDirectory(), "./");
+		
+		storageManager.changeStorageLocation(".");
+		
+		assertNotEquals(storageManager.getInformationDirectory(), ".");
 	}
 	
 	@Test
@@ -103,6 +107,15 @@ public class StorageManagerTest {
 		storageManager.clearTask();
 		
 		assertEquals(storageManager.readAllTasks(), emptyList); // Tests clearTask()
+	}
+	
+	@Test
+	public void testAccessFunctions() throws Exception {
+		assertEquals(storageManager.getStorageDirectory(), "./"); // Tests getStorageDirectory()
+		assertEquals(storageManager.getStorageName(), "TaskStorage"); // Tests getStorageName()
+		assertEquals(storageManager.getStorageType(), ".json"); // Tests getStorageType()
+		assertEquals(storageManager.getInformationDirectory(), "./"); // Tests getInformationDirectory()
+		assertEquals(storageManager.getStorageFile(), new File(storageManager.getStorageDirectory() + storageManager.getStorageName() + storageManager.getStorageType())); // Tests getStorageFile()
 	}
 	
 }
