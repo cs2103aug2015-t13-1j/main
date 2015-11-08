@@ -16,8 +16,8 @@ public class Help extends Command {
 	// list of help message displayed
 	private final String HELP_ADD = 
 			"Adding Task:\n"
-		+ "- Unscheduled Task: add “<task name>”\n"
-		+ "- Deadline Task: add “<task name>” by <date> <time>\n"
+		+ "- Unscheduled Task: add \"<task name>\"\n"
+		+ "- Deadline Task: add \"<task name>\" by <date> <time>\n"
 		+ "- Event Task: add “<task name>” from <start date> <start time> to <end date> <end time>\n"
 		+ "Note:\n"
 		+ "<task name> should be wrapped in quotation\n"
@@ -25,7 +25,21 @@ public class Help extends Command {
 		+ "<time> should be HH:MM in 24-hour notation";
 	
 	private final String HELP_LIST = 
-			"List Task:";
+			"List Task:\n"
+		+ "- General List: list\n"
+		+ "- Unscheduled Tasks: list unscheduled\n"
+		+ "- Deadline Tasks: list deadlines\n"
+		+ "- Completed Tasks: list done\n"
+		+ "- Event Tasks: list events\n"
+		+ "- Today's Tasks: list today\n"
+		+ "- Tomorrow's Tasks: list tomorrow\n"
+		+ "- All Tasks: list all\n"
+		+ "- Tasks with Keyword: list \"<first word> [additional words]\"\n"
+		+ "Note:\n"
+		+ "General list shows upto 15 tasks\n"
+		+ "List can be calle with shortform, l\n"
+		+ "List done has sysnosysms: completed and finished\n"
+		+ "When listing with keywords, make sure words are separated with spaces";
 	
 	private final String HELP_REMOVE = 
 			"Removing Task:\n"
@@ -47,11 +61,11 @@ public class Help extends Command {
 			"Reverting Last Command:\n"
 		+ "- undo\n"
 		+ "Note:\n"
-		+ "Undo is limited to following commands: BLAH BLAH BLAH";
+		+ "Undo is limited to following commands: add, remove, update, done, reformat";
 	
 	private final String HELP_RELOCATE =
 			"Relocating Storage File:\n"
-		+ "- relocate “<absolute or relative folder path>”\n"
+		+ "- relocate \"<absolute or relative folder path>\"\n"
 		+ "Note:\n"
 		+ "The folder path is case-sensitive";
 	
@@ -86,7 +100,7 @@ public class Help extends Command {
 	}
 	
 	private void setHelpMessage() {
-		helpMessage = "\n";
+		helpMessage = "";
 		
 		if (helpType == null) {
 			helpMessage += HELP_ADD + "\n" + HELP_LIST + "\n" + HELP_REMOVE + "\n" + HELP_UPDATE + "\n" + HELP_DONE + "\n" + HELP_UNDO + "\n" + HELP_RELOCATE + "\n" + HELP_REFORMAT + "\n" + HELP_SUMMARY;
