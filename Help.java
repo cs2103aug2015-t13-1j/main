@@ -13,9 +13,16 @@ public class Help extends Command {
 	private final String HELP_TYPE_RELOCATE = "relocate";
 	private final String HELP_TYPE_REFORMAT = "reformat";
 	
+	// color coding for JANSI
+	private static final String COLOR_CODE_END_TAG = "|@";
+	public static final String COLOR_CODE_CYAN = "@|CYAN ";
+	public static final String COLOR_CODE_GREEN = "@|GREEN ";
+	public static final String COLOR_CODE_YELLOW = "@|YELLOW ";
+	public static final String COLOR_CODE_RED = "@|RED ";
+	
 	// list of help message displayed
 	private final String HELP_ADD = 
-			"Adding Task:\n"
+			COLOR_CODE_CYAN + "Adding Task:\n" + COLOR_CODE_END_TAG
 		+ "- Unscheduled Task: add \"<task name>\"\n"
 		+ "- Deadline Task: add \"<task name>\" by <date> <time>\n"
 		+ "- Event Task: add “<task name>” from <start date> <start time> to <end date> <end time>\n"
@@ -25,7 +32,7 @@ public class Help extends Command {
 		+ "<time> should be HH:MM in 24-hour notation";
 	
 	private final String HELP_LIST = 
-			"List Task:\n"
+			COLOR_CODE_CYAN + "List Task:\n" + COLOR_CODE_END_TAG
 		+ "- General List: list\n"
 		+ "- Unscheduled Tasks: list unscheduled\n"
 		+ "- Deadline Tasks: list deadlines\n"
@@ -42,41 +49,41 @@ public class Help extends Command {
 		+ "When listing with keywords, make sure words are separated with spaces";
 	
 	private final String HELP_REMOVE = 
-			"Removing Task:\n"
+			COLOR_CODE_CYAN + "Removing Task:\n" + COLOR_CODE_END_TAG
 		+ "- remove <task number>\n"
 		+ "Note:\n"
 		+ "<task number> is the number shown from the most recent list command";
 	
 	private final String HELP_UPDATE = 
-			"Updating Task:\n"
+			COLOR_CODE_CYAN + "Updating Task:\n" + COLOR_CODE_END_TAG
 		+ "- update <task number>";
 	
 	private final String HELP_DONE =
-			"Marking Task Done:\n"
+			COLOR_CODE_CYAN + "Marking Task Done:\n" + COLOR_CODE_END_TAG
 		+ "- done <task number>\n"
 		+ "Note:\n"
 		+ "<task number> is the number shown from the most recent list command";
 	
 	private final String HELP_UNDO = 
-			"Reverting Last Command:\n"
+			COLOR_CODE_CYAN + "Reverting Last Command:\n" + COLOR_CODE_END_TAG
 		+ "- undo\n"
 		+ "Note:\n"
 		+ "Undo is limited to following commands: add, remove, update, done, reformat";
 	
 	private final String HELP_RELOCATE =
-			"Relocating Storage File:\n"
+			COLOR_CODE_CYAN + "Relocating Storage File:\n" + COLOR_CODE_END_TAG
 		+ "- relocate \"<absolute or relative folder path>\"\n"
 		+ "Note:\n"
 		+ "The folder path is case-sensitive";
 	
 	private final String HELP_REFORMAT = 
-			"Clearing Content in Storage File:\n"
+			COLOR_CODE_CYAN + "Clearing Content in Storage File:\n" + COLOR_CODE_END_TAG
 		+ "- reformat"
 		+ "Note:\n"
 		+ "All saved content will be erased, please use with caution";
 	
 	private final String HELP_SUMMARY = 
-			"You can view specific help by specifying your query:\n"
+			COLOR_CODE_YELLOW + "You can view specific help by specifying your query:\n" + COLOR_CODE_END_TAG
 		+ "- Adding Task: help add\n"
 		+ "- Listing Task: help list\n"
 		+ "- Removing Task: help remove\n"
