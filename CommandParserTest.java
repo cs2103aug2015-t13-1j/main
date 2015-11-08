@@ -365,7 +365,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testRelocateParsing() {
-		String folderPath = "d:\\my documents\\dropbox";
+		String folderPath = "d:\\my documents\\dropbox\\";
 
 		try {
 			Relocate valid = (Relocate)CommandParser.getCommandFromInput("relocate \"" + folderPath + "\"");
