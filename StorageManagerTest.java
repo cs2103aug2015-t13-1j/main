@@ -28,14 +28,14 @@ public class StorageManagerTest {
 		assertEquals(storageManager.getStorageFile().exists(), true);
 		
 		// if openStorage() passes, change the storage location
-		storageManager.changeStorageLocation(DIRECTORY);
+//		storageManager.changeStorageLocation(DIRECTORY);
 	}
 		
 	@After
 	public void shutdown() throws Exception {
 		storageManager.closeStorage();
 		deleteFile(DIRECTORY + FILENAME);
-		
+
 		try {
 			storageManager.getStorageFile().exists();
 			fail("exception not thrown");
@@ -59,11 +59,7 @@ public class StorageManagerTest {
 	public void testChangeStorageLocation() throws Exception {
 		storageManager.changeStorageLocation("./");
 		
-		assertEquals(storageManager.getInformationDirectory(), "./");
-		
-		storageManager.changeStorageLocation(".");
-		
-		assertNotEquals(storageManager.getInformationDirectory(), ".");
+		assertEquals(storageManager.getStorageDirectory(), "./");
 	}
 	
 	@Test
