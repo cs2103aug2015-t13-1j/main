@@ -26,9 +26,6 @@ public class StorageManagerTest {
 		assertNotEquals(storageManager.getStorageName(), "");
 		assertNotEquals(storageManager.getStorageType(), "");
 		assertEquals(storageManager.getStorageFile().exists(), true);
-		
-		// if openStorage() passes, change the storage location
-//		storageManager.changeStorageLocation(DIRECTORY);
 	}
 		
 	@After
