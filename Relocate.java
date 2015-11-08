@@ -10,6 +10,10 @@ public class Relocate extends Command {
 	
 	@Override
 	public void execute() throws Exception {
+		if (fileLocation.charAt(fileLocation.length() - 1) != '/') {
+			throw new Exception("File directory must contain \"/\" at the end");
+		}
+		
 		if (!storageManager.changeStorageLocation(fileLocation)) {
 			throw new Exception("File directory specified does not exist");
 		}
