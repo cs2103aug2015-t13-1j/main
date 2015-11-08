@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +26,7 @@ public class CommandParser {
 	public static final String ERROR_INVALID_COMMAND = "\"%s\" is not a supported command.";
   public static final String ERROR_EXPECTED_ONE_TASK_NUM = "Please indicate only one task to %s.";
   public static final String ERROR_NUMBER_FORMAT = "Please specify a valid task number.";
-	public static final String ERROR_INVALID_DATE_AND_TIME = "%s is not a date and time in dd-mm-yyyy hh:mm format.";
+	public static final String ERROR_INVALID_DATE_AND_TIME = "%s is not a date and time in dd-mm hh:mm or dd-mm-yyyy hh:mm format, where hh:mm is in 24-hour time.";
 	public static final String ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD = "The type of task to be added could not be determined.";
 	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD = "Please specify the name for the new task, and its start and end date and time if appropriate.";
 	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE = "Please specify the task number to be removed.";
@@ -37,8 +38,7 @@ public class CommandParser {
 	public static final String ERROR_NAME_SHOULD_BE_IN_QUOTES = "The task name should be surrounded by quotes.";
 	public static final String ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS = "The task name should not be composed entirely of spaces.";
 	public static final String ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES = "The folder path should be surrounded by quotes.";
-	public static final String ERROR_FOLDER_PATH_TOO_SHORT = "The folder path should be more than 1 character long.";
-	public static final String ERROR_FOLDER_PATH_WITHOUT_SLASH = "File directory must contain \"/\" at the end";
+	public static final String ERROR_FOLDER_PATH_TOO_SHORT = "The folder path should contain at least 1 character surrounded by quotes.";
 	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
@@ -49,9 +49,11 @@ public class CommandParser {
   // because of the way tokenizing is done, an argument like date and time which has a space between them is counted as 2 arguments
 	private static final Pattern splitter = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
 	
-	// the formatter used to parse date and time
-	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-	
+	// the default formatter used to parse date and time
+	private static final DateTimeFormatter primaryDateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+	// if user omits year, we assume they mean the current year 
+	// to implement this, we append the current year to what the user entered, and so we need another formatter
+	private static final DateTimeFormatter secondaryDateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM HH:mm yyyy");
 	// the maximum number of args for command types that take in arguments
 	// the max arguments for add command varies depending on the form used, so it is not listed here
 	private static final int MAX_ARG_REMOVE = 1;
@@ -357,30 +359,36 @@ public class CommandParser {
   private static Command initReformatCommand() {
   	return new Reformat();
   }
-  
+
+//@@author A0126270N
   private static Command initRelocateCommand(ArrayList<String> args) throws Exception {
   	String fileLocation = args.get(0);
   	log.log(Level.INFO, "folder path entered = " + fileLocation + "\n");
+  	
+  	if (fileLocation.length() <= 2) {
+  		log.log(Level.INFO, "aborting as folder path is too short\n");
+  		throw new Exception(ERROR_FOLDER_PATH_TOO_SHORT);
+  	}
+  	
   	char first = fileLocation.charAt(0), last = fileLocation.charAt(fileLocation.length()-1);
   	if (first != '"' || last != '"') {
   		log.log(Level.INFO, "aborting as folder path is not in quotes\n");
   		throw new Exception(ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
   	}
   	
-  	if (fileLocation.length() <= 3) {
-  		throw new Exception(ERROR_FOLDER_PATH_TOO_SHORT);
-  	}
-  	
-  	if (fileLocation.charAt(fileLocation.length() - 2) != '/') {
-			throw new Exception(ERROR_FOLDER_PATH_WITHOUT_SLASH);
-		}
-  	
   	String fileLocationWithoutQuotes = fileLocation.substring(1, fileLocation.length() - 1);
-  	
+  	// it is safe to use slash (but not backslash) in folder paths for java, so replace any backslashes
+  	fileLocationWithoutQuotes = fileLocationWithoutQuotes.replace("\\", "/");
+  	char end = fileLocationWithoutQuotes.charAt(fileLocationWithoutQuotes.length()-1);
+
+  	if (end != '/') {
+  		fileLocationWithoutQuotes = fileLocationWithoutQuotes + "/";
+  		log.log(Level.INFO, "appending slash to the end of file location, location = " + fileLocationWithoutQuotes + "\n");
+		}
+  	  	
   	return new Relocate(fileLocationWithoutQuotes);
   }
 
-  //@@author A0126270N
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
   	switch(args.size()) {
     	case ADD_ARG_SIZE_FOR_UNSCHEDULED:
@@ -421,9 +429,19 @@ public class CommandParser {
    */
   public static LocalDateTime parseDateTime(String dateTimeString) throws Exception {
   	try {
-    	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
+    	LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, primaryDateTimeFormatter);
     	return dateTime;
-  	} 
+  	}
+  	catch(DateTimeParseException e) {
+  		// deliberately do nothing and try using another formatter
+  	}
+  	
+  	// if the user has the year omited, assume that it is the current year, and try using secondary formatter
+  	try {
+  		int currentYear = Calendar.getInstance ().get(Calendar.YEAR);
+  		LocalDateTime dateTime = LocalDateTime.parse(dateTimeString + " " + currentYear, secondaryDateTimeFormatter);
+  		return dateTime;
+  	}
     	catch(DateTimeParseException e) {
     		log.log(Level.INFO, "aborting, could not parse " + dateTimeString + " with the given formatter\n");
     		throw new Exception(String.format(ERROR_INVALID_DATE_AND_TIME, dateTimeString));	

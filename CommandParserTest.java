@@ -364,15 +364,19 @@ public class CommandParserTest {
 	}
 
 	@Test
-	public void testRelocateParsing() {
-		String folderPath = "d:\\my documents\\dropbox";
+	public void testRelocateParsing() throws Exception {
+		String folderPath = "d:/my documents/dropbox/";
 
-		try {
+	try 	{
 			Relocate valid = (Relocate)CommandParser.getCommandFromInput("relocate \"" + folderPath + "\"");
 			assertEquals(valid, new Relocate(folderPath));
 		} catch (Exception e) {
-			fail("exception thrown");
+fail("exception thrown");
 		}
+
+	// test if backslashes automatically get converted into slashes
+	Relocate valid = (Relocate)CommandParser.getCommandFromInput("relocate \"" + folderPath.replace("/", "\\") + "\"");
+	assertEquals(valid, new Relocate(folderPath));
 
 		try {
 			Command invalid = (Relocate)CommandParser.getCommandFromInput("relocate " + folderPath);
