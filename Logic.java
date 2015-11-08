@@ -246,14 +246,15 @@ public class Logic {
 		LocalDate today = LocalDate.now();
 		ArrayList<Task> todaysTasks = new ArrayList<Task>();
 		for (Task task : taskList) {
-			LocalDate start = task.getStartDateTime().toLocalDate();
-			LocalDate end = task.getEndDateTime().toLocalDate();
+			LocalDateTime start = task.getStartDateTime();
+			LocalDateTime end = task.getEndDateTime();
 			if (start != null && end != null) {
-				if (start.compareTo(today) == 0 || end.compareTo(today) == 0) {
+				if (start.toLocalDate().compareTo(today) == 0 
+						|| end.toLocalDate().compareTo(today) == 0) {
 					todaysTasks.add(task);
 				}
 			} else if (end != null) {
-				if (end.compareTo(today) == 0) {
+				if (end.toLocalDate().compareTo(today) == 0) {
 					todaysTasks.add(task);
 				}
 			}
@@ -272,14 +273,15 @@ public class Logic {
 		ArrayList<Task> tomorrowsTasks = new ArrayList<Task>();
 		
 		for (Task task : taskList) {
-			LocalDate start = task.getStartDateTime().toLocalDate();
-			LocalDate end = task.getEndDateTime().toLocalDate();
+			LocalDateTime start = task.getStartDateTime();
+			LocalDateTime end = task.getEndDateTime();
 			if (start != null && end != null) {
-				if (start.compareTo(tomorrow) == 0 || end.compareTo(tomorrow) == 0) {
+				if (start.toLocalDate().compareTo(tomorrow) == 0 
+						|| end.toLocalDate().compareTo(tomorrow) == 0) {
 					tomorrowsTasks.add(task);
 				}
 			} else if (end != null) {
-				if (end.compareTo(tomorrow) == 0) {
+				if (end.toLocalDate().compareTo(tomorrow) == 0) {
 					tomorrowsTasks.add(task);
 				}
 			}
