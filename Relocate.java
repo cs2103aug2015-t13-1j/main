@@ -22,7 +22,7 @@ public class Relocate extends Command {
 	}
 	
 	//@@author A0126270N
-	public String getFileLocation() {
+	private String getFileLocation() {
 		return fileLocation;
 	}
 	

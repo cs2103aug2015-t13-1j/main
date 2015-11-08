@@ -107,7 +107,7 @@ public class LogicTest {
 		expected.add(t4);
 		expected.add(t5);
 		
-		actual = logic.getDeadlineTasks(sm.readAllTasks());
+		actual = logic.getDeadlines(sm.readAllTasks());
 		assert(actual.equals(expected));
 		expected.clear();
 		
@@ -195,7 +195,7 @@ public class LogicTest {
 		actual = logic.updateCurrentTaskList();
 		// these get methods are tested in the test suite - they are assumed to work here
 		assert(logic.getUnscheduledTasks(actual).size() == Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
-		assert(logic.getDeadlineTasks(actual).size() == Logic.DEFAULT_VIEW_NUM_DEADLINES);
+		assert(logic.getDeadlines(actual).size() == Logic.DEFAULT_VIEW_NUM_DEADLINES);
 		assert(logic.getEvents(actual).size() == Logic.DEFAULT_VIEW_NUM_EVENTS);
 		sm.clearTasks();
 		
@@ -217,7 +217,7 @@ public class LogicTest {
 		}
 		actual = logic.updateCurrentTaskList();
 		assert(logic.getUnscheduledTasks(sm.readAllTasks()).size() > Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
-		assert(logic.getDeadlineTasks(sm.readAllTasks()).size() > Logic.DEFAULT_VIEW_NUM_DEADLINES);
+		assert(logic.getDeadlines(sm.readAllTasks()).size() > Logic.DEFAULT_VIEW_NUM_DEADLINES);
 		assert(actual.size() == Logic.DEFAULT_VIEW_MAX_TASKS);
 		sm.clearTasks();
 		
@@ -232,7 +232,7 @@ public class LogicTest {
 		sm.writeTask(events.get(0));
 		actual = logic.updateCurrentTaskList();
 		assert(logic.getUnscheduledTasks(sm.readAllTasks()).size() > Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
-		assert(logic.getDeadlineTasks(sm.readAllTasks()).size() > Logic.DEFAULT_VIEW_NUM_DEADLINES);
+		assert(logic.getDeadlines(sm.readAllTasks()).size() > Logic.DEFAULT_VIEW_NUM_DEADLINES);
 		assert(logic.getEvents(sm.readAllTasks()).size() < Logic.DEFAULT_VIEW_NUM_EVENTS);
 		assert(actual.size() == Logic.DEFAULT_VIEW_MAX_TASKS);
 		sm.clearTasks();
@@ -245,7 +245,7 @@ public class LogicTest {
 		sm.writeTask(events.get(0));
 		actual = logic.updateCurrentTaskList();
 		assert(logic.getUnscheduledTasks(sm.readAllTasks()).size() < Logic.DEFAULT_VIEW_NUM_UNSCHEDULED);
-		assert(logic.getDeadlineTasks(sm.readAllTasks()).size() < Logic.DEFAULT_VIEW_NUM_DEADLINES);
+		assert(logic.getDeadlines(sm.readAllTasks()).size() < Logic.DEFAULT_VIEW_NUM_DEADLINES);
 		assert(logic.getEvents(sm.readAllTasks()).size() < Logic.DEFAULT_VIEW_NUM_EVENTS);
 		assert(actual.size() < Logic.DEFAULT_VIEW_MAX_TASKS);
 		sm.clearTasks();

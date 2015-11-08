@@ -171,7 +171,7 @@ public class Logic {
 	 * @param taskList	the specified task list to filter for deadlines
 	 * @return			an ArrayList of the found deadlines
 	 */
-	public ArrayList<Task> getDeadlineTasks(ArrayList<Task> taskList) {
+	public ArrayList<Task> getDeadlines(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		ArrayList<Task> deadlines = new ArrayList<Task>();
 		for (Task task : taskList) {
@@ -289,7 +289,7 @@ public class Logic {
 		ArrayList<Task> defaultTasks = new ArrayList<Task>();
 		ArrayList<Task> uncompleted = getUncompletedTasks();
 		ArrayList<Task> uncompletedUnscheduled = getUnscheduledTasks(uncompleted);
-		ArrayList<Task> uncompletedDeadlines = getDeadlineTasks(uncompleted);
+		ArrayList<Task> uncompletedDeadlines = getDeadlines(uncompleted);
 		ArrayList<Task> uncompletedEvents = getEvents(uncompleted);
 		
 		int numTasks = 0;
@@ -391,7 +391,8 @@ public class Logic {
 
 	//@@author A0126270N
 	/*
-	 *Determines if the specified task already exists. This is used to prevent adding or updating which would cause duplicate tasks
+	 * Determines if the specified task already exists. This is used to prevent 
+	 * adding or updating which would cause duplicate tasks
 	 */
 	public boolean doesTaskExist(Task task) {
 		assert(task != null);

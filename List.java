@@ -71,7 +71,7 @@ public class List extends Command {
 			flaggedTasks = logic.getUnscheduledTasks(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.DEADLINE)) {
-			flaggedTasks = logic.getDeadlineTasks(flaggedTasks);
+			flaggedTasks = logic.getDeadlines(flaggedTasks);
 		}
 		if (flags.contains(LIST_FLAGS.EVENT)) {
 			flaggedTasks = logic.getEvents(flaggedTasks);
