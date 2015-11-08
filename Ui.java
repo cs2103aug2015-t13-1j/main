@@ -32,7 +32,7 @@ public class Ui {
 	public static final String COLOR_CODE_OVERDUE = "@|RED ";
 	
 	/** messages to be displayed to the user **/
-	private static final String MESSAGE_WELCOME = "Welcome to TaskBuddy!\n\n";
+	private static final String MESSAGE_WELCOME = "Welcome to HelloTask!\n\n";
 	private static final String MESSAGE_COMMAND_PROMPT = "> ";
 	
 	/** messages and message formats for tasks in the task list display **/
