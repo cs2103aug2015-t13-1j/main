@@ -371,7 +371,7 @@ public class CommandParser {
   		throw new Exception(ERROR_FOLDER_PATH_TOO_SHORT);
   	}
   	
-  	if (fileLocation.charAt(fileLocation.length() - 2) != '/') {
+  	if (fileLocation.charAt(fileLocation.length() - 2) != '/' || fileLocation.charAt(fileLocation.length() - 2) != '\\') {
 			throw new Exception(ERROR_FOLDER_PATH_WITHOUT_SLASH);
 		}
   	
