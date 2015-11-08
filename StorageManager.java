@@ -18,23 +18,23 @@ import com.google.gson.Gson;
  */
 public class StorageManager {
 	// Specificiation for TaskStorage.json
-	public static String STORAGE_DIRECTORY = "";
-	public static String STORAGE_NAME = "";
-	public static String STORAGE_TYPE = "";
+	private static String STORAGE_DIRECTORY = "";
+	private static String STORAGE_NAME = "";
+	private static String STORAGE_TYPE = "";
 	// Specificiation for Default TaskStorage.json
 	private static final String DEFAULT_STORAGE_DIRECTORY = "./";
 	private static final String DEFAULT_STORAGE_NAME = "TaskStorage";
 	private static final String DEFAULT_STORAGE_TYPE = ".json";
 	// Specificiation for StorageInformation.json
-	public static final String INFORMATION_DIRECTORY = "./";
-	public static final String INFORMATION_NAME = "StorageInformation";
-	public static final String INFORMATION_TYPE = ".json";
+	private static final String INFORMATION_DIRECTORY = "./";
+	private static final String INFORMATION_NAME = "StorageInformation";
+	private static final String INFORMATION_TYPE = ".json";
 	// Variables for File
-	public static File file;
-	public static FileReader fileReader;
-	public static FileWriter fileWriter;
-	public static BufferedReader bufferedReader;
-	public static BufferedWriter bufferedWriter;
+	private static File file;
+	private static FileReader fileReader;
+	private static FileWriter fileWriter;
+	private static BufferedReader bufferedReader;
+	private static BufferedWriter bufferedWriter;
 	// Variables for Task
 	private static Task[] TASK_LIST = {};
 	private static final Task[] EMPTY_TASK = {};
@@ -108,6 +108,8 @@ public class StorageManager {
 	 * @throws Exception	if the task was unable to be written
 	 */
 	public void closeStorage() throws Exception {
+		assert(file.exists());
+		
 		try {
 			closeReader();
 			closeWriter();
@@ -127,6 +129,8 @@ public class StorageManager {
 	 * @throws Exception	if the task was unable to be written
 	 */
 	private void setReader() throws Exception {
+		assert(file.exists());
+		
 		try {
 			fileReader = new FileReader(file.getAbsoluteFile());
 			bufferedReader = new BufferedReader(fileReader);
@@ -139,6 +143,8 @@ public class StorageManager {
 	}
 
 	private void setWriterWithAppend() throws Exception {
+		assert(file.exists());
+		
 		try {
 			fileWriter = new FileWriter(file.getAbsoluteFile(), true);
 			bufferedWriter = new BufferedWriter(fileWriter);
@@ -151,6 +157,8 @@ public class StorageManager {
 	}
 
 	private void setWriterWithoutAppend() throws Exception {
+		assert(file.exists());
+		
 		try {
 			fileWriter = new FileWriter(file.getAbsoluteFile());
 			bufferedWriter = new BufferedWriter(fileWriter);
@@ -163,6 +171,8 @@ public class StorageManager {
 	}
 
 	private void closeReader() throws Exception {
+		assert(file.exists());
+		
 		try {
 			bufferedReader.close();
 			fileReader.close();
@@ -178,6 +188,8 @@ public class StorageManager {
 	}
 
 	private void closeWriter() throws Exception {
+		assert(file.exists());
+		
 		try {
 			bufferedWriter.close();
 			fileWriter.close();
@@ -198,6 +210,8 @@ public class StorageManager {
 	 * @throws Exception	if the task was unable to be written
 	 */
 	private void initializeStorage() throws Exception {
+		assert(file.exists());
+		
 		File informationFile = new File(INFORMATION_DIRECTORY + INFORMATION_NAME + INFORMATION_TYPE);	
 		FileReader informationFileReader;
 		BufferedReader informationBufferedReader;
@@ -290,6 +304,8 @@ public class StorageManager {
 	 * @throws Exception	if the task was unable to be written
 	 */
 	public boolean changeStorageLocation(String directory) throws Exception {
+		assert(file.exists());
+		
 		STORAGE_DIRECTORY = directory;
 		
 		// Initiate Reader / Writer for StorageInformation.json
@@ -404,6 +420,8 @@ public class StorageManager {
 	 * @throws Exception	if the task was unable to be written
 	 */
 	public void writeTask(Task task) throws Exception {
+		assert(file.exists());
+		
 		try {
 			ArrayList<Task> taskListTransition;
 			Task[] taskListToReturn;
@@ -438,6 +456,8 @@ public class StorageManager {
 	 * @throws Exception	if the task was unable to be removed
 	 */
 	public void removeTask(Task task) throws Exception {
+		assert(file.exists());
+		
 		boolean isRemoved = false;
 		try {
 			ArrayList<Task> taskListTransition;
@@ -479,6 +499,8 @@ public class StorageManager {
 	 * @throws Exception	if there are no tasks or if the old task was not found
 	 */
 	public void updateTask(Task oldTask, Task newTask) throws Exception {
+		assert(file.exists());
+		
 		if (TASK_LIST.length == 0) {
 			throw new Exception(ERROR_EMPTY_TASK_LIST);
 		}
@@ -496,6 +518,8 @@ public class StorageManager {
 	 * @throws Exception	if the task was unable to be cleared
 	 */
 	public void clearTask() throws Exception {
+		assert(file.exists());
+		
 		TASK_LIST = EMPTY_TASK;
 		
 		closeWriter();
@@ -503,5 +527,30 @@ public class StorageManager {
 		gson.toJson("", bufferedWriter);
 		
 		log.log(Level.INFO, "Successfully cleared task from task list.");
+	}
+	
+	/**
+	 * Following are public methods that accesses private attributes in StorageManager
+	 */
+	public String getStorageDirectory() {
+		return StorageManager.STORAGE_DIRECTORY;
+	}
+	
+	public String getStorageName() {
+		return StorageManager.STORAGE_NAME;
+	}
+	
+	public String getStorageType() {
+		return StorageManager.STORAGE_TYPE;
+	}
+	
+	public String getInformationDirectory() {
+		return StorageManager.INFORMATION_DIRECTORY;
+	}
+	
+	public File getStorageFile() {
+		assert(file.exists());
+		
+		return StorageManager.file;
 	}
 }
