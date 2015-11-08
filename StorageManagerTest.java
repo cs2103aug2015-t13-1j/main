@@ -2,9 +2,7 @@
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.junit.After;
@@ -16,13 +14,20 @@ public class StorageManagerTest {
 	// Not sure if this can be changed
 	private static final String DIRECTORY = "./";
 	private static final String FILENAME = "TaskStorage.json";
-	private static StorageManager storageManager = null;
+	private static StorageManager storageManager = new StorageManager();
 
 	@Before
-	public void init() throws Exception {
-		storageManager = new StorageManager();
-		// storageManager.initializeStorage();
+	public void testOpenStorage() throws Exception {
+		// test openStorage() first so that the storage is open for the other tests
+		// as long as it passes
 		storageManager.openStorage();
+		
+		assertNotEquals(StorageManager.STORAGE_DIRECTORY, "");
+		assertNotEquals(StorageManager.STORAGE_NAME, "");
+		assertNotEquals(StorageManager.STORAGE_TYPE, "");
+		assertEquals(StorageManager.file.exists(), true);
+		
+		// if openStorage() passes, change the storage location
 		storageManager.changeStorageLocation(DIRECTORY);
 	}
 		
@@ -48,16 +53,6 @@ public class StorageManagerTest {
 		if (!file.delete()) {
 			throw new IOException("Could not delete file");
 		}
-	}
-
-	@Test
-	public void testOpenStorage() throws Exception {
-		storageManager.openStorage();
-		
-		assertNotEquals(StorageManager.STORAGE_DIRECTORY, "");
-		assertNotEquals(StorageManager.STORAGE_NAME, "");
-		assertNotEquals(StorageManager.STORAGE_TYPE, "");
-		assertEquals(StorageManager.file.exists(), true);
 	}
 	
 	@Test
