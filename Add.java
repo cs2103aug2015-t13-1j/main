@@ -1,3 +1,6 @@
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 //@@author A0145732H
 /**
  * Add command to handle adding a task to the task list.
@@ -8,6 +11,7 @@ public class Add extends Command implements Undoable {
 	private static final String SUCCESS_ADD = "Added %s.";
 	private static final String SUCCESS_ADD_UNDO = "\"%s\" was removed.";
 	private static final String ERROR_TASK_ALREADY_EXISTS = "The task which you are trying to add already exists.";
+	
 	
 	private Task task;
 	private boolean wasExecuted;
@@ -26,6 +30,7 @@ public class Add extends Command implements Undoable {
 		logic.validateDates(task.getStartDateTime(), task.getEndDateTime());
 		
 		if (logic.doesTaskExist(task)) {
+			log.log(Level.INFO, "aborting, the task to be added already exists\n");
 			throw new Exception(ERROR_TASK_ALREADY_EXISTS);
 		}
 		

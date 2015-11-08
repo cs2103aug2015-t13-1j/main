@@ -4,6 +4,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,6 +79,8 @@ public class CommandParser {
 	private static final String HELP_REMOVE = "remove";
 	private static final String HELP_LIST = "list";
 	private static final String HELP_INVALID = "invalid";
+
+	private static final Logger log = Logger.getLogger(Ui.LOG_NAME);
 	
 	/**
 	 * Parse the input into the appropriate command
@@ -88,19 +92,24 @@ public class CommandParser {
 	 */
   public static Command getCommandFromInput(String input) throws Exception {
   	assert(input != null);
+  	log.log(Level.INFO, "parsing input \"" + input + "\"\n");
   	// exit early if this is an empty string (which happens when the user types nothing before pressing enter)
   	// this requires special handling because attempting to split this empty string into params causes a size 0 array
   	if (input.equals("")) {
+  		log.log(Level.INFO, "aborting parsing because input is an empty string\n");
   		throw new Exception(ERROR_NOTHING_ENTERED);
   	}
   	
   	// also check that if quotes are present, there is a corresponding closing quote. There should be either 0 or 2 quotes, depending on command
+  	// this is an important check, because it simplifies parsing for more complex command formats
   	int nQuotes = countQuotesInString(input);
   	if (!(nQuotes == 0 || nQuotes == 2)) {
+  		log.log(Level.INFO, "aborting parsing because number of quotes not 0 or 2\n");
   		throw new Exception(ERROR_INVALID_QUOTE_COUNT);
   	}
   	
   	ArrayList<String> params = splitInput(input);
+  	log.log(Level.INFO, "params after splitting: " + params + "\n");
   	String commandType = getCommandType(params).toLowerCase();
   	ArrayList<String> args = getCommandArgs(params); 
   	
@@ -111,6 +120,8 @@ public class CommandParser {
     		return initAddCommand(args);
     		
     	case "done" :
+    		// fall-through
+    	case "d":
     		return initDoneCommand(args);
     		
     	case "list" :
@@ -132,6 +143,8 @@ public class CommandParser {
     		return initUndoCommand();
     		
     	case "help" :
+    		// fall-through
+    	case "h":
     		return initHelpCommand(args);
     		
     	case "reformat":
@@ -147,6 +160,7 @@ public class CommandParser {
     		return initExitCommand();
     		
     	default :
+    		log.log(Level.INFO, "Could not determine command type, " + commandType + " is an unsupported command\n");
     		throw new Exception(String.format(ERROR_INVALID_COMMAND, commandType));
   	}
   }
@@ -266,19 +280,22 @@ public class CommandParser {
   
   private static Command initAddCommand(ArrayList<String> args) throws Exception {
 	  if (args.size() == 0) {
+		  log.log(Level.INFO, "Insufficient arguments for add");
 		  throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD);
 	  }
 	  
 		Task newTask;
 		String name = args.get(POSITION_ADD_NAME); // name is always present in the same position for all tasks
+		log.log(Level.INFO, "Name entered = " + name + "\n");
 			verifyTaskNameValidity(name);
 			name = name.replace("\"", "").trim();
-		
+			log.log(Level.INFO, "Name verified\n");
 		LocalDateTime endTime, startTime;
 		
 		switch(determineTaskTypeToBeAdded(args)) {
 			case UNSCHEDULED :
 				newTask = new Task(name, false);
+				log.log(Level.INFO, "created unscheduled task with name " + name + "\n");
 				break;
 				
 			case DEADLINE :
@@ -288,6 +305,7 @@ public class CommandParser {
 				endTime = parseDateTime(deadline);
 				
 					newTask = new Task(name, endTime, false);
+					log.log(Level.INFO, "creating deadline with name " + name + " , end date" + endTime + "\n");
 				break;
 				
 			case EVENT :
@@ -300,9 +318,11 @@ public class CommandParser {
 				endTime = parseDateTime(end);
 				
 				newTask = new Task(name, startTime, endTime, false);
+				log.log(Level.INFO, "creating event with name " + name + " , start = " + startTime + ", end = " + endTime + "\n");
 				break;
 				
 			default :
+				log.log(Level.INFO, "Aborting, cannot determine the type of task to add\n");
 				throw new Exception(ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD);
 		}
 		
@@ -326,6 +346,7 @@ public class CommandParser {
 			if (helpType != HELP_INVALID) {
 				return new Help(determineHelpTypeToBeList(args));
 			} else {
+				log.log(Level.INFO, "Aborting, could not determine type of help to show\n");
 				throw new Exception("The type of help to be shown could not be determined.");
 			}
 		}
@@ -337,8 +358,10 @@ public class CommandParser {
   
   private static Command initRelocateCommand(ArrayList<String> args) throws Exception {
   	String fileLocation = args.get(0);
+  	log.log(Level.INFO, "folder path entered = " + fileLocation + "\n");
   	char first = fileLocation.charAt(0), last = fileLocation.charAt(fileLocation.length()-1);
   	if (first != '"' || last != '"') {
+  		log.log(Level.INFO, "aborting as folder path is not in quotes\n");
   		throw new Exception(ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
   	}
   	
@@ -392,6 +415,7 @@ public class CommandParser {
     	return dateTime;
   	} 
     	catch(DateTimeParseException e) {
+    		log.log(Level.INFO, "aborting, could not parse " + dateTimeString + " with the given formatter\n");
     		throw new Exception(String.format(ERROR_INVALID_DATE_AND_TIME, dateTimeString));	
   	}
   	
@@ -405,16 +429,19 @@ public class CommandParser {
 	  try {
 	  return Integer.parseInt(integerString);
 	  } catch (NumberFormatException e) {
+		  log.log(Level.INFO, "Aborting, could not parse " + integerString + " as an integer\n");
 	  		throw new Exception(ERROR_NUMBER_FORMAT);
   }
   }
   
   private static Command initRemoveCommand(ArrayList<String> args) throws Exception {
   	if (args.size() == 0) {
+  		log.log(Level.INFO, "aborting, insufficient arguments\n");
   		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE);
   	}
   	
   		if (args.size() > MAX_ARG_REMOVE) {
+  			log.log(Level.INFO, "aborting, too many arguments\n");
     	throw new Exception(String.format(ERROR_EXPECTED_ONE_TASK_NUM, "remove"));    		
   	}
   
@@ -423,10 +450,12 @@ public class CommandParser {
 
   private static Command initDoneCommand(ArrayList<String> args) throws Exception {
   	if (args.size() == 0) {
+  		log.log(Level.INFO, "aborting, insufficient arguments\n");
   		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE);
   	}
   			
   			if (args.size() > MAX_ARG_DONE) {
+  		  		log.log(Level.INFO, "aborting, too many arguments\n");
     	throw new Exception(String.format(ERROR_EXPECTED_ONE_TASK_NUM, "mark as completed"));    		
   	}
   	
@@ -437,6 +466,7 @@ public class CommandParser {
   private static Command initUpdateCommand(ArrayList<String> args) throws Exception {
 	  boolean isSufficientArguments = args.size() >= 2;
 	  if (isSufficientArguments == false) {
+	  		log.log(Level.INFO, "aborting, insufficient arguments\n");
 	  		throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
 	  	}
 	  	
@@ -460,6 +490,7 @@ public class CommandParser {
   		switch(arg) {
     		case "+name" :
     			if (isNameParsed == false && (i + 1) < params.size()) {
+    		  		log.log(Level.INFO, "+name detected\n");
     				isNameParsed = true;
     				newName = params.get(i + 1);
     				verifyTaskNameValidity(newName);
@@ -467,12 +498,14 @@ public class CommandParser {
     				nameAction = DeltaTask.FIELD_ACTION.UPDATE;
     				i += 2; // skip over the new name we just added
     			} else {
+    		  		log.log(Level.INFO, "aborting " + String.format(ERROR_INVALID_FIELD_TO_UPDATE, "name", arg) + "\n");
     				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "name", arg));
     			}
     			break;
     			
     		case "+end" :
     			if (isEndParsed == false && (i + 2) < params.size()) {
+    				log.log(Level.INFO, "+end detected\n");
     				isEndParsed = true;
     				String date = params.get(i + 1);
     				String time = params.get(i + 2);
@@ -480,22 +513,26 @@ public class CommandParser {
     				endAction = DeltaTask.FIELD_ACTION.UPDATE;
     				i += 3; // skip past 2 words, which is the new date and time 
     			} else {
+    				log.log(Level.INFO, "aborting, " + String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg) + "\n");
     				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
     			}
     			break;
   			
     		case "-end" :
     			if (isEndParsed == false) {
+    				log.log(Level.INFO, "-end detected\n");
     				endAction = DeltaTask.FIELD_ACTION.REMOVE;
     				isEndParsed = true;
     				i++;
     			} else {
+    				log.log(Level.INFO, "aborting, " + String.format(ERROR_INVALID_FIELD_TO_REMOVE, "end date") + "\n");
     				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_REMOVE, "end date"));
     			}
     			break;
     			
     		case "+start" :
     			if (isStartParsed == false && (i + 2) < params.size()) {
+    				log.log(Level.INFO, "+start detected\n");
     				isStartParsed = true;
     				String date = params.get(i + 1);
     				String time = params.get(i + 2);
@@ -503,21 +540,25 @@ public class CommandParser {
     				startAction = DeltaTask.FIELD_ACTION.UPDATE;
     				i += 3; // skip past 2 words, which is the new date and time
     			} else {
+    				log.log(Level.INFO, "aborting, " + String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg) + "\n");
     				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_UPDATE, "date and time", arg));
     			}
     			break;
   			
     		case "-start" :
     			if (isStartParsed == false) {
+    				log.log(Level.INFO, "+start detected\n");
     				startAction = DeltaTask.FIELD_ACTION.REMOVE;
     				isStartParsed = true;
     				i++;
     			} else {
+    				log.log(Level.INFO, "aborting, " + String.format(ERROR_INVALID_FIELD_TO_REMOVE, "start date") + "\n");
     				throw new Exception(String.format(ERROR_INVALID_FIELD_TO_REMOVE, "start date"));
     			}
     			break;
     		
   			default :
+  				log.log(Level.INFO, "aborting, " + arg + " is an unrecognized keyword\n");
   				throw new Exception(String.format(ERROR_UNRECOGNIZED_UPDATE_TOKEN, arg));
     	}
   	}
@@ -544,11 +585,13 @@ public class CommandParser {
 	  char first = name.charAt(0), last = name.charAt(name.length()-1);
 	  
 if (name.length() <= 2 || first != '"' || last != '"') {
+	log.log(Level.INFO, "aborting, " + name + " is invalid as it is not in quotes\n");
 throw new Exception(ERROR_NAME_SHOULD_BE_IN_QUOTES );	
 }
 
 String nameWithQuotesRemoved = name.substring(1, name.length()-1);
 if (nameWithQuotesRemoved.trim().length() == 0) {
+	log.log(Level.INFO, "aborting, " + name + " is invalid as it has no non-whitespace chars\n");
 	throw new Exception(ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS);
 }
   }
