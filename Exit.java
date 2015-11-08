@@ -16,8 +16,6 @@ public class Exit extends Command {
 	 * Calls the necessary methods to exit TaskBuddy cleanly
 	 */
 	public void execute() throws Exception {
-		// TODO which methods to change to public, etc.
-		storageManager.closeStorage();
 		Ui.indicateExit();
 		wasExecuted = true;
 	}
