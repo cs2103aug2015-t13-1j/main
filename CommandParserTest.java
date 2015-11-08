@@ -386,10 +386,4 @@ public class CommandParserTest {
 		}
 	}
 	
-	//@@author A0100081E
-	@Test
-	public void testHelp() {
-		
-	}
-	
 }
