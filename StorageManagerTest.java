@@ -98,7 +98,7 @@ public class StorageManagerTest {
 		
 		assertEquals(storageManager.readAllTasks().get(3).getName(), taskList.get(3).getName()); // Tests updateTask()
 		
-		storageManager.clearTask();
+		storageManager.clearAllTasks();
 		
 		assertEquals(storageManager.readAllTasks(), emptyList); // Tests clearTask()
 	}

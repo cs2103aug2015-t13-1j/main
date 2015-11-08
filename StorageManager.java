@@ -519,7 +519,7 @@ public class StorageManager {
 	 * 
 	 * @throws Exception	if the task was unable to be cleared
 	 */
-	public void clearTask() throws Exception {
+	public void clearAllTasks() throws Exception {
 		assert(file.exists());
 		
 		TASK_LIST = EMPTY_TASK;

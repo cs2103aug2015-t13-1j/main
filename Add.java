@@ -1,5 +1,4 @@
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 //@@author A0145732H
 /**
