@@ -37,8 +37,7 @@ public class CommandParser {
 	public static final String ERROR_NAME_SHOULD_BE_IN_QUOTES = "The task name should be surrounded by quotes.";
 	public static final String ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS = "The task name should not be composed entirely of spaces.";
 	public static final String ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES = "The folder path should be surrounded by quotes.";
-	public static final String ERROR_FOLDER_PATH_TOO_SHORT = "The folder path should be more than 1 character long.";
-	public static final String ERROR_FOLDER_PATH_WITHOUT_SLASH = "File directory must contain \"/\" at the end";
+	public static final String ERROR_FOLDER_PATH_TOO_SHORT = "The folder path should contain at least 1 character surrounded by quotes.";
 	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
@@ -357,30 +356,36 @@ public class CommandParser {
   private static Command initReformatCommand() {
   	return new Reformat();
   }
-  
+
+//@@author A0126270N
   private static Command initRelocateCommand(ArrayList<String> args) throws Exception {
   	String fileLocation = args.get(0);
   	log.log(Level.INFO, "folder path entered = " + fileLocation + "\n");
+  	
+  	if (fileLocation.length() <= 2) {
+  		log.log(Level.INFO, "aborting as folder path is too short\n");
+  		throw new Exception(ERROR_FOLDER_PATH_TOO_SHORT);
+  	}
+  	
   	char first = fileLocation.charAt(0), last = fileLocation.charAt(fileLocation.length()-1);
   	if (first != '"' || last != '"') {
   		log.log(Level.INFO, "aborting as folder path is not in quotes\n");
   		throw new Exception(ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
   	}
   	
-  	if (fileLocation.length() <= 3) {
-  		throw new Exception(ERROR_FOLDER_PATH_TOO_SHORT);
-  	}
-  	
-  	if (fileLocation.charAt(fileLocation.length() - 2) != '/' || fileLocation.charAt(fileLocation.length() - 2) != '\\') {
-			throw new Exception(ERROR_FOLDER_PATH_WITHOUT_SLASH);
-		}
-  	
   	String fileLocationWithoutQuotes = fileLocation.substring(1, fileLocation.length() - 1);
-  	
+  	// it is safe to use slash (but not backslash) in folder paths for java, so replace any backslashes
+  	fileLocationWithoutQuotes = fileLocationWithoutQuotes.replace("\\", "/");
+  	char end = fileLocationWithoutQuotes.charAt(fileLocationWithoutQuotes.length()-1);
+
+  	if (end != '/') {
+  		fileLocationWithoutQuotes = fileLocationWithoutQuotes + "/";
+  		log.log(Level.INFO, "appending slash to the end of file location, location = " + fileLocationWithoutQuotes + "\n");
+		}
+  	  	
   	return new Relocate(fileLocationWithoutQuotes);
   }
 
-  //@@author A0126270N
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
   	switch(args.size()) {
     	case ADD_ARG_SIZE_FOR_UNSCHEDULED:
