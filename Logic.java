@@ -105,17 +105,7 @@ public class Logic {
 		}
 		return foundTasks;
 	}
-	
-	/**
-	 * This method searches for all of the tasks marked as done by the user.
-	 * 
-	 * @return	an ArrayList of tasks marked as done
-	 */
-	public ArrayList<Task> getCompletedTasks() {
-		ArrayList<Task> taskList = storageManager.readAllTasks();
-		return getCompletedTasks(taskList);
-	}
-	
+
 	/**
 	 * This method searches for all of the tasks marked as done in a given task list
 	 * 
@@ -159,15 +149,6 @@ public class Logic {
 	}
 	
 	/**
-	 * This method searches for all of the unscheduled tasks in the entire task list
-	 * @return	an ArrayList of the unscheduled tasks
-	 */
-	public ArrayList<Task> getUnscheduledTasks() {
-		ArrayList<Task> taskList = storageManager.readAllTasks();
-		return getUnscheduledTasks(taskList);
-	}
-	
-	/**
 	 * This method searches for all of the unscheduled tasks in a specified task list
 	 * 
 	 * @param taskList	the specified task list to filter for unscheduled tasks
@@ -182,15 +163,6 @@ public class Logic {
 			}
 		}
 		return unscheduled;	
-	}
-	
-	/**
-	 * This method searches for all of the deadline tasks in the entire task list
-	 * @return	an ArrayList of the deadline tasks
-	 */
-	public ArrayList<Task> getDeadlineTasks() {
-		ArrayList<Task> taskList = storageManager.readAllTasks();
-		return getDeadlineTasks(taskList);
 	}
 	
 	/**
@@ -211,15 +183,6 @@ public class Logic {
 	}
 	
 	/**
-	 * This method searches for all of the events in the entire task list
-	 * @return	an ArrayList of the events
-	 */
-	public ArrayList<Task> getEvents() {
-		ArrayList<Task> taskList = storageManager.readAllTasks();
-		return getEvents(taskList);
-	}
-	
-	/**
 	 * This method searches for all of the events in a specified task list
 	 * 
 	 * @param taskList	the specified task list to filter for events
@@ -236,11 +199,12 @@ public class Logic {
 		return events;	
 	}
 	
-	public ArrayList<Task> getTodaysTasks() {
-		ArrayList<Task> taskList = storageManager.readAllTasks();
-		return getTodaysTasks(taskList);
-	}
-	
+	/**
+	 * This method searches for any events or deadlines happening today from a specified task list
+	 * 
+	 * @param taskList	the specified task list to filter for today's tasks
+	 * @return			an ArrayList of today's tasks
+	 */
 	public ArrayList<Task> getTodaysTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		LocalDate today = LocalDate.now();
@@ -262,11 +226,12 @@ public class Logic {
 		return todaysTasks;
 	}
 	
-	public ArrayList<Task> getTomorrowsTasks() {
-		ArrayList<Task> taskList = storageManager.readAllTasks();
-		return getTomorrowsTasks(taskList);
-	}
-	
+	/**
+	 * This method searches for any events or deadlines happening tomorrow from a specified task list
+	 * 
+	 * @param taskList	the specified task list to filter for tomorrow's tasks
+	 * @return			an ArrayList of tomorrow's tasks
+	 */
 	public ArrayList<Task> getTomorrowsTasks(ArrayList<Task> taskList) {
 		assert(taskList != null);
 		LocalDate tomorrow = LocalDate.now().plusDays(1);

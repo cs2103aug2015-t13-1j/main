@@ -385,8 +385,7 @@ public class Ui {
 	/**
 	 * Returns the task list that was most recently displayed to the user. 
 	 * 
-	 * @return 	an ArrayList of tasks that were most recently displayed to the user,
-	 * 			or null if the most recent command was not a List command
+	 * @return 	an ArrayList of tasks that were most recently displayed to the user
 	 */
 	public static ArrayList<Task> getCurrentTaskList() {
 		return currentTaskList;
