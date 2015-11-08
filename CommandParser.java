@@ -35,6 +35,8 @@ public class CommandParser {
 	public static final String ERROR_NAME_SHOULD_BE_IN_QUOTES = "The task name should be surrounded by quotes.";
 	public static final String ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS = "The task name should not be composed entirely of spaces.";
 	public static final String ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES = "The folder path should be surrounded by quotes.";
+	public static final String ERROR_FOLDER_PATH_TOO_SHORT = "The folder path should be more than 1 character long.";
+	public static final String ERROR_FOLDER_PATH_WITHOUT_SLASH = "File directory must contain \"/\" at the end";
 	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
@@ -337,10 +339,19 @@ public class CommandParser {
   
   private static Command initRelocateCommand(ArrayList<String> args) throws Exception {
   	String fileLocation = args.get(0);
+  	
   	char first = fileLocation.charAt(0), last = fileLocation.charAt(fileLocation.length()-1);
   	if (first != '"' || last != '"') {
   		throw new Exception(ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
   	}
+  	
+  	if (fileLocation.length() <= 3) {
+  		throw new Exception(ERROR_FOLDER_PATH_TOO_SHORT);
+  	}
+  	
+  	if (fileLocation.charAt(fileLocation.length() - 2) != '/') {
+			throw new Exception(ERROR_FOLDER_PATH_WITHOUT_SLASH);
+		}
   	
   	String fileLocationWithoutQuotes = fileLocation.substring(1, fileLocation.length() - 1);
   	

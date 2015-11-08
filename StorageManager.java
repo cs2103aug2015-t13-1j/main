@@ -305,6 +305,8 @@ public class StorageManager {
 	 */
 	public boolean changeStorageLocation(String directory) throws Exception {
 		assert(file.exists());
+		assert(directory.length() >= 2);
+		assert((directory.charAt(directory.length() - 1) == '\\') || (directory.charAt(directory.length() - 1) == '/') == true);
 		
 		STORAGE_DIRECTORY = directory;
 		
@@ -524,7 +526,7 @@ public class StorageManager {
 		
 		closeWriter();
 		setWriterWithoutAppend();
-		gson.toJson("", bufferedWriter);
+		gson.toJson(EMPTY_TASK, bufferedWriter);
 		
 		log.log(Level.INFO, "Successfully cleared task from task list.");
 	}
