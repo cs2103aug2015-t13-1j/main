@@ -8,8 +8,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import com.google.gson.Gson;
 
 /**
@@ -60,6 +64,15 @@ public class StorageManager {
 	 * This method constructs the StorageManager
 	 */
 	public StorageManager() {
+		FileHandler handler;
+		try {
+			handler = new FileHandler("SMlog");
+			handler.setFormatter(new SimpleFormatter());
+			log.addHandler(handler);
+		} catch (Exception e) {
+			
+		}
+		
 		log.log(Level.INFO, "StorageManager::StorageManager(): StorageManager is successfully initialized.");
 	}
 

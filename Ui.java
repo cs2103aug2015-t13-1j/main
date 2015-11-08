@@ -2,12 +2,18 @@
 import org.fusesource.jansi.AnsiConsole;
 import static org.fusesource.jansi.Ansi.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * The UI class handles all user input and output to the screen.
@@ -53,14 +59,19 @@ public class Ui {
 	private static final String MESSAGE_FEEDBACK_DEADLINE = "\"%s\" due by %s";
 	private static final String MESSAGE_FEEDBACK_UNSCHEDULED = "\"%s\"";
 	
+	/** class variables pertaining to the running of Ui **/
 	private static boolean isRunning;
 	private static Scanner keyboard;
 	private static ArrayList<Task> currentTaskList;
 	private static Logic logic;
 	
+	/** logger variables **/
+	static final String LOG_NAME = "HelloTaskLog";
+	private static Logger logger = Logger.getLogger(LOG_NAME);
+	
 	public static void main(String[] args) throws Exception {
-		taskBuddyInit();
-		displayWelcomeMessage();
+		helloTaskInit();
+		showToUser(MESSAGE_WELCOME);
 		while (isRunning) {
 			currentTaskList = logic.updateCurrentTaskList();
 			showToUser(logic.getDefaultView());
@@ -68,7 +79,7 @@ public class Ui {
 			String userInput = getUserInput();
 			executeUserInput(userInput);
 		}
-		taskBuddyClose();
+		helloTaskClose();
 	}
 
 	/** 
@@ -81,31 +92,46 @@ public class Ui {
 	}
 
 	/**
-	 * This method initiates Task Buddy by initializing the class variables
+	 * This method initiates HelloTask by initializing the class variables
 	 * @throws Exception 
 	 */
-	private static void taskBuddyInit() throws Exception {
-		AnsiConsole.systemInstall();
-		keyboard = new Scanner(System.in);
-		isRunning = true;
+	private static void helloTaskInit() throws Exception {
+		loggerInit();
+		uiInit();
+		logicInit();
+		logger.log(Level.INFO, "HelloTask initialized successfully\n");
+	}
+
+	public static void logicInit() throws Exception {
 		logic = new Logic();
 		logic.init(new StorageManager(), new Logic());
 	}
 
-	/**
-	 * This method displays a welcome message and other relevant tasks to the user
-	 * upon opening the program.
-	 */
-	private static void displayWelcomeMessage() {
-		showToUser(MESSAGE_WELCOME);
-		// TODO possibly show the list of upcoming tasks to the user
+	public static void loggerInit() {
+		try {
+			FileHandler handler = new FileHandler(LOG_NAME);
+			handler.setFormatter(new SimpleFormatter());
+			LogManager.getLogManager().reset();
+			logger.addHandler(handler);
+		} catch (Exception e) {
+			/* error opening the log file - just get rid of logging so it won't 
+			 * print to the console while the user is running the program */
+			LogManager.getLogManager().reset();
+		}
+	}
+
+	public static void uiInit() {
+		AnsiConsole.systemInstall();
+		keyboard = new Scanner(System.in);
+		isRunning = true;
 	}
 
 	/**
 	 * This method closes Task Buddy
 	 * @throws Exception 
 	 */
-	private static void taskBuddyClose() throws Exception {
+	private static void helloTaskClose() throws Exception {
+		logger.log(Level.INFO, "closing HelloTask\n");
 		logic.close();
 		keyboard.close();
 		AnsiConsole.systemUninstall();
