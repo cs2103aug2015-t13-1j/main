@@ -2,7 +2,6 @@
 import org.fusesource.jansi.AnsiConsole;
 import static org.fusesource.jansi.Ansi.*;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
@@ -88,7 +87,9 @@ public class Ui {
 	 * @return	the user's input string
 	 */
 	private static String getUserInput() {
-		return keyboard.nextLine();
+		String userInput = keyboard.nextLine();
+		logger.log(Level.INFO, "user entered \"" + userInput + "\"");
+		return userInput;
 	}
 
 	/**
@@ -113,6 +114,7 @@ public class Ui {
 			handler.setFormatter(new SimpleFormatter());
 			LogManager.getLogManager().reset();
 			logger.addHandler(handler);
+			logger.log(Level.INFO, "logger initialized\n");
 		} catch (Exception e) {
 			/* error opening the log file - just get rid of logging so it won't 
 			 * print to the console while the user is running the program */
@@ -130,9 +132,13 @@ public class Ui {
 	 * This method closes Task Buddy
 	 * @throws Exception 
 	 */
-	private static void helloTaskClose() throws Exception {
+	private static void helloTaskClose() {
 		logger.log(Level.INFO, "closing HelloTask\n");
-		logic.close();
+		try {
+			logic.close();
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "caught exception: " + e.getMessage());
+		}
 		keyboard.close();
 		AnsiConsole.systemUninstall();
 		System.exit(0);
@@ -254,7 +260,7 @@ public class Ui {
 	 * @param message		the StringBuilder holding the current task list display message
 	 * @param taskNumber	the number associated with the task
 	 * @param task			the task to format and display
-//	 * @param isFirst		whether this is the first unscheduled task in the display so far
+	 * @param isFirst		whether this is the first unscheduled task in the display so far
 	 * @return				whether this is the first unscheduled task in the display so far
 	 */
 	public static boolean writeUnscheduledToList(StringBuilder message, 
@@ -321,7 +327,6 @@ public class Ui {
 		} else {
 			message = String.format(MESSAGE_DATE, day, dateTime.getDayOfMonth(), month);
 		}
-//		return message;
 		return addColorCoding(message, dateTime);
 	}
 	
@@ -342,7 +347,6 @@ public class Ui {
 		} else {
 			message = String.format(MESSAGE_TIME, hour, dateTime.getMinute(), "PM");
 		}
-//		return message;
 		return addColorCoding(message, dateTime);
 	}
 	
@@ -403,5 +407,6 @@ public class Ui {
 	 */
 	public static void indicateExit() {
 		isRunning = false;
+		logger.log(Level.INFO, "exit command was issued - indicated Ui to exit program");
 	}
 }

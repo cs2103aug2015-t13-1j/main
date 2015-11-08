@@ -8,11 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import com.google.gson.Gson;
 
@@ -43,7 +40,7 @@ public class StorageManager {
 	private static final Task[] EMPTY_TASK = {};
 	// Gson Variable
 	private static Gson gson = new Gson();
-	private static final Logger log = Logger.getLogger("HelloTaskLog");
+	private static final Logger log = Logger.getLogger(Ui.LOG_NAME);
 	
 	// Error Messages
 	public static final String ERROR_FILE_READER_UNINITIALIZED = "File reader could not be initialized.";
@@ -64,15 +61,6 @@ public class StorageManager {
 	 * This method constructs the StorageManager
 	 */
 	public StorageManager() {
-		FileHandler handler;
-		try {
-			handler = new FileHandler("SMlog");
-			handler.setFormatter(new SimpleFormatter());
-			log.addHandler(handler);
-		} catch (Exception e) {
-			
-		}
-		
 		log.log(Level.INFO, "StorageManager is successfully initialized.");
 	}
 
