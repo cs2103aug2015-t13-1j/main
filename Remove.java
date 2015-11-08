@@ -1,5 +1,6 @@
 //@@author A0145732H
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * Remove command to handle removing a task from the task list.
@@ -31,6 +32,7 @@ public class Remove extends Command implements Undoable {
 			task = taskList.get(index);
 			storageManager.removeTask(task);
 		} else {
+			log.log(Level.INFO, "aborting, the task number entered is invalid\n");
 			throw new Exception(ERROR_INDEX_INVALID);
 		}
 		isExecuted = true;

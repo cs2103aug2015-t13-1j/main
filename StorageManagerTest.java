@@ -13,7 +13,8 @@ public class StorageManagerTest {
 	// Note: running the tests causes it to read and write from the eclipse project root folder instead of /bin. 
 	// Not sure if this can be changed
 	private static final String DIRECTORY = "./";
-	private static final String FILENAME = "TaskStorage.json";
+	private static final String FILENAME = "TaskStorage";
+	private static final String FILETYPE = ".json";
 	private static StorageManager storageManager = new StorageManager();
 
 	@Before
@@ -26,16 +27,13 @@ public class StorageManagerTest {
 		assertNotEquals(storageManager.getStorageName(), "");
 		assertNotEquals(storageManager.getStorageType(), "");
 		assertEquals(storageManager.getStorageFile().exists(), true);
-		
-		// if openStorage() passes, change the storage location
-		storageManager.changeStorageLocation(DIRECTORY);
 	}
 		
 	@After
 	public void shutdown() throws Exception {
 		storageManager.closeStorage();
-		deleteFile(DIRECTORY + FILENAME);
-		
+//		deleteFile(DIRECTORY + FILENAME + FILETYPE);
+
 		try {
 			storageManager.getStorageFile().exists();
 			fail("exception not thrown");
@@ -59,11 +57,7 @@ public class StorageManagerTest {
 	public void testChangeStorageLocation() throws Exception {
 		storageManager.changeStorageLocation("./");
 		
-		assertEquals(storageManager.getInformationDirectory(), "./");
-		
-		storageManager.changeStorageLocation(".");
-		
-		assertNotEquals(storageManager.getInformationDirectory(), ".");
+		assertEquals(storageManager.getStorageDirectory(), "./");
 	}
 	
 	@Test

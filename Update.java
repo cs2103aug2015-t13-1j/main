@@ -1,6 +1,7 @@
 //@@author A0145732H
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * Update command to handle updating the fields of a task.
@@ -30,7 +31,6 @@ public class Update extends Command implements Undoable {
 		this.wasExecuted = false;
 	}
 
-	//@@author A0145732H
 	@Override
 	/**
 	 * Update the task.
@@ -39,6 +39,7 @@ public class Update extends Command implements Undoable {
 		ArrayList<Task> taskList = Ui.getCurrentTaskList();
 		
 		if (taskIndex < 0 || taskIndex >= taskList.size()) {
+			log.log(Level.INFO, "aborting, the task index " + taskIndex + " is invalid\n");
 			throw new Exception(ERROR_INDEX_INVALID);
 		}
 	
@@ -48,10 +49,12 @@ public class Update extends Command implements Undoable {
 			logic.validateDates(newTask.getStartDateTime(), newTask.getEndDateTime());
 			
 			if (oldTask.equals(newTask)) {
+				log.log(Level.INFO, "aborting, the new task resulting from requested changes and the old task are identical\n");
 				throw new Exception(ERROR_CHANGES_DO_NOT_RESULT_IN_DIFFERENT_TASK);
 			}
 			
 			if (logic.doesTaskExist(newTask)) {
+				log.log(Level.INFO, "aborting, the new task already exists\n");
 				throw new Exception(ERROR_TASK_ALREADY_EXISTS);
 			}
 			
@@ -59,7 +62,6 @@ public class Update extends Command implements Undoable {
 		wasExecuted = true;
 	}
 
-	//@@author A0126270N
 	private void createUpdatedTask() throws Exception {
 		String newName = null;
 		
@@ -74,6 +76,7 @@ public class Update extends Command implements Undoable {
 				
 			case REMOVE :
 				// command parser should not allow name's action to be initialized to REMOVE
+				log.log(Level.WARNING, "aborting, the nameAction field was initialized to remove by commandParser, which should be impossible\n");
 				assert("A request to remove task name slipped through command parser's "
 						+ "defences, execution should not reach here" == null);
 		}
@@ -81,7 +84,7 @@ public class Update extends Command implements Undoable {
 		assert(newName != null);
 		
 		// for requests to remove non-existent fields, like removing the start date 
-		// off a unscheduled task, forgive and ignore the error
+		// of a unscheduled task, forgive and ignore the error
 		LocalDateTime newStart = null;
 		switch(changes.getStartAction()) {
 			case UPDATE :
@@ -112,6 +115,7 @@ public class Update extends Command implements Undoable {
 	
 		
 		if (isTaskParametersValid(newName, newStart, newEnd) == false) {
+			log.log(Level.INFO, "aborting, the new task is invalid as it has a start date but no end date\n");
 			throw new Exception(ERROR_UPDATED_TASK_IS_INVALID);
 		}
 		
@@ -176,6 +180,7 @@ public class Update extends Command implements Undoable {
 	public int getTaskIndex() {
 		return taskIndex;
 	}
+	
 	@Override
 	public String getUndoMessage() {
 		return String.format(SUCCESS_UPDATE_UNDO, newTask.getName(), Ui.getPrintableTaskString(oldTask));

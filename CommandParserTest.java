@@ -1,7 +1,6 @@
 import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.junit.Test;
 

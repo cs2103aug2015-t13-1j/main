@@ -1,6 +1,7 @@
 //@@author A0100081E
 public class Relocate extends Command {
 	private final String SUCCESS_RELOCATE = "Storage was relocated to \"%s\"";
+	private final String ERROR_FILE_NOT_FOUND = "File directory specified does not exist";
 	private String fileLocation = null;
 	
 	public Relocate(String fileLocation) {
@@ -10,12 +11,8 @@ public class Relocate extends Command {
 	
 	@Override
 	public void execute() throws Exception {
-		if (fileLocation.charAt(fileLocation.length() - 1) != '/') {
-			throw new Exception("File directory must contain \"/\" at the end");
-		}
-		
 		if (!storageManager.changeStorageLocation(fileLocation)) {
-			throw new Exception("File directory specified does not exist");
+			throw new Exception(ERROR_FILE_NOT_FOUND);
 		}
 	}
 
