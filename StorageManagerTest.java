@@ -13,7 +13,8 @@ public class StorageManagerTest {
 	// Note: running the tests causes it to read and write from the eclipse project root folder instead of /bin. 
 	// Not sure if this can be changed
 	private static final String DIRECTORY = "./";
-	private static final String FILENAME = "TaskStorage.json";
+	private static final String FILENAME = "TaskStorage";
+	private static final String FILETYPE = ".json";
 	private static StorageManager storageManager = new StorageManager();
 
 	@Before
@@ -31,7 +32,7 @@ public class StorageManagerTest {
 	@After
 	public void shutdown() throws Exception {
 		storageManager.closeStorage();
-		deleteFile(DIRECTORY + FILENAME);
+//		deleteFile(DIRECTORY + FILENAME + FILETYPE);
 
 		try {
 			storageManager.getStorageFile().exists();
