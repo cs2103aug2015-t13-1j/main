@@ -33,20 +33,20 @@ public class Logic {
 	}
 	
 	//@@author A0126270N
-		public void init(StorageManager sm, Logic logic) throws Exception {
-			assert(sm != null);
-			storageManager = sm;
-			storageManager.openStorage();
-			Command.setStorageManager(sm);
-			
-			assert(logic != null);
-			commandLogic = logic;
-			Command.setLogic(commandLogic);
-		}
+	public void init(StorageManager sm, Logic logic) throws Exception {
+		assert(sm != null);
+		storageManager = sm;
+		storageManager.openStorage();
+		Command.setStorageManager(sm);
 		
-		public void close() throws Exception {
-			storageManager.closeStorage();
-		}
+		assert(logic != null);
+		commandLogic = logic;
+		Command.setLogic(commandLogic);
+	}
+		
+	public void close() throws Exception {
+		storageManager.closeStorage();
+	}
 		
 	//@@author A0145732H
 	public Command processUserInput(String userInput) throws Exception {
@@ -270,6 +270,7 @@ public class Logic {
 		assert(taskList != null);
 		LocalDate tomorrow = LocalDate.now().plusDays(1);
 		ArrayList<Task> tomorrowsTasks = new ArrayList<Task>();
+		
 		for (Task task : taskList) {
 			LocalDate start = task.getStartDateTime().toLocalDate();
 			LocalDate end = task.getEndDateTime().toLocalDate();
@@ -286,6 +287,12 @@ public class Logic {
 		return tomorrowsTasks;
 	}
 	
+	/**
+	 * Validate whether the event dates are valid (start has to be before end)
+	 * @param start			the start date and time of the event
+	 * @param end			the end date and time of the event
+	 * @throws Exception	if the start is not before the end
+	 */
 	public void validateDates(LocalDateTime start, LocalDateTime end) throws Exception {
 		if (start == null) {
 			// dates are always valid for unscheduled tasks and deadlines
