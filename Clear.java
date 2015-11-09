@@ -1,13 +1,13 @@
+//@@author A0100081E
 import java.util.ArrayList;
 
-//@@author A0100081E
-public class Reformat extends Command implements Undoable {
-	private static final String SUCCESS_REFORMAT = "All tasks were erased.";
-	private static final String SUCCESS_REFORMAT_UNDO = "All tasks were rewritten.";
+public class Clear extends Command implements Undoable {
+	private static final String SUCCESS_CLEAR = "All tasks were erased.";
+	private static final String SUCCESS_CLEAR_UNDO = "All tasks were rewritten.";
 	private ArrayList<Task> erasedTaskList;
 	private boolean wasExecuted;
 	
-	public Reformat() {
+	public Clear() {
 		this.wasExecuted = false;
 		this.erasedTaskList = new ArrayList<Task>();
 	}
@@ -21,7 +21,7 @@ public class Reformat extends Command implements Undoable {
 
 	@Override
 	public String getSuccessMessage() {
-		return SUCCESS_REFORMAT;
+		return SUCCESS_CLEAR;
 	}
 
 	//@@author A0145732H
@@ -33,8 +33,9 @@ public class Reformat extends Command implements Undoable {
 		}
 	}
 
+	//@@author A0100081E
 	@Override
 	public String getUndoMessage() {
-		return SUCCESS_REFORMAT_UNDO;
+		return SUCCESS_CLEAR_UNDO;
 	}
 }

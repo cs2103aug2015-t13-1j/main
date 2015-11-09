@@ -10,8 +10,8 @@ public class Help extends Command {
 	private final String HELP_TYPE_UPDATE = "update";
 	private final String HELP_TYPE_DONE = "done";
 	private final String HELP_TYPE_UNDO = "undo";
-	private final String HELP_TYPE_RELOCATE = "relocate";
-	private final String HELP_TYPE_REFORMAT = "reformat";
+	private final String HELP_TYPE_MOVE = "move";
+	private final String HELP_TYPE_CLEAR = "clear";
 	
 	// color coding for JANSI
 	private static final String COLOR_CODE_END_TAG = "|@";
@@ -76,17 +76,17 @@ public class Help extends Command {
 			COLOR_CODE_CYAN + "Reverting Last Command:\n" + COLOR_CODE_END_TAG
 		+ "- undo\n"
 		+ "Note:\n"
-		+ "- Undo is limited to following commands: add, remove, update, done, reformat";
+		+ "- Undo is limited to following commands: add, remove, update, done, clear";
 	
-	private final String HELP_RELOCATE =
-			COLOR_CODE_CYAN + "Relocating Storage File:\n" + COLOR_CODE_END_TAG
-		+ "- relocate \"<absolute or relative folder path>\"\n"
+	private final String HELP_MOVE =
+			COLOR_CODE_CYAN + "Moving Storage File:\n" + COLOR_CODE_END_TAG
+		+ "- move \"<absolute or relative folder path>\"\n"
 		+ "Note:\n"
 		+ "- The folder path is case-sensitive";
 	
-	private final String HELP_REFORMAT = 
+	private final String HELP_CLEAR = 
 			COLOR_CODE_CYAN + "Clearing Content in Storage File:\n" + COLOR_CODE_END_TAG
-		+ "- reformat"
+		+ "- clear"
 		+ "Note:\n"
 		+ "- All saved content will be erased, please use with caution";
 	
@@ -98,8 +98,8 @@ public class Help extends Command {
 		+ "- Updating Task: help update\n"
 		+ "- Marking Task as Complete: help done\n"
 		+ "- Reverting Last Command: help undo\n"
-		+ "- Relocating Storage File: help relocate\n"
-		+ "- Clearing Content in Stroage File: help reformat";
+		+ "- Moving Storage File: help move\n"
+		+ "- Clearing Content in Stroage File: help clear";
 			
 	public Help() {
 		this.helpType = null;
@@ -119,8 +119,8 @@ public class Help extends Command {
 		
 		if (helpType == null) {
 			helpMessage += HELP_ADD + "\n\n" + HELP_LIST + "\n\n" + HELP_REMOVE + "\n\n" 
-					+ HELP_UPDATE + "\n\n" + HELP_DONE + "\n\n" + HELP_UNDO + "\n\n" + HELP_RELOCATE 
-					+ "\n\n" + HELP_REFORMAT + "\n\n" + HELP_SUMMARY;
+					+ HELP_UPDATE + "\n\n" + HELP_DONE + "\n\n" + HELP_UNDO + "\n\n" + HELP_MOVE 
+					+ "\n\n" + HELP_CLEAR + "\n\n" + HELP_SUMMARY;
 			
 		} else if (helpType == HELP_TYPE_ADD) {
 			helpMessage += HELP_ADD;
@@ -140,11 +140,11 @@ public class Help extends Command {
 		} else if (helpType == HELP_TYPE_UNDO) {
 			helpMessage += HELP_UNDO;
 			
-		} else if (helpType == HELP_TYPE_RELOCATE) {
-			helpMessage += HELP_RELOCATE;
+		} else if (helpType == HELP_TYPE_MOVE) {
+			helpMessage += HELP_MOVE;
 			
-		} else if (helpType == HELP_TYPE_REFORMAT) {
-			helpMessage += HELP_REFORMAT;
+		} else if (helpType == HELP_TYPE_CLEAR) {
+			helpMessage += HELP_CLEAR;
 			
 		} 
 	}

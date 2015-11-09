@@ -1,10 +1,10 @@
 //@@author A0100081E
-public class Relocate extends Command {
-	private final String SUCCESS_RELOCATE = "Storage was relocated to \"%s\"";
+public class Move extends Command {
+	private final String SUCCESS_MOVE = "Storage was moved to \"%s\"";
 	private final String ERROR_FILE_NOT_FOUND = "File directory specified does not exist";
 	private String fileLocation = null;
 	
-	public Relocate(String fileLocation) {
+	public Move(String fileLocation) {
 		assert(fileLocation != null);
 		this.fileLocation = fileLocation;
 	}
@@ -18,7 +18,7 @@ public class Relocate extends Command {
 
 	@Override
 	public String getSuccessMessage() {
-		return String.format(SUCCESS_RELOCATE, fileLocation);
+		return String.format(SUCCESS_MOVE, fileLocation);
 	}
 	
 	//@@author A0126270N
@@ -35,7 +35,7 @@ public class Relocate extends Command {
 			return false; 
 		}
 		
-		Relocate other = (Relocate)obj;
+		Move other = (Move)obj;
 		return fileLocation.equals(other.getFileLocation()); 		
 	}
 }
