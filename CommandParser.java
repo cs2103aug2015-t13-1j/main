@@ -32,6 +32,7 @@ public class CommandParser {
 	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE = "Please specify the task number to be removed.";
 	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE = "Please specify the task number to be marked completed.";
 	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE = "Please specify the task to be updated, and fields to be modified or removed.";
+	public static final String ERROR_INSUFFICIENT_ARGUMENTS_FOR_MOVE = "Please specify the path (enclosed in quotes) to the folder that should be used for task storage.";
 	public static final String ERROR_INVALID_FIELD_TO_UPDATE = "A new %s was not found after %s, or you are trying to perform multiple modifications to that field.";
 	public static final String ERROR_INVALID_FIELD_TO_REMOVE = "The %s field could not be removed because you are trying to perform multiple modifications to that field.";
 	public static final String ERROR_UNRECOGNIZED_UPDATE_TOKEN = "%s is not a valid update token.";
@@ -78,7 +79,6 @@ public class CommandParser {
 		UNSCHEDULED, DEADLINE, EVENT, INVALID
 	}
 	
-	//used for the add command to determine what type of task is to be added
 	private static final String HELP_ADD = "add";
 	private static final String HELP_REMOVE = "remove";
 	private static final String HELP_LIST = "list";
@@ -155,11 +155,12 @@ public class CommandParser {
     		return initClearCommand();
     		
     	case "move":
+    		// fall-through
+    	case "m":
     		return initMoveCommand(args);
     		
     	case "exit" :
-    		// fallthrough
-    		
+    		// fall-through
     	case "quit" :
     		return initExitCommand();
     		
@@ -354,6 +355,11 @@ public class CommandParser {
 
 //@@author A0126270N
   private static Command initMoveCommand(ArrayList<String> args) throws Exception {
+	  if (args.size() == 0) {
+		  log.log(Level.INFO, "aborting as no folder path was specified.\n");
+		  throw new Exception(ERROR_INSUFFICIENT_ARGUMENTS_FOR_MOVE);
+	  }
+	  
   	String fileLocation = args.get(0);
   	log.log(Level.INFO, "folder path entered = " + fileLocation + "\n");
   	
@@ -416,7 +422,7 @@ public class CommandParser {
     
   //@@author A0126270N
   /*
-   *Parses the given string into a LocalDateTime based on the dateAndTimeFormatter string
+   *Parses the given string into a LocalDateTime based on the primary or secondary formatter strings
    *An exception is thrown if there was an error parsing the String 
    */
   public static LocalDateTime parseDateTime(String dateTimeString) throws Exception {
@@ -442,7 +448,7 @@ public class CommandParser {
   }
     
   /*
-   * Converts the integer represented by this String into an int
+   * Converts the integer represented by this String into an integer
    *An exception is thrown if a parsing error error was encountered 
    */
   private static int parseInt(String integerString) throws Exception {
