@@ -9,6 +9,7 @@ public abstract class Command {
 	protected static StorageManager storageManager = null;
 	protected static Logic logic = null;
 	protected static final Logger log = Logger.getLogger(Ui.LOG_NAME);	
+	
 	public abstract void execute() throws Exception;
 	public abstract String getSuccessMessage();
 	
