@@ -32,13 +32,13 @@ public class StorageManagerTest {
 	public void testOpenStorage() throws Exception {
 		// test openStorage() first so that the storage is open for the other tests
 		// as long as it passes
-		StorageManager.setDefaultDirectory(TEST_STORAGE_DIRECTORY);
-		StorageManager.setDefaultName(TEST_STORAGE_FILENAME);
-		StorageManager.setDefaultType(TEST_STORAGE_FILETYPE);
-
-		StorageManager.setInformationDirectory(TEST_INFORMATION_DIRECTORY);
-		StorageManager.setInformationName(TEST_INFORMATION_FILENAME);
-		StorageManager.setInformationType(TEST_INFORMATION_FILETYPE);
+		storageManager.setDefaultDirectory(TEST_STORAGE_DIRECTORY);
+		storageManager.setDefaultName(TEST_STORAGE_FILENAME);
+		storageManager.setDefaultType(TEST_STORAGE_FILETYPE);
+		
+		storageManager.setInformationDirectory(TEST_INFORMATION_DIRECTORY);
+		storageManager.setInformationName(TEST_INFORMATION_FILENAME);
+		storageManager.setInformationType(TEST_INFORMATION_FILETYPE);
 
 		storageManager.openStorage();
 		
@@ -52,13 +52,13 @@ public class StorageManagerTest {
 	public void shutdown() throws Exception {
 		storageManager.closeStorage();
 
-		StorageManager.setDefaultDirectory(DEFAULT_STORAGE_DIRECTORY);
-		StorageManager.setDefaultName(DEFAULT_STORAGE_FILENAME);
-		StorageManager.setDefaultType(DEFAULT_STORAGE_FILETYPE);
+		storageManager.setDefaultDirectory(DEFAULT_STORAGE_DIRECTORY);
+		storageManager.setDefaultName(DEFAULT_STORAGE_FILENAME);
+		storageManager.setDefaultType(DEFAULT_STORAGE_FILETYPE);
 
-		StorageManager.setInformationDirectory(DEFAULT_INFORMATION_DIRECTORY);
-		StorageManager.setInformationName(DEFAULT_INFORMATION_FILENAME);
-		StorageManager.setInformationType(DEFAULT_INFORMATION_FILETYPE);
+		storageManager.setInformationDirectory(DEFAULT_INFORMATION_DIRECTORY);
+		storageManager.setInformationName(DEFAULT_INFORMATION_FILENAME);
+		storageManager.setInformationType(DEFAULT_INFORMATION_FILETYPE);
 
 		deleteFile(TEST_STORAGE_DIRECTORY + TEST_STORAGE_FILENAME + TEST_STORAGE_FILETYPE);
 
@@ -134,7 +134,7 @@ public class StorageManagerTest {
 	@Test
 	public void testAccessFunctions() throws Exception {
 		assertEquals(storageManager.getStorageDirectory(), "./"); // Tests getStorageDirectory()
-		assertEquals(storageManager.getStorageName(), "TaskStorage"); // Tests getStorageName()
+		assertEquals(storageManager.getStorageName(), "TestTaskStorage"); // Tests getStorageName()
 		assertEquals(storageManager.getStorageType(), ".json"); // Tests getStorageType()
 		assertEquals(storageManager.getInformationDirectory(), "./"); // Tests getInformationDirectory()
 		assertEquals(storageManager.getStorageFile(), new File(storageManager.getStorageDirectory() + storageManager.getStorageName() + storageManager.getStorageType())); // Tests getStorageFile()

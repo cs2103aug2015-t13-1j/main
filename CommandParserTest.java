@@ -10,7 +10,7 @@ public class CommandParserTest {
 	@Test
 	public void testUnsupportedCommandParsing() {
 		try {
-			Command invalid = CommandParser.getCommandFromInput("abc");
+			CommandParser.getCommandFromInput("abc");
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_COMMAND, "abc"));
 		}
@@ -43,8 +43,7 @@ public class CommandParserTest {
 	@Test
 	public void testParsingOfEmptyString() {
 		try {
-			// boundary case: nothing is typed before the user presses enter
-			Command invalid = CommandParser.getCommandFromInput("");
+			CommandParser.getCommandFromInput("");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_NOTHING_ENTERED);	
@@ -55,8 +54,7 @@ public class CommandParserTest {
 	@Test
 	public void testAddUnscheduledTaskCommandParsing() {
 		try {
-			// boundary case: the only thing entered is the command name with no trailing spaces and further arguments
-			Command invalid = CommandParser.getCommandFromInput("add ");
+			CommandParser.getCommandFromInput("add ");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_ADD);
@@ -66,8 +64,7 @@ public class CommandParserTest {
 		
 		// Multi-word task names should invalid; task names with more than 1 word must be quoted
 		try {
-			// this should throw an exception
-			Command invalid2 = CommandParser.getCommandFromInput("add " + newTaskName);
+			CommandParser.getCommandFromInput("add " + newTaskName);
 			fail();
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_NAME_SHOULD_BE_IN_QUOTES);
@@ -81,7 +78,7 @@ public class CommandParserTest {
 		}
 		
 		try {
-			Command invalid = CommandParser.getCommandFromInput("add \" \"");
+			CommandParser.getCommandFromInput("add \" \"");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS);
@@ -106,15 +103,14 @@ public class CommandParserTest {
 		}
 
 		try {
-			Add invalidCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by " + invalidDeadlineString);
+			CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by " + invalidDeadlineString);
 			fail("exception not thrown");
 		} catch (Exception e) {
 		assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_DATE_AND_TIME, invalidDeadlineString));
 		}
 
 		try {
-			// boundary case: the "by" keyword is present without any date
-			Add invalidCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by ");
+			CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by ");
 			fail("exception not thrown");
 		} catch (Exception e) {
 		assertEquals(e.getMessage(), CommandParser.ERROR_COULD_NOT_DETERMINE_TASK_TYPE_TO_ADD);
@@ -139,7 +135,7 @@ public class CommandParserTest {
 	  }
 
 	  try {
-			Add invalidCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + invalidEndString);
+			CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + invalidEndString);
 			fail("exception not thrown");
 	  } catch (Exception e) {
   		assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_DATE_AND_TIME, invalidEndString));
@@ -149,21 +145,21 @@ public class CommandParserTest {
 	@Test
 	public void testRemoveTaskCommandParsing() {
 		try {
-			Command invalid = CommandParser.getCommandFromInput("remove ");
+			CommandParser.getCommandFromInput("remove ");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_REMOVE);
 		}
 		
 		try {
-			Command invalid = CommandParser.getCommandFromInput("remove thisIsNotAnInteger");
+			CommandParser.getCommandFromInput("remove thisIsNotAnInteger");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_NUMBER_FORMAT);
 		}
 		
 		try {
-			Command invalid = CommandParser.getCommandFromInput("remove 1 2");
+			CommandParser.getCommandFromInput("remove 1 2");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_EXPECTED_ONE_TASK_NUM, "remove"));
@@ -180,21 +176,21 @@ public class CommandParserTest {
 	@Test
 	public void testUpdateCommandParsing() throws Exception {
 		try {
-			Command invalid = CommandParser.getCommandFromInput("update");
+			CommandParser.getCommandFromInput("update");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
 		}
 		
 		try {
-			Command invalid = CommandParser.getCommandFromInput("update 1");
+			CommandParser.getCommandFromInput("update 1");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_UPDATE);
 		}
 	
 		try {
-			Command invalid = CommandParser.getCommandFromInput("update thisIsNotAnInteger -end");
+			CommandParser.getCommandFromInput("update thisIsNotAnInteger -end");
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_NUMBER_FORMAT);
@@ -235,28 +231,28 @@ public class CommandParserTest {
 		}
 
 		try {
-			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 +end " + invalidEndString);
+			CommandParser.getCommandFromInput("update 1 +end " + invalidEndString);
 			fail("exception not thrown");
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_DATE_AND_TIME, invalidEndString));
 		}
 		
 		try {
-			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 +end");
+			CommandParser.getCommandFromInput("update 1 +end");
 			fail();
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "date and time", "+end"));
 		}
 
 		try {
-			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 +start");
+			CommandParser.getCommandFromInput("update 1 +start");
 			fail();
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "date and time", "+start"));
 		}
 
 		try {
-			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 +name");
+			CommandParser.getCommandFromInput("update 1 +name");
 			fail();
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "name", "+name"));
@@ -311,7 +307,7 @@ public class CommandParserTest {
 		}
 		
 		try {
-			Update invalid = (Update)CommandParser.getCommandFromInput("update 1 -name");
+			CommandParser.getCommandFromInput("update 1 -name");
 			fail();
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_UNRECOGNIZED_UPDATE_TOKEN, "-name"));
@@ -320,7 +316,8 @@ public class CommandParserTest {
 		try {
 			Update valid = (Update)CommandParser.getCommandFromInput("update 1 -start -end");
 			DeltaTask changes = valid.getChanges();
-			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
+			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction();
+			changes.getNameAction();
 			assertEquals(startAction, DeltaTask.FIELD_ACTION.REMOVE);
 			assertEquals(endAction, DeltaTask.FIELD_ACTION.REMOVE);
 		} catch(Exception e) {
@@ -332,14 +329,14 @@ public class CommandParserTest {
 	@Test
 	public void testDoneParsing() {
 		try {
-			Command invalid = CommandParser.getCommandFromInput("done 1 2");
+			CommandParser.getCommandFromInput("done 1 2");
 			fail("exception not thrown");
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_EXPECTED_ONE_TASK_NUM, "mark as completed"));
 		}
 		
 		try {
-			Command invalid = CommandParser.getCommandFromInput("done");
+			CommandParser.getCommandFromInput("done");
 			fail("exception not thrown");
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE);
@@ -379,7 +376,7 @@ public class CommandParserTest {
 		assertEquals(valid, new Move(folderPath));
 
 		try {
-			Command invalid = (Move)CommandParser.getCommandFromInput("move " + folderPath);
+			CommandParser.getCommandFromInput("move " + folderPath);
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
