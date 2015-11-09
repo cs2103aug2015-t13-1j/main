@@ -76,7 +76,7 @@ public class Help extends Command {
 			COLOR_CODE_CYAN + "Reverting Last Command:\n" + COLOR_CODE_END_TAG
 		+ "- undo\n"
 		+ "Note:\n"
-		+ "- Undo is limited to following commands: add, remove, update, done, clear";
+		+ "- Undo is only applicable for the following commands: add, remove, update, done, clear, and move";
 	
 	private final String HELP_MOVE =
 			COLOR_CODE_CYAN + "Moving Storage File:\n" + COLOR_CODE_END_TAG
@@ -99,7 +99,7 @@ public class Help extends Command {
 		+ "- Marking Task as Complete: help done\n"
 		+ "- Reverting Last Command: help undo\n"
 		+ "- Moving Storage File: help move\n"
-		+ "- Clearing Content in Stroage File: help clear";
+		+ "- Clearing Content in storage File: help clear";
 			
 	public Help() {
 		this.helpType = null;

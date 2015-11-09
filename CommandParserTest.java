@@ -39,6 +39,13 @@ public class CommandParserTest {
 			assertEquals(e.getMessage(), CommandParser.ERROR_NOTHING_ENTERED);	
 		}
 		
+		try {
+			CommandParser.getCommandFromInput("\"\"");
+			fail("exception not thrown");
+		} catch (Exception e) {
+			assertEquals(e.getMessage(), CommandParser.ERROR_NOTHING_ENTERED);	
+		}
+		
 	}
 	
 	@Test

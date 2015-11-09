@@ -118,6 +118,12 @@ public class CommandParser {
   	
   	ArrayList<String> params = splitInput(input);
   	log.log(Level.INFO, "params after splitting: " + params + "\n");
+  	
+  	if (params.size() == 0) {
+  		log.log(Level.INFO, "aborting parsing because there are no params\n");
+  		throw new Exception(ERROR_NOTHING_ENTERED);
+  	}
+  	
   	String commandType = getCommandType(params).toLowerCase();
   	ArrayList<String> args = getCommandArgs(params); 
   	
