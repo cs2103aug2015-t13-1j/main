@@ -39,7 +39,6 @@ public class CommandParser {
 	public static final String ERROR_NAME_SHOULD_BE_IN_QUOTES = "The task name should be surrounded by quotes.";
 	public static final String ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS = "The task name should not be composed entirely of spaces.";
 	public static final String ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES = "The folder path should be surrounded by quotes.";
-	public static final String ERROR_FOLDER_PATH_TOO_SHORT = "The folder path should contain at least 1 character surrounded by quotes.";
 	
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
@@ -363,10 +362,6 @@ public class CommandParser {
   	String fileLocation = args.get(0);
   	log.log(Level.INFO, "folder path entered = " + fileLocation + "\n");
   	
-  	if (fileLocation.length() <= 2) {
-  		log.log(Level.INFO, "aborting as folder path is too short\n");
-  		throw new Exception(ERROR_FOLDER_PATH_TOO_SHORT);
-  	}
   	
   	char first = fileLocation.charAt(0), last = fileLocation.charAt(fileLocation.length()-1);
   	if (first != '"' || last != '"') {

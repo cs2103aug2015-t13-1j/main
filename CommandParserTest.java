@@ -43,6 +43,7 @@ public class CommandParserTest {
 	
 	@Test
 	public void testAddUnscheduledTaskCommandParsing() throws Exception {
+		
 		try {
 			CommandParser.getCommandFromInput("add ");
 			fail("exception not thrown");
@@ -72,6 +73,13 @@ public class CommandParserTest {
 			
 	}
 
+	@Test
+	public void testAddShortcutParsing() throws Exception {
+		String newTaskName = "read To Kill a Mockingbird";
+		Command valid1 = CommandParser.getCommandFromInput("a \"" + newTaskName + "\"");
+		assertEquals(new Add(new Task(newTaskName, false)), valid1);
+	}
+	
 	@Test
 	public void testAddDeadlineTaskCommandParsing() throws Exception {
 		String newTaskName = "read Harry Potter by J K Rowling";
@@ -144,10 +152,16 @@ public class CommandParserTest {
 		}
 	
 			Command valid1 = CommandParser.getCommandFromInput("remove 1");
-			assertEquals(new Remove(1), valid1);
+			assertEquals(valid1, new Remove(1));
 		
 	}
 
+	@Test
+	public void testRemoveShortcutParsing() throws Exception {
+		Command valid1 = CommandParser.getCommandFromInput("r 1");
+		assertEquals(valid1, new Remove(1));
+	}
+	
 	@Test
 	public void testUpdateCommandParsing() throws Exception {
 		try {
@@ -242,6 +256,14 @@ public class CommandParserTest {
 	}
 
 	@Test
+	public void testUpdateShortcutParsing() throws Exception {
+		// declare local constants to avoid fully qualified FIELD_ACTION enum constants, is there a java equivalent of c++'s using keyword?
+				DeltaTask.FIELD_ACTION NONE = DeltaTask.FIELD_ACTION.NONE, REMOVE = DeltaTask.FIELD_ACTION.REMOVE;
+		Update valid1 = (Update)CommandParser.getCommandFromInput("u 1 -start");
+		assertEquals(valid1.getChanges(), new DeltaTask(NONE, null, REMOVE, null, NONE, null));
+	}
+	
+	@Test
 	public void testDoneParsing() throws Exception {
 		try {
 			CommandParser.getCommandFromInput("done 1 2");
@@ -260,6 +282,12 @@ public class CommandParserTest {
 			Done valid = (Done)CommandParser.getCommandFromInput("done 1");
 			assertEquals(valid, new Done(1));
 		
+	}
+	
+	@Test
+	public void testDoneShortcutParsing() throws Exception {
+		Done valid = (Done)CommandParser.getCommandFromInput("d 1");
+		assertEquals(valid, new Done(1));
 	}
 	
 	@Test
@@ -292,6 +320,15 @@ public class CommandParserTest {
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
 		}
+
+		
+	}
+	
+	@Test
+	public void testMoveShortcutParsing() throws Exception {
+		String folderPath = "d:/my documents/dropbox/";
+		Move valid1 = (Move)CommandParser.getCommandFromInput("m \"" + folderPath + "\"");
+		assertEquals(valid1, new Move(folderPath));
 	}
 	
 }
