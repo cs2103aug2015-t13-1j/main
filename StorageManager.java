@@ -308,7 +308,9 @@ public class StorageManager {
 		assert(directory.length() >= 2);
 		assert((directory.charAt(directory.length() - 1) == '\\') || (directory.charAt(directory.length() - 1) == '/') == true);
 		
-		STORAGE_DIRECTORY = directory;
+		String oldDirecotry = STORAGE_DIRECTORY;
+		String oldName = STORAGE_NAME;
+		String oldType = STORAGE_TYPE;
 		
 		// Initiate Reader / Writer for StorageInformation.json
 		File informationFile = new File(INFORMATION_DIRECTORY + INFORMATION_NAME + INFORMATION_TYPE);
@@ -332,7 +334,7 @@ public class StorageManager {
 		STORAGE_NAME = storageInformationFromJson.getFileName();
 		STORAGE_TYPE = storageInformationFromJson.getFileType();
 		
-		// Create a file to check if it exists and if is can be created at input path
+		// Create a file to check if it exists and if it can be created at input path
 		File check = new File(STORAGE_DIRECTORY + STORAGE_NAME + STORAGE_TYPE);
 		
 		if(!check.exists()) {
@@ -340,6 +342,10 @@ public class StorageManager {
 				// Write back to original StorageInformation.json as new StorageInformation file cannot be created
 				gson.toJson(storageInformationFromJson, informationBufferedWriter);
 				informationBufferedWriter.flush();
+				
+				STORAGE_DIRECTORY = oldDirecotry;
+				STORAGE_NAME = oldName;
+				STORAGE_TYPE = oldType;
 				
 				try {
 					informationBufferedWriter.close();
