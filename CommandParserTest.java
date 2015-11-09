@@ -305,7 +305,7 @@ public class CommandParserTest {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_MOVE);
 		}
 		
-		String folderPath = "./"; // the current folder
+		String folderPath = "d:/my documents/dropbox/"; 
 			Move valid1 = (Move)CommandParser.getCommandFromInput("move \"" + folderPath + "\"");
 			assertEquals(valid1, new Move(folderPath));
 		
@@ -321,13 +321,6 @@ public class CommandParserTest {
 			assertEquals(e.getMessage(), CommandParser.ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);
 		}
 
-		try {
-			CommandParser.getCommandFromInput("move \"abc/\"");
-			fail("exception not thrown");
-		} catch (Exception e) {
-			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FOLDER_PATH, "abc/"));
-		}
-		
 	}
 	
 	@Test

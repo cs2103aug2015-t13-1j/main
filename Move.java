@@ -17,7 +17,6 @@ public class Move extends Command implements Undoable {
 	@Override
 	public void execute() throws Exception {
 		oldLocation = storageManager.getStorageDirectory();
-		System.out.println("old location = " + oldLocation);
 		File newPath = new File(newLocation);
 		if (newPath.isDirectory() == false) {
 	  		log.log(Level.INFO, "aborting because the folder path is invalid\n");
@@ -25,7 +24,6 @@ public class Move extends Command implements Undoable {
 	  	}
 		storageManager.changeStorageLocation(newLocation);
 		}
-	
 
 	@Override
 	public String getSuccessMessage() {

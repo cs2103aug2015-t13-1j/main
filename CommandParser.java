@@ -1,5 +1,4 @@
 //@@author A0126270N
-import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -40,8 +39,7 @@ public class CommandParser {
 	public static final String ERROR_NAME_SHOULD_BE_IN_QUOTES = "The task name should be surrounded by quotes.";
 	public static final String ERROR_NAME_SHOULD_CONTAIN_NON_WHITESPACE_CHARS = "The task name should not be composed entirely of spaces.";
 	public static final String ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES = "The folder path should be surrounded by quotes.";
-	public static final String ERROR_INVALID_FOLDER_PATH = "%s is not a valid path to a folder."; 
-	
+	 
 	// positions in the command input
 	private static final int POSITION_COMMAND_TYPE = 0;
   private static final int POSITION_FIRST_PARAM = 1;
@@ -364,7 +362,6 @@ public class CommandParser {
   	String fileLocation = args.get(0);
   	log.log(Level.INFO, "folder path entered = " + fileLocation + "\n");
   	
-  	
   	char first = fileLocation.charAt(0), last = fileLocation.charAt(fileLocation.length()-1);
   	if (first != '"' || last != '"') {
   		log.log(Level.INFO, "aborting as folder path is not in quotes\n");
@@ -381,13 +378,6 @@ public class CommandParser {
   		log.log(Level.INFO, "appending slash to the end of file location, location = " + fileLocationWithoutQuotes + "\n");
 		}
   	  	
-  	// check that this path points to a valid folder
-  	File folderPath = new File(fileLocationWithoutQuotes);
-  	
-  	if (folderPath.isDirectory() == false) {
-  		log.log(Level.INFO, "aborting because the folder path is invalid\n");
-  		throw new Exception(String.format(ERROR_INVALID_FOLDER_PATH, fileLocationWithoutQuotes));
-  	}
   	return new Move(fileLocationWithoutQuotes);
   }
 
