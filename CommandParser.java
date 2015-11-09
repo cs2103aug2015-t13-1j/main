@@ -201,14 +201,6 @@ public class CommandParser {
   		boolean isAllMarked = false;
   		for (int i = 0; i < args.size(); i++) {
   			String flag = args.get(i);
-  			
-  			// if "all" flag is marked, remove all flags and break out of the loop
-  			if (flag.equals("all")) {
-  				listFlags = EnumSet.noneOf(List.LIST_FLAGS.class);
-  				isAllMarked = true;
-  				break;
-  			}
-  			
   			switch (flag) {
   				case "unscheduled" :
   					if (!isAllMarked) {
@@ -264,7 +256,7 @@ public class CommandParser {
   						flag = flag.replace("\"", "");
   						keywords = flag.split(" ");
   					} else {
-  						throw new Exception("\"" + flag + "\" is not a recognized marker");
+  						throw new Exception("\"" + flag + "\" is not a recognized keyword");
   					}
   					break;
 				}

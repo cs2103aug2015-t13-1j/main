@@ -44,18 +44,14 @@ public class List extends Command {
 	 * This method handles whether to filter the task list or get the uncompleted tasks list. 
 	 */
 	public void execute() throws Exception {
-		if (keywords != null || flags != null) {
-			ArrayList<Task> tasks = storageManager.readAllTasks();
-			if (keywords != null) {
-				tasks = logic.searchTasks(keywords);
-			}
-			if (flags != null) {
-				tasks = getFlaggedTasks(tasks);
-			}
-			taskList = tasks;
-		} else {
-			taskList = logic.getUncompletedTasks();
+		ArrayList<Task> tasks = storageManager.readAllTasks();
+		if (keywords != null) {
+			tasks = logic.searchTasks(keywords);
 		}
+		if (flags != null) {
+			tasks = getFlaggedTasks(tasks);
+		}
+		taskList = tasks;
 		wasExecuted = true;
 	}
 
