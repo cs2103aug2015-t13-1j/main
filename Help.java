@@ -26,6 +26,7 @@ public class Help extends Command {
 		+ "- Event Task: add \"<task name>\" from <start date> <start time> "
 		+ "  to <end date> <end time>\n"
 		+ "Note:\n"
+		+ "- Add can be used with short form, a\n"
 		+ "- <task name> should be wrapped in quotation\n"
 		+ "- <date> can be either DD-MM-YYYY or DD-MM (current year is assumed)\n"
 		+ "- <time> should be HH:MM in 24-hour notation";
@@ -42,8 +43,8 @@ public class Help extends Command {
 		+ "- All Tasks: list all\n"
 		+ "- Tasks containing specific words: list \"<first word> [additional words]\"\n"
 		+ "Note:\n"
+		+ "- List can be used with shortvform, l\n"
 		+ "- General list shows all unscheduled tasks\n"
-		+ "- List can be calle with shortform, l\n"
 		+ "- List done has synonyms: completed and finished\n"
 		+ "- When listing with keywords, make sure words are separated with spaces\n"
 		+ "- You can use multiple list filters and search for specific words in a single \n"
@@ -57,7 +58,13 @@ public class Help extends Command {
 	
 	private final String HELP_UPDATE = 
 			COLOR_CODE_CYAN + "Updating Task:\n" + COLOR_CODE_END_TAG
-		+ "- update <task number>";
+		+ "- Name Update: update <task number> +name \"<new name>\"\n"
+		+ "- Start Time Update: update <tasknumber> +start \"<new start date and time>\"\n"
+		+ "- End Time Update: update <tasknumber> +end \"<new end date and time>\"\n"
+		+ "- Remove Start/End Time: update <tasknumber> -start/-end\n"
+		+ "Note:\n"
+		+ "- Update can be used with shortvform, u\n"
+		+ "- Time convention follows that of Add";
 	
 	private final String HELP_DONE =
 			COLOR_CODE_CYAN + "Marking Task Done:\n" + COLOR_CODE_END_TAG
