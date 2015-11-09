@@ -56,13 +56,13 @@ public class Move extends Command implements Undoable {
 	public void undo() throws Exception {
 		File oldPath = new File(oldLocation);
 		if (oldPath.isDirectory() == false) {
-	  		log.log(Level.INFO, "aborting because the old folder path is invalid\n");
-	  		throw new Exception("Undo failed. " + String.format(ERROR_INVALID_FOLDER_PATH, oldLocation));
-	  	}
+  		log.log(Level.INFO, "aborting because the old folder path is invalid\n");
+  		throw new Exception("Undo failed. " + String.format(ERROR_INVALID_FOLDER_PATH, oldLocation));
+  	}
 		storageManager.changeStorageLocation(oldLocation);
 	}
 	
 	public String getUndoMessage() {
 		return String.format(SUCCESS_UNDO, oldLocation);
-}
+	}
 }
