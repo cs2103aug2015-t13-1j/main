@@ -364,22 +364,22 @@ public class CommandParserTest {
 	}
 
 	@Test
-	public void testRelocateParsing() throws Exception {
+	public void testMoveParsing() throws Exception {
 		String folderPath = "d:/my documents/dropbox/";
 
 		try {
-			Relocate valid = (Relocate)CommandParser.getCommandFromInput("relocate \"" + folderPath + "\"");
-			assertEquals(valid, new Relocate(folderPath));
+			Move valid = (Move)CommandParser.getCommandFromInput("move \"" + folderPath + "\"");
+			assertEquals(valid, new Move(folderPath));
 		} catch (Exception e) {
 			fail("exception thrown");
 		}
 
 		// test if backslashes automatically get converted into slashes
-		Relocate valid = (Relocate)CommandParser.getCommandFromInput("relocate \"" + folderPath.replace("/", "\\") + "\"");
-		assertEquals(valid, new Relocate(folderPath));
+		Move valid = (Move)CommandParser.getCommandFromInput("move \"" + folderPath.replace("/", "\\") + "\"");
+		assertEquals(valid, new Move(folderPath));
 
 		try {
-			Command invalid = (Relocate)CommandParser.getCommandFromInput("relocate " + folderPath);
+			Command invalid = (Move)CommandParser.getCommandFromInput("move " + folderPath);
 			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_FOLDER_PATH_SHOULD_BE_IN_QUOTES);

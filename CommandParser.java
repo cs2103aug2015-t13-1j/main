@@ -151,11 +151,11 @@ public class CommandParser {
     	case "h":
     		return initHelpCommand(args);
     		
-    	case "reformat":
-    		return initReformatCommand();
+    	case "clear":
+    		return initClearCommand();
     		
-    	case "relocate":
-    		return initRelocateCommand(args);
+    	case "move":
+    		return initMoveCommand(args);
     		
     	case "exit" :
     		// fallthrough
@@ -348,12 +348,12 @@ public class CommandParser {
 		}
   }
   
-  private static Command initReformatCommand() {
-  	return new Reformat();
+  private static Command initClearCommand() {
+  	return new Clear();
   }
 
 //@@author A0126270N
-  private static Command initRelocateCommand(ArrayList<String> args) throws Exception {
+  private static Command initMoveCommand(ArrayList<String> args) throws Exception {
   	String fileLocation = args.get(0);
   	log.log(Level.INFO, "folder path entered = " + fileLocation + "\n");
   	
@@ -378,7 +378,7 @@ public class CommandParser {
   		log.log(Level.INFO, "appending slash to the end of file location, location = " + fileLocationWithoutQuotes + "\n");
 		}
   	  	
-  	return new Relocate(fileLocationWithoutQuotes);
+  	return new Move(fileLocationWithoutQuotes);
   }
 
   private static TASK_TYPE determineTaskTypeToBeAdded(ArrayList<String> args) {
