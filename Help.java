@@ -53,6 +53,7 @@ public class Help extends Command {
 			COLOR_CODE_CYAN + "Removing Task:\n" + COLOR_CODE_END_TAG
 		+ "- remove <task number>\n"
 		+ "Note:\n"
+		+ "- Remove can be used with short form, r\n"
 		+ "- <task number> is the number shown from the most recent list command";
 	
 	private final String HELP_UPDATE = 
@@ -62,7 +63,7 @@ public class Help extends Command {
 		+ "- End Time Update: update <tasknumber> +end \"<new end date and time>\"\n"
 		+ "- Remove Start/End Time: update <tasknumber> -start/-end\n"
 		+ "Note:\n"
-		+ "- Update can be used with shortvform, u\n"
+		+ "- Update can be used with short form, u\n"
 		+ "- Time convention follows that of Add";
 	
 	private final String HELP_DONE =
