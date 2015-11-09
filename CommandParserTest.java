@@ -17,27 +17,17 @@ public class CommandParserTest {
 	}
 
 	@Test
-	public void testListCommandParsing() {
-		Command c;
-		try {
-			c = CommandParser.getCommandFromInput("list");
-			assertEquals(List.class, c.getClass());
-		} catch (Exception e) {
-			fail();
-		}
+	public void testListCommandParsing() throws Exception {
+			Command valid = CommandParser.getCommandFromInput("list");
+			assertEquals(List.class, valid.getClass());
 	}
 	
 	@Test
-	public void testExitCommandParsing() {
-		Command c1;
-		try {
-			c1 = CommandParser.getCommandFromInput("exit");
-			assertEquals(Exit.class, c1.getClass());
-			Command c2 = CommandParser.getCommandFromInput("Quit");
-			assertEquals(Exit.class, c2.getClass());
-		} catch (Exception e) {
-			fail("exception was thrown");
-		}
+	public void testExitCommandParsing() throws Exception {
+			Command valid1 = CommandParser.getCommandFromInput("exit");
+			assertEquals(Exit.class, valid1.getClass());
+			Command valid2 = CommandParser.getCommandFromInput("Quit");
+			assertEquals(Exit.class, valid2.getClass());
 	}
 	
 	@Test
@@ -52,7 +42,7 @@ public class CommandParserTest {
 	}
 	
 	@Test
-	public void testAddUnscheduledTaskCommandParsing() {
+	public void testAddUnscheduledTaskCommandParsing() throws Exception {
 		try {
 			CommandParser.getCommandFromInput("add ");
 			fail("exception not thrown");
@@ -62,20 +52,16 @@ public class CommandParserTest {
 		
 		String newTaskName = "read To Kill a Mockingbird";
 		
-		// Multi-word task names should invalid; task names with more than 1 word must be quoted
+		// task names should be quoted
 		try {
 			CommandParser.getCommandFromInput("add " + newTaskName);
-			fail();
+			fail("exception not thrown");
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_NAME_SHOULD_BE_IN_QUOTES);
 		}
-		
-		try {
-			Command valid = CommandParser.getCommandFromInput("add \"" + newTaskName + "\"");
-			assertEquals(new Add(new Task(newTaskName, false)), valid);
-		} catch (Exception e) {
-			fail("exception thrown");
-		}
+	
+			Command valid1 = CommandParser.getCommandFromInput("add \"" + newTaskName + "\"");
+			assertEquals(new Add(new Task(newTaskName, false)), valid1);
 		
 		try {
 			CommandParser.getCommandFromInput("add \" \"");
@@ -93,15 +79,11 @@ public class CommandParserTest {
 		String validDeadlineString = "21-12-2015 14:40";
 		LocalDateTime validDeadline = CommandParser.parseDateTime(validDeadlineString);
 		String invalidDeadlineString = "21-13-2015 14:40";
+	
+			Add valid1 = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by " + validDeadlineString);
+			assertEquals(valid1.getTask().getEndDateTime(), validDeadline);
+			assertEquals(new Add(new Task(newTaskName, validDeadline, false)), valid1);
 		
-		try {
-			Add validCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by " + validDeadlineString);
-			assertEquals(validCommand.getTask().getEndDateTime(), validDeadline);
-			assertEquals(new Add(new Task(newTaskName, validDeadline, false)), validCommand);
-		} catch (Exception e) {
-			fail("exception thrown");
-		}
-
 		try {
 			CommandParser.getCommandFromInput("add \"" + newTaskName + "\" by " + invalidDeadlineString);
 			fail("exception not thrown");
@@ -126,24 +108,20 @@ public class CommandParserTest {
 		String validEndString = "21-02-2015 15:00";
 		LocalDateTime validEndTime = CommandParser.parseDateTime(validEndString);
 		String invalidEndString = "21-13-2015 14:40";
-		
-	  try {
-			Add validCommand = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + validEndString);
-			assertEquals(new Add(new Task(newTaskName, validStartTime, validEndTime, false)), validCommand);
-	  } catch (Exception e) {
-	  	fail("exception thrown");
-	  }
-
+	
+			Add valid1 = (Add) CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + validEndString);
+			assertEquals(new Add(new Task(newTaskName, validStartTime, validEndTime, false)), valid1);
+	  
 	  try {
 			CommandParser.getCommandFromInput("add \"" + newTaskName + "\" from " + validStartString + " to " + invalidEndString);
 			fail("exception not thrown");
 	  } catch (Exception e) {
   		assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_DATE_AND_TIME, invalidEndString));
-    }		
+    }
 	}
-    
+	  
 	@Test
-	public void testRemoveTaskCommandParsing() {
+	public void testRemoveTaskCommandParsing() throws Exception {
 		try {
 			CommandParser.getCommandFromInput("remove ");
 			fail("exception not thrown");
@@ -164,13 +142,10 @@ public class CommandParserTest {
 		} catch (Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_EXPECTED_ONE_TASK_NUM, "remove"));
 		}
+	
+			Command valid1 = CommandParser.getCommandFromInput("remove 1");
+			assertEquals(new Remove(1), valid1);
 		
-		try {
-			Command valid = CommandParser.getCommandFromInput("remove 1");
-			assertEquals(new Remove(1), valid);
-		} catch (Exception e) {
-			fail("exception thrown");
-		}
 	}
 
 	@Test
@@ -205,32 +180,16 @@ public class CommandParserTest {
 		LocalDateTime validEndTime = CommandParser.parseDateTime(validEndString);
 
 		String invalidEndString = "21-13-2015 14:40";
-	
-		try {
-			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +name \"" + newName + "\"");
-			DeltaTask changes = valid.getChanges();
-			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
-			assertEquals(startAction, DeltaTask.FIELD_ACTION.NONE);
-			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
-			assertEquals(nameAction, DeltaTask.FIELD_ACTION.UPDATE);
-			assertEquals(changes.getNewName(), newName);
-		} catch(Exception e) {
-			fail("exception thrown");
-		}
-		
-		try {
-			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +end " + validEndString);
-			DeltaTask changes = valid.getChanges();
-			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
-			assertEquals(startAction, DeltaTask.FIELD_ACTION.NONE);
-			assertEquals(endAction, DeltaTask.FIELD_ACTION.UPDATE);
-			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
-			assertEquals(changes.getNewEnd(), validEndTime);
-		} catch(Exception e) {
-			fail("exception thrown");
-		}
+		// declare local constants to avoid fully qualified FIELD_ACTION enum constants, is there a java equivalent of c++'s using keyword?
+		DeltaTask.FIELD_ACTION NONE = DeltaTask.FIELD_ACTION.NONE, UPDATE = DeltaTask.FIELD_ACTION.UPDATE, REMOVE = DeltaTask.FIELD_ACTION.REMOVE;
+			Update valid1 = (Update)CommandParser.getCommandFromInput("update 1 +name \"" + newName + "\"");
+			// If the associated action for a field is NONE, then its new value set in DeltaTask is unimportant as it will never be used 
+			assertEquals(valid1.getChanges(), new DeltaTask(UPDATE, newName, NONE, null, NONE, null));
 
-		try {
+						Update valid2 = (Update)CommandParser.getCommandFromInput("update 1 +end " + validEndString);
+						assertEquals(valid2.getChanges(), new DeltaTask(NONE, null, NONE, null, UPDATE, validEndTime));
+						
+					try {
 			CommandParser.getCommandFromInput("update 1 +end " + invalidEndString);
 			fail("exception not thrown");
 		} catch(Exception e) {
@@ -239,14 +198,14 @@ public class CommandParserTest {
 		
 		try {
 			CommandParser.getCommandFromInput("update 1 +end");
-			fail();
+			fail("exception not thrown");
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "date and time", "+end"));
 		}
 
 		try {
 			CommandParser.getCommandFromInput("update 1 +start");
-			fail();
+			fail("exception not thrown");
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "date and time", "+start"));
 		}
@@ -257,77 +216,33 @@ public class CommandParserTest {
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_INVALID_FIELD_TO_UPDATE, "name", "+name"));
 		}
+		
+			Update valid3 = (Update)CommandParser.getCommandFromInput("update 1 +start " + validStartString);
+			assertEquals(valid3.getChanges(), new DeltaTask(NONE, null, UPDATE, validStartTime, NONE, null));
 
-		try {
-			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +start " + validStartString);
-			DeltaTask changes = valid.getChanges();
-			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
-			assertEquals(startAction, DeltaTask.FIELD_ACTION.UPDATE);
-			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
-			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
-			assertEquals(changes.getNewStart(), validStartTime);
-		} catch(Exception e) {
-			fail();
-		}
-		
-		try {
-			Update valid = (Update)CommandParser.getCommandFromInput("update 1 +name \"" + newName + "\" +start " + validStartString + " +end " + validEndString);
-			DeltaTask changes = valid.getChanges();
-			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
-			assertEquals(startAction, DeltaTask.FIELD_ACTION.UPDATE);
-			assertEquals(endAction, DeltaTask.FIELD_ACTION.UPDATE);
-			assertEquals(nameAction, DeltaTask.FIELD_ACTION.UPDATE);
-			assertEquals(changes.getNewStart(), validStartTime);
-			assertEquals(changes.getNewEnd(), validEndTime);
-			assertEquals(changes.getNewName(), newName);
-		} catch(Exception e) {
-			fail("Exception thrown");
-		}
-		
-		try {
-			Update valid = (Update)CommandParser.getCommandFromInput("update 1 -end ");
-			DeltaTask changes = valid.getChanges();
-			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
-			assertEquals(startAction, DeltaTask.FIELD_ACTION.NONE);
-			assertEquals(endAction, DeltaTask.FIELD_ACTION.REMOVE);
-			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
-		} catch(Exception e) {
-			fail("exception thrown");
-		}
-		
-		try {
-			Update valid = (Update)CommandParser.getCommandFromInput("update 1 -start");
-			DeltaTask changes = valid.getChanges();
-			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction(), nameAction = changes.getNameAction();
-			assertEquals(startAction, DeltaTask.FIELD_ACTION.REMOVE);
-			assertEquals(endAction, DeltaTask.FIELD_ACTION.NONE);
-			assertEquals(nameAction, DeltaTask.FIELD_ACTION.NONE);
-		} catch(Exception e) {
-			fail("exception thrown");
-		}
-		
+			Update valid4 = (Update)CommandParser.getCommandFromInput("update 1 +name \"" + newName + "\" +start " + validStartString + " +end " + validEndString);
+			assertEquals(valid4.getChanges(), new DeltaTask(UPDATE, newName, UPDATE, validStartTime, UPDATE, validEndTime));
+			
+			Update valid5 = (Update)CommandParser.getCommandFromInput("update 1 -end ");
+			assertEquals(valid5.getChanges(), new DeltaTask(NONE, null, NONE, null, REMOVE, null));
+			
+
+			Update valid6 = (Update)CommandParser.getCommandFromInput("update 1 -start");
+			assertEquals(valid6.getChanges(), new DeltaTask(NONE, null, REMOVE, null, NONE, null));
+			
 		try {
 			CommandParser.getCommandFromInput("update 1 -name");
-			fail();
+			fail("exception not thrown");
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), String.format(CommandParser.ERROR_UNRECOGNIZED_UPDATE_TOKEN, "-name"));
 		}
 		
-		try {
-			Update valid = (Update)CommandParser.getCommandFromInput("update 1 -start -end");
-			DeltaTask changes = valid.getChanges();
-			DeltaTask.FIELD_ACTION startAction = changes.getStartAction(), endAction = changes.getEndAction();
-			changes.getNameAction();
-			assertEquals(startAction, DeltaTask.FIELD_ACTION.REMOVE);
-			assertEquals(endAction, DeltaTask.FIELD_ACTION.REMOVE);
-		} catch(Exception e) {
-			fail("exception thrown");
-		}
-		
+			Update valid7 = (Update)CommandParser.getCommandFromInput("update 1 -start -end");
+			assertEquals(valid7.getChanges(), new DeltaTask(NONE, null, REMOVE, null, REMOVE, null));
 	}
 
 	@Test
-	public void testDoneParsing() {
+	public void testDoneParsing() throws Exception {
 		try {
 			CommandParser.getCommandFromInput("done 1 2");
 			fail("exception not thrown");
@@ -341,39 +256,35 @@ public class CommandParserTest {
 		} catch(Exception e) {
 			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_DONE);
 		}
-		
-		try {
+	
 			Done valid = (Done)CommandParser.getCommandFromInput("done 1");
 			assertEquals(valid, new Done(1));
-		} catch(Exception e) {
-			fail("exception thrown");
-		}
+		
 	}
 	
 	@Test
-	public void testUndoParsing() {
-		try {
+	public void testUndoParsing() throws Exception {
 			Undo valid = (Undo)CommandParser.getCommandFromInput("undo");
 			assertEquals(valid, new Undo());
-		} catch (Exception e) {
-			fail("exception thrown");
-		}
 	}
 
 	@Test
 	public void testMoveParsing() throws Exception {
-		String folderPath = "d:/my documents/dropbox/";
-
 		try {
-			Move valid = (Move)CommandParser.getCommandFromInput("move \"" + folderPath + "\"");
-			assertEquals(valid, new Move(folderPath));
+			CommandParser.getCommandFromInput("move");
+			fail("exception not thrown");
 		} catch (Exception e) {
-			fail("exception thrown");
+			assertEquals(e.getMessage(), CommandParser.ERROR_INSUFFICIENT_ARGUMENTS_FOR_MOVE);
 		}
-
+		
+		String folderPath = "d:/my documents/dropbox/";
+			Move valid1 = (Move)CommandParser.getCommandFromInput("move \"" + folderPath + "\"");
+			assertEquals(valid1, new Move(folderPath));
+		
 		// test if backslashes automatically get converted into slashes
-		Move valid = (Move)CommandParser.getCommandFromInput("move \"" + folderPath.replace("/", "\\") + "\"");
-		assertEquals(valid, new Move(folderPath));
+			String folderPathUsingBackslashes = folderPath.replace("/", "\\");
+		Move valid2 = (Move)CommandParser.getCommandFromInput("move \"" + folderPathUsingBackslashes + "\"");
+		assertEquals(valid2, new Move(folderPath));
 
 		try {
 			CommandParser.getCommandFromInput("move " + folderPath);
