@@ -139,16 +139,13 @@ public class LogicTest {
 	}
 	
 	@Test
-	public void testValidateDates() {
+	public void testValidateDates() throws Exception {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime later = now.plusSeconds(1);
 		
 		// now is before later - should be valid
-		try {
+		
 			logic.validateDates(now, later);
-		} catch (Exception e) {
-			fail();
-		}
 
 		// both dates are equal - should throw exception
 		Exception exception = null;
