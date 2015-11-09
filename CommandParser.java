@@ -79,8 +79,13 @@ public class CommandParser {
 	}
 	
 	private static final String HELP_ADD = "add";
-	private static final String HELP_REMOVE = "remove";
 	private static final String HELP_LIST = "list";
+	private static final String HELP_REMOVE = "remove";
+	private static final String HELP_UPDATE = "update";
+	private static final String HELP_DONE = "done";
+	private static final String HELP_UNDO = "undo";
+	private static final String HELP_MOVE = "move";
+	private static final String HELP_CLEAR = "clear";
 	private static final String HELP_INVALID = "invalid";
 
 	private static final Logger log = Logger.getLogger(Ui.LOG_NAME);
@@ -409,6 +414,16 @@ public class CommandParser {
 				return HELP_LIST;
   		case HELP_REMOVE:
 				return HELP_REMOVE;
+  		case HELP_UPDATE:
+  			return HELP_UPDATE;
+  		case HELP_DONE:
+  			return HELP_DONE;
+  		case HELP_UNDO:
+  			return HELP_UNDO;
+  		case HELP_MOVE:
+  			return HELP_MOVE;
+  		case HELP_CLEAR:
+  			return HELP_CLEAR;
   		default :
   			return HELP_INVALID;
   	}
