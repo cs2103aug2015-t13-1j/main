@@ -22,13 +22,13 @@ public class StorageManager {
 	private static String STORAGE_NAME = "";
 	private static String STORAGE_TYPE = "";
 	// Specificiation for Default TaskStorage.json
-	private static final String DEFAULT_STORAGE_DIRECTORY = "./";
-	private static final String DEFAULT_STORAGE_NAME = "TaskStorage";
-	private static final String DEFAULT_STORAGE_TYPE = ".json";
+	private static String DEFAULT_STORAGE_DIRECTORY = "./";
+	private static String DEFAULT_STORAGE_NAME = "TaskStorage";
+	private static String DEFAULT_STORAGE_TYPE = ".json";
 	// Specificiation for StorageInformation.json
-	private static final String INFORMATION_DIRECTORY = "./";
-	private static final String INFORMATION_NAME = "StorageInformation";
-	private static final String INFORMATION_TYPE = ".json";
+	private static String INFORMATION_DIRECTORY = "./";
+	private static String INFORMATION_NAME = "StorageInformation";
+	private static String INFORMATION_TYPE = ".json";
 	// Variables for File
 	private static File file;
 	private static FileReader fileReader;
@@ -548,6 +548,38 @@ public class StorageManager {
 	
 	public String getInformationDirectory() {
 		return StorageManager.INFORMATION_DIRECTORY;
+	}
+
+	public String getInformationName() {
+		return StorageManager.INFORMATION_NAME;
+	}
+
+	public String getInformationType() {
+		return StorageManager.INFORMATION_TYPE;
+	}
+
+	public void setInformationDirectory(String directory) {
+		StorageManager.INFORMATION_DIRECTORY = directory;
+	}
+
+	public void setInformationName(String name) {
+		StorageManager.INFORMATION_NAME = name;
+	}
+
+	public void setInformationType(String type) {
+		StorageManager.INFORMATION_TYPE = type;
+	}
+
+	public void setDefaultDirectory(String directory) {
+		StorageManager.DEFAULT_STORAGE_DIRECTORY = directory;
+	}
+
+	public void setDefaultName(String name) {
+		StorageManager.DEFAULT_STORAGE_NAME = name;
+	}
+
+	public void setDefaultType(String type) {
+		StorageManager.DEFAULT_STORAGE_TYPE = type;
 	}
 	
 	public File getStorageFile() {
