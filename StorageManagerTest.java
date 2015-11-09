@@ -12,15 +12,34 @@ import org.junit.Test;
 public class StorageManagerTest {
 	// Note: running the tests causes it to read and write from the eclipse project root folder instead of /bin. 
 	// Not sure if this can be changed
-	private static final String DIRECTORY = "./";
-	private static final String FILENAME = "TaskStorage";
-	private static final String FILETYPE = ".json";
+	private static final String TEST_STORAGE_DIRECTORY = "./";
+	private static final String TEST_STORAGE_FILENAME = "TestTaskStorage";
+	private static final String TEST_STORAGE_FILETYPE = ".json";
+	private static final String TEST_INFORMATION_DIRECTORY = "./";
+	private static final String TEST_INFORMATION_FILENAME = "TestStorageInformation";
+	private static final String TEST_INFORMATION_FILETYPE = ".json";
+
+	private static final String DEFAULT_STORAGE_DIRECTORY = "./";
+	private static final String DEFAULT_STORAGE_FILENAME = "TaskStorage";
+	private static final String DEFAULT_STORAGE_FILETYPE = ".json";
+	private static final String DEFAULT_INFORMATION_DIRECTORY = "./";
+	private static final String DEFAULT_INFORMATION_FILENAME = "StorageInformation";
+	private static final String DEFAULT_INFORMATION_FILETYPE = ".json";
+
 	private static StorageManager storageManager = new StorageManager();
 
 	@Before
 	public void testOpenStorage() throws Exception {
 		// test openStorage() first so that the storage is open for the other tests
 		// as long as it passes
+		StorageManager.setDefaultDirectory(TEST_STORAGE_DIRECTORY);
+		StorageManager.setDefaultName(TEST_STORAGE_FILENAME);
+		StorageManager.setDefaultType(TEST_STORAGE_FILETYPE);
+
+		StorageManager.setInformationDirectory(TEST_INFORMATION_DIRECTORY);
+		StorageManager.setInformationName(TEST_INFORMATION_FILENAME);
+		StorageManager.setInformationType(TEST_INFORMATION_FILETYPE);
+
 		storageManager.openStorage();
 		
 		assertNotEquals(storageManager.getStorageDirectory(), "");
@@ -32,7 +51,16 @@ public class StorageManagerTest {
 	@After
 	public void shutdown() throws Exception {
 		storageManager.closeStorage();
-//		deleteFile(DIRECTORY + FILENAME + FILETYPE);
+
+		StorageManager.setDefaultDirectory(DEFAULT_STORAGE_DIRECTORY);
+		StorageManager.setDefaultName(DEFAULT_STORAGE_FILENAME);
+		StorageManager.setDefaultType(DEFAULT_STORAGE_FILETYPE);
+
+		StorageManager.setInformationDirectory(DEFAULT_INFORMATION_DIRECTORY);
+		StorageManager.setInformationName(DEFAULT_INFORMATION_FILENAME);
+		StorageManager.setInformationType(DEFAULT_INFORMATION_FILETYPE);
+
+		deleteFile(TEST_STORAGE_DIRECTORY + TEST_STORAGE_FILENAME + TEST_STORAGE_FILETYPE);
 
 		try {
 			storageManager.getStorageFile().exists();
