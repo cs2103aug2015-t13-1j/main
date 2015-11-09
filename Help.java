@@ -33,17 +33,16 @@ public class Help extends Command {
 	
 	private final String HELP_LIST = 
 			COLOR_CODE_CYAN + "List Task:\n" + COLOR_CODE_END_TAG
-		+ "- General List: list\n"
+		+ "- All tasks: list\n"
 		+ "- Unscheduled Tasks: list unscheduled\n"
 		+ "- Deadline Tasks: list deadlines\n"
 		+ "- Completed Tasks: list done\n"
 		+ "- Event Tasks: list events\n"
 		+ "- Today's Tasks: list today\n"
 		+ "- Tomorrow's Tasks: list tomorrow\n"
-		+ "- All Tasks: list all\n"
 		+ "- Tasks containing specific words: list \"<first word> [additional words]\"\n"
 		+ "Note:\n"
-		+ "- List can be used with shortvform, l\n"
+		+ "- List can be used with short form, l\n"
 		+ "- General list shows all unscheduled tasks\n"
 		+ "- List done has synonyms: completed and finished\n"
 		+ "- When listing with keywords, make sure words are separated with spaces\n"
